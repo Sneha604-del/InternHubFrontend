@@ -1,1 +1,8 @@
 <router-outlet />
+<div class="app-container">
+  <header class="top-bar">
+    <button *ngIf="showBackButton" class="back-btn" (click)="goBack()">&larr;</button>
+
+  </header>
+</div>
+<app-bottom-nav></app-bottom-nav>
