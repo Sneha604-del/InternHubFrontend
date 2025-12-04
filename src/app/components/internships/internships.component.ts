@@ -17,7 +17,7 @@ import { ApiService } from '../../services/api.service';
           <p><strong>Location:</strong> {{internship.location}}</p>
           <p><strong>Duration:</strong> {{internship.duration}}</p>
           <p><strong>Stipend:</strong> {{internship.stipend}}</p>
-          <button class="btn">Apply Now</button>
+          <button class="btn" (click)="applyNow(internship.id)">Apply Now</button>
         </div>
       </div>
       
@@ -84,5 +84,9 @@ export class InternshipsComponent implements OnInit {
     });
   }
 
-
+  applyNow(internshipId: number) {
+    this.router.navigate(['/apply'], {
+      queryParams: { internshipId }
+    });
+  }
 }

@@ -33,7 +33,7 @@ export class LoginComponent {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
         this.loading = false;
-        // Login successful - stay on login page or redirect as needed
+        this.router.navigate(['/home']);
       },
       error: (error) => {
         this.errorMessage = error.error || 'Login failed';

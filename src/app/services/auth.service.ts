@@ -16,8 +16,13 @@ export class AuthService {
   constructor(private http: HttpClient) {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    if (token && user) {
-      this.currentUserSubject.next(JSON.parse(user));
+    if (token && user && user !== 'undefined') {
+      try {
+        this.currentUserSubject.next(JSON.parse(user));
+      } catch (e) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     }
   }
 
