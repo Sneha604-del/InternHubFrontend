@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DocumentService } from '../../services/document.service';
 
 @Component({
   selector: 'app-documentation',
@@ -11,26 +13,65 @@ import { CommonModule } from '@angular/common';
         <button 
           class="tab" 
           [class.active]="activeTab === 'documents'"
-          (click)="activeTab = 'documents'">
+          (click)="switchTab('documents')">
           Your Documents
         </button>
         <button 
           class="tab" 
           [class.active]="activeTab === 'certificate'"
-          (click)="activeTab = 'certificate'">
-          Certificate
+          (click)="switchTab('certificate')">
+          Certificates
         </button>
       </div>
 
       <div class="tab-content">
         <div *ngIf="activeTab === 'documents'">
-          <h2>Your Documents</h2>
-          <p>Your documents will appear here.</p>
+          <h2>Your Application Documents</h2>
+          <div *ngIf="loading" class="loading">Loading...</div>
+          <div *ngIf="!loading && applications.length === 0" class="empty">No applications found.</div>
+          <div *ngIf="!loading && applications.length > 0" class="doc-list">
+            <div *ngFor="let app of applications" class="doc-card">
+              <div class="doc-header">
+                <h3>{{app.internshipTitle}}</h3>
+                <span class="status" [class]="'status-' + app.status.toLowerCase()">{{app.status}}</span>
+              </div>
+              <div class="doc-info">
+                <p><strong>Company:</strong> {{app.companyName}}</p>
+                <p><strong>Applied:</strong> {{app.appliedDate | date:'medium'}}</p>
+                <p><strong>College:</strong> {{app.college}}</p>
+                <p><strong>Degree:</strong> {{app.degree}} ({{app.yearOfStudy}})</p>
+              </div>
+              <div class="doc-files">
+                <a *ngIf="app.resumeUrl" [href]="getFileUrl(app.resumeUrl)" target="_blank" class="file-link">📄 Resume</a>
+                <a *ngIf="app.studentIdUrl" [href]="getFileUrl(app.studentIdUrl)" target="_blank" class="file-link">🆔 Student ID</a>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div *ngIf="activeTab === 'certificate'">
-          <h2>Certificate</h2>
-          <p>Your certificates will appear here.</p>
+          <h2>Your Certificates</h2>
+          <div *ngIf="loading" class="loading">Loading...</div>
+          <div *ngIf="!loading && certificates.length === 0" class="empty">No certificates available.</div>
+          <div *ngIf="!loading && certificates.length > 0" class="cert-list">
+            <div *ngFor="let cert of certificates" class="cert-card" (click)="viewCertificate(cert)">
+              <div class="cert-header">
+                <h3>{{cert.internshipTitle}}</h3>
+                <span class="cert-number">{{cert.certificateNumber}}</span>
+              </div>
+              <div class="cert-info">
+                <p><strong>Company:</strong> {{cert.companyName}}</p>
+                <p class="view-hint">Click to view certificate</p>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="selectedCertificate" class="cert-modal" (click)="closeCertificate()">
+            <div class="cert-modal-content" (click)="$event.stopPropagation()">
+              <button class="close-btn" (click)="closeCertificate()">✕</button>
+              <div [innerHTML]="certificateHtml" class="cert-html"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -42,10 +83,109 @@ import { CommonModule } from '@angular/common';
     .tab:hover { color: #007bff; }
     .tab.active { background: #007bff; color: white; }
     .tab-content { padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); min-height: calc(100vh - 120px); }
-    h2 { margin-top: 0; color: #333; }
-    p { color: #666; }
+    h2 { margin-top: 0; color: #333; font-size: 20px; }
+    .loading, .empty { text-align: center; padding: 40px; color: #666; }
+    .doc-list, .cert-list { display: grid; gap: 16px; }
+    .doc-card, .cert-card { background: #f8f9fa; border-radius: 8px; padding: 16px; border-left: 4px solid #007bff; }
+    .doc-header, .cert-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+    .doc-header h3, .cert-header h3 { margin: 0; font-size: 16px; color: #333; }
+    .status { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-accepted { background: #d4edda; color: #155724; }
+    .status-rejected { background: #f8d7da; color: #721c24; }
+    .status-completed { background: #d1ecf1; color: #0c5460; }
+    .cert-number { background: #e9ecef; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+    .doc-info, .cert-info { margin-bottom: 12px; }
+    .doc-info p, .cert-info p { margin: 4px 0; font-size: 14px; color: #555; }
+    .remarks { font-style: italic; color: #666; }
+    .doc-files { display: flex; gap: 8px; flex-wrap: wrap; }
+    .file-link { display: inline-block; padding: 6px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; }
+    .file-link:hover { background: #0056b3; }
+    .download-btn { display: inline-block; padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-size: 14px; margin-top: 8px; }
+    .download-btn:hover { background: #218838; }
+    .view-hint { color: #007bff; font-size: 13px; margin-top: 8px; font-style: italic; }
+    .cert-card { cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+    .cert-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .cert-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .cert-modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 90vw; max-height: 90vh; overflow: auto; position: relative; }
+    .close-btn { position: absolute; top: 10px; right: 10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 20px; z-index: 1001; }
+    .close-btn:hover { background: #c82333; }
+    .cert-html { min-width: 600px; }
   `]
 })
-export class DocumentationComponent {
+export class DocumentationComponent implements OnInit {
   activeTab: 'documents' | 'certificate' = 'documents';
+  applications: any[] = [];
+  certificates: any[] = [];
+  loading = false;
+  selectedCertificate: any = null;
+  certificateHtml: SafeHtml = '';
+
+
+  constructor(
+    private documentService: DocumentService,
+    private sanitizer: DomSanitizer
+  ) {}
+
+  ngOnInit() {
+    this.loadApplications();
+  }
+
+  switchTab(tab: 'documents' | 'certificate') {
+    this.activeTab = tab;
+    if (tab === 'documents' && this.applications.length === 0) {
+      this.loadApplications();
+    } else if (tab === 'certificate' && this.certificates.length === 0) {
+      this.loadCertificates();
+    }
+  }
+
+  loadApplications() {
+    this.loading = true;
+    this.documentService.getApplications().subscribe({
+      next: (data) => {
+        this.applications = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading applications:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  loadCertificates() {
+    this.loading = true;
+    this.documentService.getCertificates().subscribe({
+      next: (data) => {
+        this.certificates = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading certificates:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  viewCertificate(cert: any) {
+    this.selectedCertificate = cert;
+    this.documentService.getCertificateContent(cert.fileName).subscribe({
+      next: (html) => {
+        this.certificateHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+      },
+      error: (err) => {
+        console.error('Error loading certificate:', err);
+      }
+    });
+  }
+
+  closeCertificate() {
+    this.selectedCertificate = null;
+    this.certificateHtml = '';
+  }
+
+  getFileUrl(filePath: string): string {
+    return this.documentService.getFileUrl(filePath);
+  }
 }
