@@ -6,6 +6,7 @@ import { DocumentationComponent } from './components/documentation/documentation
 import { ProfileComponent } from './components/profile/profile.component';
 import { InternshipsComponent } from './components/internships/internships.component';
 import { ApplyComponent } from './components/apply/apply.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -15,5 +16,6 @@ export const routes: Routes = [
   { path: 'documentation', component: DocumentationComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'internships', component: InternshipsComponent },
-  { path: 'apply', component: ApplyComponent }
+  { path: 'apply', component: ApplyComponent },
+  { path: 'notifications', component: NotificationsComponent }
 ];

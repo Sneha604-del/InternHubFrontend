@@ -2,7 +2,16 @@
   <header *ngIf="showNavigation" class="top-bar">
     <button *ngIf="showBackButton" class="back-btn" (click)="goBack()">&larr;</button>
     <h2>InternHub</h2>
-    <button class="logout-btn" (click)="logout()">Logout</button>
+    <div class="header-actions">
+      <button class="notification-btn" (click)="goToNotifications()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+      </button>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
   </header>
   <div class="content" [class.no-nav]="!showNavigation">
     <router-outlet />

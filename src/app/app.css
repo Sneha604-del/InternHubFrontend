@@ -41,6 +41,49 @@
   margin-right: 8px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.notification-btn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ff4757;
+  color: white;
+  border-radius: 8px;
+  padding: 1px 4px;
+  font-size: 9px;
+  font-weight: bold;
+  min-width: 14px;
+  text-align: center;
+  line-height: 1.2;
+}
+
 .logout-btn {
   background: white;
   color: #007bff;

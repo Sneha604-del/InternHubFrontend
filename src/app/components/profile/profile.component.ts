@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProfileService, Profile, ProfileUpdateRequest } from '../../services/profile.service';
+import { ProfileService, Profile, ProfileUpdateRequest, PasswordChangeRequest } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -81,6 +81,30 @@ import { AuthService } from '../../services/auth.service';
           </div>
         </div>
       </div>
+      
+      <div *ngIf="showPasswordModal" class="modal" (click)="showPasswordModal = false">
+        <div class="modal-box" (click)="$event.stopPropagation()">
+          <h2>Change Password</h2>
+          <form (ngSubmit)="submitPasswordChange()" #passwordForm="ngForm">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" required>
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="modal-btn cancel" (click)="cancelPasswordChange()">Cancel</button>
+              <button type="submit" class="modal-btn confirm" [disabled]="changingPassword || !passwordForm.valid">{{ changingPassword ? 'Changing...' : 'Change Password' }}</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -127,6 +151,7 @@ import { AuthService } from '../../services/auth.service';
     .modal-btn { flex: 1; padding: 11px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
     .modal-btn.cancel { background: #ecf0f1; color: #34495e; }
     .modal-btn.confirm { background: linear-gradient(135deg, #007bff, #0056b3); color: white; box-shadow: 0 2px 8px rgba(0,123,255,0.25); }
+    .modal-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     
     @media (min-width: 768px) {
       .container { padding: 24px; }
@@ -162,7 +187,11 @@ export class ProfileComponent implements OnInit {
   editMode = false;
   saving = false;
   showDeleteConfirm = false;
+  showPasswordModal = false;
+  changingPassword = false;
   editData: ProfileUpdateRequest = { fullName: '', college: '', course: '' };
+  passwordData: PasswordChangeRequest = { currentPassword: '', newPassword: '' };
+  confirmPassword = '';
 
   constructor(
     private profileService: ProfileService,
@@ -173,6 +202,8 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.loadProfile();
   }
+  
+
 
   loadProfile() {
     const user = this.authService.getCurrentUser();
@@ -222,7 +253,40 @@ export class ProfileComponent implements OnInit {
   }
 
   changePassword() {
-    alert('Change Password feature - Coming soon!');
+    this.passwordData = { currentPassword: '', newPassword: '' };
+    this.confirmPassword = '';
+    this.showPasswordModal = true;
+  }
+  
+  submitPasswordChange() {
+    if (!this.profile) return;
+    if (this.passwordData.newPassword !== this.confirmPassword) {
+      alert('New passwords do not match');
+      return;
+    }
+    if (this.passwordData.newPassword.length < 6) {
+      alert('Password must be at least 6 characters long');
+      return;
+    }
+    
+    this.changingPassword = true;
+    this.profileService.changePassword(this.profile.id, this.passwordData).subscribe({
+      next: () => {
+        alert('Password changed successfully! Please login again.');
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      },
+      error: (error) => {
+        alert(error.error || 'Failed to change password');
+        this.changingPassword = false;
+      }
+    });
+  }
+  
+  cancelPasswordChange() {
+    this.showPasswordModal = false;
+    this.passwordData = { currentPassword: '', newPassword: '' };
+    this.confirmPassword = '';
   }
 
   openSettings() {

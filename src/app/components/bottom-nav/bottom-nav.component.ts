@@ -24,6 +24,7 @@ import { RouterModule } from '@angular/router';
         </svg>
         <span>Home</span>
       </a>
+
       <a routerLink="/profile" routerLinkActive="active" class="nav-item">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -65,6 +66,8 @@ import { RouterModule } from '@angular/router';
       height: 18px;
       margin-bottom: 2px;
     }
+
+
     @media (min-width: 768px) {
       .bottom-nav { padding: 8px 0; }
       .nav-item { padding: 4px 12px; font-size: 12px; }

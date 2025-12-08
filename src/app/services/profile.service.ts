@@ -19,6 +19,11 @@ export interface ProfileUpdateRequest {
   course: string;
 }
 
+export interface PasswordChangeRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,5 +42,9 @@ export class ProfileService {
 
   deleteProfile(id: number): Observable<string> {
     return this.http.delete(`${this.apiUrl}/api/profile/${id}`, { responseType: 'text' });
+  }
+  
+  changePassword(id: number, request: PasswordChangeRequest): Observable<string> {
+    return this.http.put(`${this.apiUrl}/api/profile/${id}/password`, request, { responseType: 'text' });
   }
 }

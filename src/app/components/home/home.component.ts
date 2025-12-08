@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -88,13 +90,21 @@ export class HomeComponent implements OnInit {
   categories: any[] = [];
   filteredCategories: any[] = [];
   companies: any[] = [];
+  unreadCount = 0;
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(
+    private apiService: ApiService, 
+    private router: Router,
+    private notificationService: NotificationService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadCourses();
     this.loadCategories();
   }
+  
+
 
   loadCourses() {
     this.apiService.getCourses().subscribe({
