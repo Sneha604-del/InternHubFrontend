@@ -19,6 +19,10 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/admin/company-categories`);
   }
 
+  getCategoriesByCourse(courseId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/courses/${courseId}/categories`);
+  }
+
   getCompaniesByCategory(categoryId: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/admin/companies/category/${categoryId}`);
   }

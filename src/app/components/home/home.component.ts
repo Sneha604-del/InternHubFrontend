@@ -128,7 +128,20 @@ export class HomeComponent implements OnInit {
   onCourseChange() {
     this.selectedCategory = '';
     this.companies = [];
-    this.filteredCategories = this.categories;
+    
+    if (this.selectedCourse) {
+      this.apiService.getCategoriesByCourse(+this.selectedCourse).subscribe({
+        next: (data) => {
+          this.filteredCategories = data;
+        },
+        error: (err) => {
+          console.error('Error loading categories:', err);
+          this.filteredCategories = [];
+        }
+      });
+    } else {
+      this.filteredCategories = this.categories;
+    }
   }
 
   onCategoryChange() {
