@@ -13,6 +13,9 @@ import { ApiService } from '../../services/api.service';
       
       <div *ngIf="internships.length > 0" class="list">
         <div *ngFor="let internship of internships" class="item">
+          <div class="badge" [class.paid]="internship.isPaid" [class.free]="!internship.isPaid">
+            {{internship.isPaid ? 'PAID' : 'FREE'}}
+          </div>
           <h2>{{internship.title}}</h2>
           <p><strong>Location:</strong> {{internship.location}}</p>
           <p><strong>Duration:</strong> {{internship.duration}}</p>
@@ -31,8 +34,11 @@ import { ApiService } from '../../services/api.service';
     h1 { margin: 16px 0; font-size: 18px; font-weight: 600; color: #222; text-align: center; }
 
     .list { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .item h2 { margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #222; }
+    .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
+    .badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge.paid { background: #4CAF50; color: white; }
+    .badge.free { background: #FF9800; color: white; }
+    .item h2 { margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #222; padding-right: 60px; }
     .item p { margin: 6px 0; font-size: 13px; color: #555; }
     .item strong { color: #222; font-weight: 500; }
     .btn { background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 10px; width: 100%; }

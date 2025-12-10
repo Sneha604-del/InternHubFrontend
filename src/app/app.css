@@ -108,6 +108,11 @@
   width: 100%;
 }
 
+.content.no-nav {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 @media (min-width: 768px) {
   .top-bar {
     padding: 12px 20px;
@@ -122,5 +127,9 @@
   .content {
     margin-top: 52px;
     margin-bottom: 55px;
+  }
+  .content.no-nav {
+    margin-top: 0;
+    margin-bottom: 0;
   }
 }
