@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ToastService } from '../../services/toast.service';
 import { environment } from '../../../environment';
 
 @Component({
@@ -52,9 +53,6 @@ import { environment } from '../../../environment';
           <small>Upload PDF only (Max 5MB)</small>
         </div>
 
-        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-        <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-
         <button type="submit" class="btn" [disabled]="!applyForm.form.valid || loading">
           {{ loading ? 'Submitting...' : 'Submit Application' }}
         </button>
@@ -82,8 +80,6 @@ export class ApplyComponent implements OnInit {
   internshipId: number = 0;
   currentYear = new Date().getFullYear();
   loading = false;
-  errorMessage = '';
-  successMessage = '';
 
   applicationData = {
     college: '',
@@ -96,7 +92,8 @@ export class ApplyComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -109,19 +106,16 @@ export class ApplyComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        this.errorMessage = 'File size must be less than 5MB';
+        this.toastService.showError('File size must be less than 5MB', 'File Error');
         event.target.value = '';
         return;
       }
       (this.applicationData as any)[field] = file;
-      this.errorMessage = '';
     }
   }
 
   onSubmit() {
     this.loading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const formData = new FormData();
     formData.append('internshipId', this.internshipId.toString());
@@ -138,13 +132,13 @@ export class ApplyComponent implements OnInit {
 
     this.http.post(`${environment.apiUrl}/api/applications`, formData).subscribe({
       next: (response) => {
-        this.successMessage = 'Application submitted successfully!';
         this.loading = false;
+        this.toastService.showSuccess('Application submitted successfully!', 'Success');
         setTimeout(() => this.router.navigate(['/home']), 2000);
       },
       error: (error) => {
-        this.errorMessage = error.error?.message || 'Failed to submit application';
         this.loading = false;
+        this.toastService.showError(error.error?.message || 'Failed to submit application', 'Application Error');
       }
     });
   }

@@ -59,14 +59,6 @@
                required minlength="6" placeholder="Confirm your password">
       </div>
 
-      <div class="error-message" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
-      <div class="success-message" *ngIf="successMessage">
-        {{ successMessage }}
-      </div>
-
       <button type="submit" [disabled]="!registerForm.form.valid || loading">
         {{ loading ? 'Registering...' : 'Register' }}
       </button>

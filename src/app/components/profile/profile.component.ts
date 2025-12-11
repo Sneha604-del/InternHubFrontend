@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService, Profile, ProfileUpdateRequest, PasswordChangeRequest } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-profile',
@@ -34,12 +35,28 @@ import { AuthService } from '../../services/auth.service';
               <span class="menu-text">Edit Profile</span>
               <span class="menu-arrow">›</span>
             </button>
+            <button class="menu-item" (click)="openFavorites()">
+              <span class="menu-text">Favorites</span>
+              <span class="menu-arrow">›</span>
+            </button>
+            <button class="menu-item" (click)="openNotifications()">
+              <span class="menu-text">Notifications</span>
+              <span class="menu-arrow">›</span>
+            </button>
             <button class="menu-item" (click)="openSettings()">
               <span class="menu-text">Settings</span>
               <span class="menu-arrow">›</span>
             </button>
             <button class="menu-item" (click)="changePassword()">
               <span class="menu-text">Change Password</span>
+              <span class="menu-arrow">›</span>
+            </button>
+            <button class="menu-item" (click)="openHelpSupport()">
+              <span class="menu-text">Help & Support</span>
+              <span class="menu-arrow">›</span>
+            </button>
+            <button class="menu-item" (click)="openReviewRating()">
+              <span class="menu-text">Review & Rating</span>
               <span class="menu-arrow">›</span>
             </button>
           </div>
@@ -196,7 +213,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private profileService: ProfileService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -247,8 +265,12 @@ export class ProfileComponent implements OnInit {
         this.profile = data;
         this.editMode = false;
         this.saving = false;
+        this.toastService.showSuccess('Profile updated successfully!', 'Success');
       },
-      error: () => this.saving = false
+      error: (error) => {
+        this.saving = false;
+        this.toastService.showError('Failed to update profile', 'Error');
+      }
     });
   }
 
@@ -261,23 +283,25 @@ export class ProfileComponent implements OnInit {
   submitPasswordChange() {
     if (!this.profile) return;
     if (this.passwordData.newPassword !== this.confirmPassword) {
-      alert('New passwords do not match');
+      this.toastService.showError('New passwords do not match', 'Validation Error');
       return;
     }
     if (this.passwordData.newPassword.length < 6) {
-      alert('Password must be at least 6 characters long');
+      this.toastService.showError('Password must be at least 6 characters long', 'Validation Error');
       return;
     }
     
     this.changingPassword = true;
     this.profileService.changePassword(this.profile.id, this.passwordData).subscribe({
       next: () => {
-        alert('Password changed successfully! Please login again.');
-        this.authService.logout();
-        this.router.navigate(['/login']);
+        this.toastService.showSuccess('Password changed successfully! Please login again.', 'Success');
+        setTimeout(() => {
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error: (error) => {
-        alert(error.error || 'Failed to change password');
+        this.toastService.showError(error.error || 'Failed to change password', 'Password Change Error');
         this.changingPassword = false;
       }
     });
@@ -289,8 +313,24 @@ export class ProfileComponent implements OnInit {
     this.confirmPassword = '';
   }
 
+  openFavorites() {
+    this.router.navigate(['/favorites']);
+  }
+
+  openNotifications() {
+    this.router.navigate(['/notifications']);
+  }
+
   openSettings() {
-    alert('Settings feature - Coming soon!');
+    this.toastService.showInfo('Settings feature - Coming soon!', 'Info');
+  }
+
+  openHelpSupport() {
+    this.router.navigate(['/help-support']);
+  }
+
+  openReviewRating() {
+    this.router.navigate(['/reviews']);
   }
 
   confirmDelete() {

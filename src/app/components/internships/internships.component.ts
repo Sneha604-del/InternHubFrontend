@@ -1,32 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { FavoritesService } from '../../services/favorites.service';
+
 
 @Component({
   selector: 'app-internships',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="page">
       <h1>Internships at {{companyName}}</h1>
-      
+
       <div *ngIf="internships.length > 0" class="list">
         <div *ngFor="let internship of internships" class="item">
-          <div class="badge" [class.paid]="internship.isPaid" [class.free]="!internship.isPaid">
-            {{internship.isPaid ? 'PAID' : 'FREE'}}
-          </div>
+          <button class="fav-btn" (click)="toggleFavorite(internship)" [class.active]="isFavorite(internship.id)">
+            <svg viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor"/>
+            </svg>
+          </button>
           <h2>{{internship.title}}</h2>
+
           <p><strong>Location:</strong> {{internship.location}}</p>
           <p><strong>Duration:</strong> {{internship.duration}}</p>
           <p><strong>Stipend:</strong> {{internship.stipend}}</p>
+          <div class="badge" [class.paid]="internship.isPaid" [class.free]="!internship.isPaid">
+            {{internship.isPaid ? 'PAID' : 'FREE'}}
+          </div>
+
           <button class="btn" (click)="applyNow(internship.id)">Apply Now</button>
         </div>
       </div>
-      
+
       <div *ngIf="internships.length === 0" class="empty-state">
         <p>No internships available</p>
       </div>
+
+
     </div>
   `,
   styles: [`
@@ -35,16 +47,23 @@ import { ApiService } from '../../services/api.service';
 
     .list { display: grid; gap: 12px; grid-template-columns: 1fr; }
     .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
-    .badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; margin: 8px 0; }
     .badge.paid { background: #4CAF50; color: white; }
     .badge.free { background: #FF9800; color: white; }
-    .item h2 { margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #222; padding-right: 60px; }
+    .fav-btn { position: absolute; top: 10px; right: 10px; border: none; background: transparent; cursor: pointer; color: #ccc; transition: all 0.2s; z-index: 10; padding: 4px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+    .fav-btn:active { transform: scale(0.9); }
+    .fav-btn.active { color: #4778ffff; }
+    .item h2 { margin: 0 0 8px 0; font-size: 15px; font-weight: 600; color: #222; padding-right: 60px; }
+
     .item p { margin: 6px 0; font-size: 13px; color: #555; }
     .item strong { color: #222; font-weight: 500; }
-    .btn { background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 10px; width: 100%; }
+
+    .btn { background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 8px; width: 100%; }
     .btn:hover { background: #1976D2; }
     .empty-state { background: white; padding: 40px 20px; text-align: center; border-radius: 8px; }
     .empty-state p { margin: 0; color: #999; font-size: 14px; }
+
+
     @media (min-width: 640px) {
       .list { grid-template-columns: repeat(2, 1fr); }
     }
@@ -54,6 +73,7 @@ import { ApiService } from '../../services/api.service';
       .item { padding: 16px; }
       .item h2 { font-size: 16px; }
       .list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+      .fav-btn:hover { transform: scale(1.1); }
     }
   `]
 })
@@ -62,10 +82,12 @@ export class InternshipsComponent implements OnInit {
   companyName: string = '';
   internships: any[] = [];
 
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private favoritesService: FavoritesService
   ) {}
 
   ngOnInit() {
@@ -95,4 +117,14 @@ export class InternshipsComponent implements OnInit {
       queryParams: { internshipId }
     });
   }
+
+  toggleFavorite(internship: any) {
+    this.favoritesService.toggleFavorite({ ...internship, companyName: this.companyName });
+  }
+
+  isFavorite(internshipId: number): boolean {
+    return this.favoritesService.isFavorite(internshipId);
+  }
+
+
 }

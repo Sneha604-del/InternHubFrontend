@@ -15,10 +15,6 @@
                [(ngModel)]="loginData.password" required>
       </div>
 
-      <div class="error-message" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-
       <button type="submit" [disabled]="!loginForm.form.valid || loading">
         {{ loading ? 'Logging in...' : 'Login' }}
       </button>

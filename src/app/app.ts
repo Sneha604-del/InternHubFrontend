@@ -17,6 +17,7 @@ export class App implements OnInit {
   showBackButton = false;
   showNavigation = true;
   unreadCount = 0;
+  currentPageTitle = 'InternHub';
   
   constructor(
     private router: Router, 
@@ -31,6 +32,20 @@ export class App implements OnInit {
       this.showNavigation = !authRoutes.includes(url);
       const mainRoutes = ['/home', '/documentation', '/profile'];
       this.showBackButton = !mainRoutes.includes(url) && this.showNavigation;
+      
+      const titles: { [key: string]: string } = {
+        '/home': 'Home',
+        '/internships': 'Internships',
+        '/favorites': 'Favorites',
+        '/profile': 'Profile',
+        '/notifications': 'Notifications',
+        '/apply': 'Apply',
+        '/documentation': 'Documentation',
+        '/help-support': 'Help & Support',
+        '/reviews': 'Reviews'
+      };
+      this.currentPageTitle = titles[url] || 'InternHub';
+      console.log('Current URL:', url, 'Title:', this.currentPageTitle);
     });
   }
   

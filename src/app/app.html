@@ -1,7 +1,7 @@
 <div class="app-container">
   <header *ngIf="showNavigation" class="top-bar">
     <button *ngIf="showBackButton" class="back-btn" (click)="goBack()">&larr;</button>
-    <h2>InternHub</h2>
+    <h2>{{ currentPageTitle }}</h2>
     <div class="header-actions">
       <button class="notification-btn" (click)="goToNotifications()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

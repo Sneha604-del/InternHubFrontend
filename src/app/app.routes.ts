@@ -7,6 +7,8 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { InternshipsComponent } from './components/internships/internships.component';
 import { ApplyComponent } from './components/apply/apply.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
+import { HelpSupportComponent } from './components/help-support/help-support.component';
+import { FavoritesComponent } from './components/favorites/favorites.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -17,5 +19,7 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'internships', component: InternshipsComponent },
   { path: 'apply', component: ApplyComponent },
-  { path: 'notifications', component: NotificationsComponent }
+  { path: 'notifications', component: NotificationsComponent },
+  { path: 'help-support', component: HelpSupportComponent },
+  { path: 'favorites', component: FavoritesComponent }
 ];
