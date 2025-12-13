@@ -11,4 +11,9 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  background: linear-gradient(135deg, #4169e1 0%, #1e3a8a 100%);
+  min-height: 100vh;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

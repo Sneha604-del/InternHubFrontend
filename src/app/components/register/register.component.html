@@ -1,71 +1,95 @@
 <div class="register-container">
-  <div class="register-form">
-    <h2>Student Registration</h2>
+  <mat-card class="register-card">
+    <div class="logo-container">
+      <img src="assets/symbol.png" alt="InternHub Logo" class="logo">
+    </div>
+    <mat-card-header>
+      <mat-card-title>Student Registration</mat-card-title>
+    </mat-card-header>
     
-    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-      <div class="form-group">
-        <label for="fullName">Full Name *</label>
-        <input type="text" id="fullName" name="fullName" 
-               [(ngModel)]="registrationData.fullName" 
-               required minlength="2" placeholder="Enter your full name">
-      </div>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Full Name</mat-label>
+          <input matInput type="text" name="fullName" 
+                 [(ngModel)]="registrationData.fullName" 
+                 required minlength="2" placeholder="Enter your full name">
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="email">Email *</label>
-        <input type="email" id="email" name="email" 
-               [(ngModel)]="registrationData.email" 
-               required email placeholder="Enter your email address">
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" name="email" 
+                 [(ngModel)]="registrationData.email" 
+                 required email placeholder="Enter your email address">
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="birthDate">Birth Date *</label>
-        <input type="date" id="birthDate" name="birthDate" 
-               [(ngModel)]="registrationData.birthDate" required>
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Birth Date</mat-label>
+          <input matInput type="date" name="birthDate" 
+                 [(ngModel)]="registrationData.birthDate" required>
+          <mat-icon matSuffix>calendar_today</mat-icon>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="gender">Gender *</label>
-        <select id="gender" name="gender" [(ngModel)]="registrationData.gender" required>
-          <option value="MALE">Male</option>
-          <option value="FEMALE">Female</option>
-        </select>
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Gender</mat-label>
+          <mat-select [(ngModel)]="registrationData.gender" name="gender" required>
+            <mat-option value="MALE">Male</mat-option>
+            <mat-option value="FEMALE">Female</mat-option>
+          </mat-select>
+          <mat-icon matSuffix>wc</mat-icon>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="college">College *</label>
-        <input type="text" id="college" name="college" 
-               [(ngModel)]="registrationData.college" 
-               required minlength="2" placeholder="Enter your college name">
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>College</mat-label>
+          <input matInput type="text" name="college" 
+                 [(ngModel)]="registrationData.college" 
+                 required minlength="2" placeholder="Enter your college name">
+          <mat-icon matSuffix>school</mat-icon>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="course">Course *</label>
-        <input type="text" id="course" name="course" 
-               [(ngModel)]="registrationData.course" 
-               required minlength="2" placeholder="Enter your course name">
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Course</mat-label>
+          <input matInput type="text" name="course" 
+                 [(ngModel)]="registrationData.course" 
+                 required minlength="2" placeholder="Enter your course name">
+          <mat-icon matSuffix>book</mat-icon>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="password">Password *</label>
-        <input type="password" id="password" name="password" 
-               [(ngModel)]="registrationData.password" 
-               required minlength="6" placeholder="Enter password (min 6 characters)">
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" name="password" 
+                 [(ngModel)]="registrationData.password" 
+                 required minlength="6" placeholder="Enter password (min 6 characters)">
+          <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password *</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" 
-               [(ngModel)]="confirmPassword" 
-               required minlength="6" placeholder="Confirm your password">
-      </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" name="confirmPassword" 
+                 [(ngModel)]="confirmPassword" 
+                 required minlength="6" placeholder="Confirm your password">
+          <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
+            <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
 
-      <button type="submit" [disabled]="!registerForm.form.valid || loading">
-        {{ loading ? 'Registering...' : 'Register' }}
-      </button>
-    </form>
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="!registerForm.form.valid || loading" class="full-width register-btn">
+          <mat-icon *ngIf="loading">hourglass_empty</mat-icon>
+          {{ loading ? 'Registering...' : 'Register' }}
+        </button>
+      </form>
+    </mat-card-content>
 
-    <p class="login-link">
-      Already have an account? <a routerLink="/login">Login here</a>
-    </p>
-  </div>
+    <mat-card-actions>
+      <p class="login-link">
+        Already have an account? 
+        <a mat-button routerLink="/login" color="accent">Login here</a>
+      </p>
+    </mat-card-actions>
+  </mat-card>
 </div>

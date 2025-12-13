@@ -46,7 +46,7 @@ import { FavoritesService } from '../../services/favorites.service';
     h1 { margin: 16px 0; font-size: 18px; font-weight: 600; color: #222; text-align: center; }
 
     .list { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
+    .item { background: #f8f9fa; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; border-left: 4px solid #2196F3; }
     .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; margin: 8px 0; }
     .badge.paid { background: #4CAF50; color: white; }
     .badge.free { background: #FF9800; color: white; }

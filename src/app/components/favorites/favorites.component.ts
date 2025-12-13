@@ -11,7 +11,6 @@ import { ToastService } from '../../services/toast.service';
   template: `
     <div class="page">
       <div class="header">
-        <button class="back-btn" (click)="goBack()">‹</button>
         <h1>Favorite Internships</h1>
       </div>
 
@@ -54,25 +53,25 @@ import { ToastService } from '../../services/toast.service';
   styles: [`
     .page { padding: 12px; max-width: 900px; margin: 0 auto; min-height: 100vh; background: #f5f5f5; }
     .header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-    .back-btn { width: 36px; height: 36px; border: none; background: white; border-radius: 8px; font-size: 24px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .back-btn:active { transform: scale(0.95); }
+
     h1 { margin: 0; font-size: 18px; font-weight: 600; color: #222; }
 
     .list { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; }
+    .item { background: #f8f9fa; padding: 16px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); position: relative; border-left: 4px solid #007bff; transition: all 0.2s; }
+    .item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,123,255,0.15); }
     .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; margin: 8px 0; }
-    .badge.paid { background: #4CAF50; color: white; }
-    .badge.free { background: #FF9800; color: white; }
+    .badge.paid { background: #d4edda; color: #155724; }
+    .badge.free { background: #fff3cd; color: #856404; }
     .fav-btn { position: absolute; top: 10px; right: 10px; border: none; background: transparent; cursor: pointer; color: #ccc; transition: all 0.2s; z-index: 10; padding: 4px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
     .fav-btn:active { transform: scale(0.9); }
-    .fav-btn.active { color: #2558e4ff; }
-    .item h2 { margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #222; padding-right: 40px; }
-    .item p { margin: 6px 0; font-size: 13px; color: #555; }
-    .item strong { color: #222; font-weight: 500; }
-    .review-btn { background: #FFA726; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .review-btn:hover { background: #FB8C00; }
-    .btn { background: #2196F3; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 8px; width: 100%; }
-    .btn:hover { background: #1976D2; }
+    .fav-btn.active { color: #007bff; }
+    .item h2 { margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #333; padding-right: 40px; }
+    .item p { margin: 4px 0; font-size: 14px; color: #555; }
+    .item strong { color: #333; font-weight: 500; }
+    .review-btn { background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+    .review-btn:hover { background: #218838; transform: translateY(-1px); }
+    .btn { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 8px; width: 100%; transition: all 0.2s; }
+    .btn:hover { background: #0056b3; transform: translateY(-1px); }
 
     .empty-state { background: white; padding: 60px 20px; text-align: center; border-radius: 8px; margin-top: 40px; }
     .empty-icon { color: #ddd; margin-bottom: 16px; display: flex; justify-content: center; }

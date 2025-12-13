@@ -10,19 +10,28 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <div class="container">
       <div class="header">
-        <h1>Notifications</h1>
+      
         <button *ngIf="unreadCount > 0" (click)="markAllAsRead()" class="mark-all-btn">Mark All Read</button>
       </div>
-      
-      <div *ngIf="loading" class="loading">Loading notifications...</div>
-      
+
+      <div *ngIf="loading" class="skeleton-container">
+        <div *ngFor="let item of [1,2,3,4,5]" class="skeleton-notification">
+          <div class="skeleton-content">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-message"></div>
+            <div class="skeleton-time"></div>
+          </div>
+          <div class="skeleton-dot"></div>
+        </div>
+      </div>
+
       <div *ngIf="!loading && notifications.length === 0" class="empty">
         <p>No notifications yet</p>
       </div>
-      
+
       <div *ngIf="!loading && notifications.length > 0" class="notifications-list">
-        <div *ngFor="let notification of notifications" 
-             class="notification-item" 
+        <div *ngFor="let notification of notifications"
+             class="notification-item"
              [class.unread]="!notification.read"
              (click)="markAsRead(notification)">
           <div class="notification-content">
@@ -40,7 +49,15 @@ import { AuthService } from '../../services/auth.service';
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .header h1 { font-size: 22px; font-weight: 700; color: #2c3e50; margin: 0; }
     .mark-all-btn { padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; }
-    .loading, .empty { text-align: center; padding: 40px 20px; color: #999; }
+    .empty { text-align: center; padding: 40px 20px; color: #999; }
+    .skeleton-container { display: flex; flex-direction: column; gap: 12px; }
+    .skeleton-notification { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
+    .skeleton-content { }
+    .skeleton-title { width: 70%; height: 16px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; margin-bottom: 8px; }
+    .skeleton-message { width: 90%; height: 14px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; margin-bottom: 8px; }
+    .skeleton-time { width: 40%; height: 12px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+    .skeleton-dot { position: absolute; top: 16px; right: 16px; width: 8px; height: 8px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 50%; }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     .notifications-list { display: flex; flex-direction: column; gap: 12px; }
     .notification-item { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; position: relative; transition: all 0.2s; }
     .notification-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }

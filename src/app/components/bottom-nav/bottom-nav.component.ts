@@ -44,8 +44,9 @@ import { RouterModule } from '@angular/router';
       justify-content: space-around;
       background: white;
       border-top: 1px solid #ddd;
-      padding: 6px 0;
       box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      padding: 8px 0;
+      min-height: 60px;
       z-index: 1000;
     }
     .nav-item {
@@ -54,7 +55,9 @@ import { RouterModule } from '@angular/router';
       align-items: center;
       text-decoration: none;
       color: #666;
-      padding: 2px 8px;
+      padding: 4px 8px;
+      min-width: 44px;
+      justify-content: center;
       transition: color 0.3s;
       font-size: 10px;
     }

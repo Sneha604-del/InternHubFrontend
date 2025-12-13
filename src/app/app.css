@@ -50,7 +50,7 @@
 .notification-btn {
   position: relative;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: none;
   color: white;
   padding: 6px;
   border-radius: 4px;
@@ -63,6 +63,8 @@
 .notification-btn svg {
   width: 16px;
   height: 16px;
+  font-weight: bold;
+  stroke-width: 3;
 }
 
 .notification-btn:hover {
@@ -85,19 +87,26 @@
 }
 
 .logout-btn {
-  background: white;
-  color: #007bff;
+  background: transparent;
+  color: white;
   border: none;
-  padding: 6px 14px;
+  padding: 6px;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.3s;
 }
 
+.logout-btn svg {
+  width: 18px;
+  height: 18px;
+  font-weight: bold;
+}
+
 .logout-btn:hover {
-  background: #f0f0f0;
+  background: rgba(255,255,255,0.1);
 }
 
 .content {
