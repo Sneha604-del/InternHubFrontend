@@ -10,7 +10,9 @@
         </svg>
         <span *ngIf="unreadCount > 0" class="badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
       </button>
-      <button class="logout-btn" (click)="logout()">Logout</button>
+      <button mat-icon-button class="logout-btn" (click)="confirmLogout()" aria-label="Logout">
+        <mat-icon>exit_to_app</mat-icon>
+      </button>
     </div>
   </header>
   <div class="content" [class.no-nav]="!showNavigation">

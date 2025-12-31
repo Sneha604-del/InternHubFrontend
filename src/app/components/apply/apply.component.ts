@@ -130,7 +130,10 @@ export class ApplyComponent implements OnInit {
       formData.append('resume', this.applicationData.resume);
     }
 
-    this.http.post(`${environment.apiUrl}/api/applications`, formData).subscribe({
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+    this.http.post(`${environment.apiUrl}/api/applications`, formData, { headers }).subscribe({
       next: (response) => {
         this.loading = false;
         this.toastService.showSuccess('Application submitted successfully!', 'Success');

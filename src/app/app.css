@@ -85,19 +85,13 @@
 }
 
 .logout-btn {
-  background: white;
-  color: #007bff;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 12px;
-  transition: background 0.3s;
+  color: white !important;
 }
 
-.logout-btn:hover {
-  background: #f0f0f0;
+.logout-btn mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .content {
@@ -113,6 +107,21 @@
   margin-bottom: 0;
 }
 
+::ng-deep .custom-logout-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+::ng-deep .custom-logout-dialog .mat-mdc-dialog-container {
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+::ng-deep .custom-logout-dialog .mdc-dialog__surface {
+  border-radius: 16px;
+}
+
 @media (min-width: 768px) {
   .top-bar {
     padding: 12px 20px;
@@ -120,10 +129,7 @@
   .top-bar h2 {
     font-size: 22px;
   }
-  .logout-btn {
-    padding: 8px 18px;
-    font-size: 14px;
-  }
+
   .content {
     margin-top: 52px;
     margin-bottom: 55px;

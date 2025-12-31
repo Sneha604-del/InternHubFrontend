@@ -5,10 +5,13 @@ import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
 import { NotificationService } from './services/notification.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, BottomNavComponent, CommonModule],
+  imports: [RouterOutlet, BottomNavComponent, CommonModule, MatButtonModule, MatIconModule, MatDialogModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -22,7 +25,8 @@ export class App implements OnInit {
   constructor(
     private router: Router, 
     private authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog
   ) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -53,9 +57,21 @@ export class App implements OnInit {
     this.router.navigate(['/home']);
   }
   
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+  confirmLogout() {
+    const dialogRef = this.dialog.open(LogoutDialogComponent, {
+      width: '380px',
+      maxWidth: '90vw',
+      panelClass: 'custom-logout-dialog',
+      disableClose: false,
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+      }
+    });
   }
   
   ngOnInit() {
@@ -73,3 +89,69 @@ export class App implements OnInit {
     this.router.navigate(['/notifications']);
   }
 }
+
+@Component({
+  selector: 'logout-dialog',
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule, MatIconModule],
+  template: `
+    <div class="logout-dialog-wrapper">
+      <h1 class="dialog-title">Logout</h1>
+      <p class="dialog-message">Are you sure you want to logout?</p>
+      <div class="button-group">
+        <button mat-flat-button class="cancel-btn" [mat-dialog-close]="false">Cancel</button>
+        <button mat-flat-button class="logout-btn" [mat-dialog-close]="true">Logout</button>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .logout-dialog-wrapper {
+      text-align: center;
+      padding: 8px;
+    }
+    .dialog-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 0 0 12px 0;
+    }
+    .dialog-message {
+      font-size: 16px;
+      color: #718096;
+      margin: 0 0 32px 0;
+      line-height: 1.6;
+    }
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .cancel-btn, .logout-btn {
+      flex: 1;
+      height: 48px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 8px;
+      text-transform: none;
+      letter-spacing: 0.3px;
+    }
+    .cancel-btn {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+    .cancel-btn:hover {
+      background: #cbd5e0;
+    }
+    .logout-btn {
+      background: #dc3545 !important;
+      color: white !important;
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+    .logout-btn:hover {
+      background: #c82333 !important;
+      box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+      transform: translateY(-1px);
+    }
+  `]
+})
+export class LogoutDialogComponent {}
