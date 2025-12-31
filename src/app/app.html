@@ -1,4 +1,6 @@
-<div class="app-container">
+<app-splash-screen *ngIf="showSplash" (splashComplete)="onSplashComplete()"></app-splash-screen>
+
+<div class="app-container" *ngIf="!showSplash">
   <header *ngIf="showNavigation" class="top-bar">
     <button *ngIf="showBackButton" class="back-btn" (click)="goBack()">&larr;</button>
     <h2>{{ currentPageTitle }}</h2>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { BottomNavComponent } from './components/bottom-nav/bottom-nav.component';
+import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
@@ -21,6 +22,7 @@ export class App implements OnInit {
   showNavigation = true;
   unreadCount = 0;
   currentPageTitle = 'InternHub';
+  showSplash = true;
   
   constructor(
     private router: Router, 
@@ -87,6 +89,10 @@ export class App implements OnInit {
   
   goToNotifications() {
     this.router.navigate(['/notifications']);
+  }
+
+  onSplashComplete() {
+    this.showSplash = false;
   }
 }
 

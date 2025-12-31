@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ApiService } from '../../services/api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
@@ -9,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule],
   template: `
     <div class="page">
       <div class="header">
@@ -35,19 +37,21 @@ import { AuthService } from '../../services/auth.service';
 
       <div class="filters">
         <div class="input-group">
-          <label>Course</label>
-          <select [(ngModel)]="selectedCourse" (change)="onCourseChange()">
-            <option value="">Choose Course</option>
-            <option *ngFor="let course of courses" [value]="course.id">{{course.name}}</option>
-          </select>
+          <mat-form-field appearance="outline">
+            <mat-label>Course</mat-label>
+            <mat-select [(ngModel)]="selectedCourse" (selectionChange)="onCourseChange()">
+              <mat-option *ngFor="let course of courses" [value]="course.id">{{course.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div class="input-group" *ngIf="selectedCourse">
-          <label>Category</label>
-          <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
-            <option value="">Choose Category</option>
-            <option *ngFor="let category of filteredCategories" [value]="category.id">{{category.name}}</option>
-          </select>
+          <mat-form-field appearance="outline">
+            <mat-label>Category</mat-label>
+            <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onCategoryChange()">
+              <mat-option *ngFor="let category of filteredCategories" [value]="category.id">{{category.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
 
@@ -82,9 +86,7 @@ import { AuthService } from '../../services/auth.service';
     .filters { padding: 12px; margin-bottom: 12px; background: white; border-radius: 8px; }
     .input-group { margin-bottom: 12px; }
     .input-group:last-child { margin-bottom: 0; }
-    .input-group label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #555; }
-    select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: white; }
-    select:focus { outline: none; border-color: #2196F3; }
+    mat-form-field { width: 100%; }
     .list { display: grid; gap: 12px; grid-template-columns: 1fr; }
     .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .item h2 { margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #222; }
