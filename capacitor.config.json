@@ -1,0 +1,6 @@
+{
+  "appId": "com.internhub.app",
+  "appName": "InternHub",
+  "webDir": "dist/InternHubFrontend/browser",
+  "bundledWebRuntime": false
+}

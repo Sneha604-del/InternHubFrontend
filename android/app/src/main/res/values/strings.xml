@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">InternHub</string>
+    <string name="title_activity_main">InternHub</string>
+    <string name="package_name">com.internhub.app</string>
+    <string name="custom_url_scheme">com.internhub.app</string>
+</resources>
