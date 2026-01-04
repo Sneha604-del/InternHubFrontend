@@ -1,0 +1,47 @@
+.group-create-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.group-form-card {
+  padding: 20px;
+}
+
+.form-section {
+  margin-bottom: 30px;
+}
+
+.form-section h3 {
+  color: #2d3748;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.form-row mat-form-field {
+  flex: 1;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.form-actions button {
+  min-width: 200px;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+}

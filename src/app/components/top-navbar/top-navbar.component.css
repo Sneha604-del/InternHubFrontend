@@ -1,0 +1,197 @@
+.navbar {
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border: none;
+  box-shadow: none;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn:hover {
+  background: #e5e7eb;
+  transform: translateX(-2px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-icon {
+  font-size: 24px;
+  color: #3b82f6;
+}
+
+.brand-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.5px;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.nav-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+  transform: translateY(-1px);
+}
+
+.nav-btn.logout:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logout Popup */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.popup {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 320px;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.popup h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.popup p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+.popup-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.btn.cancel {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn.cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn.logout {
+  background: #dc2626;
+  color: white;
+}
+
+.btn.logout:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 10px 16px;
+  }
+  
+  .brand-text {
+    font-size: 18px;
+  }
+  
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { BottomNavComponent } from './components/bottom-nav/bottom-nav.component';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
+import { TopNavbarComponent } from './components/top-navbar/top-navbar.component';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { AuthService } from './services/auth.service';
@@ -12,7 +13,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, BottomNavComponent, CommonModule, MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [RouterOutlet, BottomNavComponent, SplashScreenComponent, TopNavbarComponent, CommonModule, MatButtonModule, MatIconModule, MatDialogModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -48,7 +49,10 @@ export class App implements OnInit {
         '/apply': 'Apply',
         '/documentation': 'Documentation',
         '/help-support': 'Help & Support',
-        '/reviews': 'Reviews'
+        '/reviews': 'Reviews',
+        '/groups': 'Groups',
+        '/group-create': 'Create Group',
+        '/group-invitations': 'Group Invitations'
       };
       this.currentPageTitle = titles[url] || 'InternHub';
       console.log('Current URL:', url, 'Title:', this.currentPageTitle);

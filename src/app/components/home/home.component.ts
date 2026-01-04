@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,102 +13,181 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule],
   template: `
-    <div class="page">
-      <div class="header">
-        <h1>Find your Internship</h1>
-      </div>
-
-      <div class="stepper">
-        <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
-          <div class="step-number">1</div>
-          <div class="step-label">Course</div>
+    <div class="home-container">
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <div class="banner-content">
+          <h1>Start Your Career Journey</h1>
+          <p>Discover internships that match your skills and aspirations</p>
+          <button class="cta-button" (click)="router.navigate(['/internships'])">Explore Opportunities</button>
         </div>
-        <div class="step-line" [class.completed]="currentStep > 1"></div>
-        <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
-          <div class="step-number">2</div>
-          <div class="step-label">Category</div>
-        </div>
-        <div class="step-line" [class.completed]="currentStep > 2"></div>
-        <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
-          <div class="step-number">3</div>
-          <div class="step-label">Company</div>
+        <div class="banner-image">
+          <div class="placeholder-icon">🎯</div>
         </div>
       </div>
 
-      <div class="filters">
-        <div class="input-group">
-          <mat-form-field appearance="outline">
-            <mat-label>Course</mat-label>
+      <!-- Quick Search -->
+      <div class="search-card">
+        <h2>Find Internships</h2>
+        <div class="search-form">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Select Your Course</mat-label>
             <mat-select [(ngModel)]="selectedCourse" (selectionChange)="onCourseChange()">
-              <mat-option *ngFor="let course of courses" [value]="course.id">{{course.name}}</mat-option>
+              <mat-option *ngFor="let course of courses" [value]="course.id">
+                {{course.name}}
+              </mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
-
-        <div class="input-group" *ngIf="selectedCourse">
-          <mat-form-field appearance="outline">
-            <mat-label>Category</mat-label>
+          
+          <mat-form-field appearance="outline" class="search-field" *ngIf="selectedCourse">
+            <mat-label>Choose Category</mat-label>
             <mat-select [(ngModel)]="selectedCategory" (selectionChange)="onCategoryChange()">
-              <mat-option *ngFor="let category of filteredCategories" [value]="category.id">{{category.name}}</mat-option>
+              <mat-option *ngFor="let category of filteredCategories" [value]="category.id">
+                {{category.name}}
+              </mat-option>
             </mat-select>
           </mat-form-field>
         </div>
       </div>
 
-      <div *ngIf="companies.length > 0" class="list">
-        <div *ngFor="let company of companies" class="item">
-          <h2>{{company.name}}</h2>
-          <p *ngIf="company.website"><strong>Website:</strong> <a [href]="company.website" target="_blank">{{company.website}}</a></p>
-          <p><strong>Required Skills:</strong> {{company.requiredSkills || 'Not specified'}}</p>
-          <button class="btn" (click)="viewInternships(company)">View Internship</button>
+      <!-- Companies Grid -->
+      <div class="companies-section" *ngIf="companies.length > 0">
+        <h2>Available Companies</h2>
+        <div class="companies-grid">
+          <div *ngFor="let company of companies" class="company-card" (click)="viewInternships(company)">
+            <div class="company-header">
+              <div class="company-logo">{{company.name.charAt(0)}}</div>
+              <div class="company-info">
+                <h3>{{company.name}}</h3>
+                <p class="company-skills">{{company.requiredSkills || 'Various Skills'}}</p>
+              </div>
+            </div>
+            <div class="company-actions">
+              <span class="view-link">View Positions →</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div *ngIf="selectedCategory && companies.length === 0" class="empty-state">
-        <p>No companies available</p>
+      <!-- Popular Categories -->
+      <div class="categories-section">
+        <h2>Popular Categories</h2>
+        <div class="categories-grid">
+          <div class="category-card" (click)="selectPopularCategory('Software Development')">
+            <div class="category-icon">💻</div>
+            <h3>Software Development</h3>
+            <p>Web, Mobile & Backend</p>
+          </div>
+          <div class="category-card" (click)="selectPopularCategory('Data Science')">
+            <div class="category-icon">📊</div>
+            <h3>Data Science</h3>
+            <p>Analytics & Machine Learning</p>
+          </div>
+          <div class="category-card" (click)="selectPopularCategory('Marketing')">
+            <div class="category-icon">📈</div>
+            <h3>Digital Marketing</h3>
+            <p>Social Media & Content</p>
+          </div>
+          <div class="category-card" (click)="selectPopularCategory('Design')">
+            <div class="category-icon">🎨</div>
+            <h3>UI/UX Design</h3>
+            <p>Product & Graphic Design</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Getting Started -->
+      <div class="getting-started">
+        <h2>Getting Started</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Complete Your Profile</h4>
+              <p>Add your skills, education, and experience</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Browse Internships</h4>
+              <p>Find opportunities that match your interests</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Apply & Track</h4>
+              <p>Submit applications and monitor progress</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   `,
   styles: [`
-    .page { padding: 12px; max-width: 900px; margin: 0 auto; min-height: 100%; background: #f5f5f5; }
-    .header { margin-bottom: 16px; text-align: center; }
-    .header h1 { margin: 0; font-size: 18px; font-weight: 600; color: #222; }
-    .stepper { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; padding: 12px; background: white; border-radius: 8px; }
-    .step { display: flex; flex-direction: column; align-items: center; }
-    .step-number { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #999; background: white; transition: all 0.3s; }
-    .step.active .step-number { border-color: #2196F3; color: #2196F3; }
-    .step.completed .step-number { background: #2196F3; color: white; border-color: #2196F3; }
-    .step-label { margin-top: 6px; font-size: 11px; color: #999; font-weight: 500; }
-    .step.active .step-label { color: #2196F3; }
-    .step.completed .step-label { color: #2196F3; }
-    .step-line { flex: 1; height: 2px; background: #ddd; margin: 0 8px; max-width: 60px; transition: all 0.3s; }
-    .step-line.completed { background: #2196F3; }
-    .filters { padding: 12px; margin-bottom: 12px; background: white; border-radius: 8px; }
-    .input-group { margin-bottom: 12px; }
-    .input-group:last-child { margin-bottom: 0; }
-    mat-form-field { width: 100%; }
-    .list { display: grid; gap: 12px; grid-template-columns: 1fr; }
-    .item { background: white; padding: 14px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .item h2 { margin: 0 0 10px 0; font-size: 15px; font-weight: 600; color: #222; }
-    .item p { margin: 6px 0; font-size: 13px; color: #555; word-break: break-word; }
-    .item strong { color: #222; font-weight: 500; }
-    .item a { color: #2196F3; text-decoration: none; word-break: break-all; }
-    .btn { background: #2196F3; color: white; border: none; padding: 10px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-top: 10px; width: 100%; }
-    .btn:hover { background: #1976D2; }
-    .empty-state { background: white; padding: 40px 20px; text-align: center; border-radius: 8px; }
-    .empty-state p { margin: 0; color: #999; font-size: 14px; }
+    .home-container { max-width: 1200px; margin: 0 auto; padding: 12px; background: #f8f9fa; min-height: 100vh; }
+    
+    /* Welcome Banner - Smaller */
+    .welcome-banner { display: flex; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; }
+    .banner-content { flex: 1; }
+    .banner-content h1 { font-size: 22px; font-weight: 700; margin: 0 0 8px 0; }
+    .banner-content p { font-size: 14px; margin: 0 0 16px 0; opacity: 0.9; }
+    .cta-button { background: white; color: #667eea; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+    .cta-button:hover { transform: translateY(-1px); }
+    .banner-image { margin-left: 20px; }
+    .placeholder-icon { font-size: 40px; }
+    
+    /* Search Card - Smaller */
+    .search-card { background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .search-card h2 { margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #333; }
+    .search-form { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .search-field { width: 100%; }
+    
+    /* Companies Section - Smaller */
+    .companies-section { margin-bottom: 20px; }
+    .companies-section h2 { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px; }
+    .companies-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .company-card { background: white; padding: 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .company-card:hover { transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .company-header { display: flex; align-items: center; margin-bottom: 8px; }
+    .company-logo { width: 32px; height: 32px; background: #667eea; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; margin-right: 12px; }
+    .company-info h3 { margin: 0 0 2px 0; font-size: 14px; font-weight: 600; color: #333; }
+    .company-skills { margin: 0; font-size: 12px; color: #666; }
+    .view-link { color: #667eea; font-weight: 500; font-size: 12px; }
+    
+    /* Popular Categories - Smaller */
+    .categories-section { margin-bottom: 20px; }
+    .categories-section h2 { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px; }
+    .categories-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .category-card { background: white; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .category-card:hover { transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .category-icon { font-size: 24px; margin-bottom: 8px; }
+    .category-card h3 { margin: 0 0 4px 0; font-size: 13px; font-weight: 600; color: #333; }
+    .category-card p { margin: 0; font-size: 11px; color: #666; }
+    
+    /* Getting Started - Smaller */
+    .getting-started { background: white; padding: 16px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .getting-started h2 { margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #333; }
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step { display: flex; align-items: flex-start; }
+    .step-number { width: 24px; height: 24px; background: #667eea; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; margin-right: 12px; flex-shrink: 0; }
+    .step-content h4 { margin: 0 0 2px 0; font-size: 13px; font-weight: 600; color: #333; }
+    .step-content p { margin: 0; font-size: 11px; color: #666; }
+    
     @media (min-width: 640px) {
-      .list { grid-template-columns: repeat(2, 1fr); }
+      .search-form { grid-template-columns: 1fr 1fr; }
+      .companies-grid { grid-template-columns: repeat(2, 1fr); }
+      .categories-grid { grid-template-columns: repeat(4, 1fr); }
+      .steps { flex-direction: row; }
+      .step { flex-direction: column; text-align: center; flex: 1; }
+      .step-number { margin: 0 0 8px 0; }
     }
     @media (min-width: 768px) {
-      .page { padding: 16px; }
-      .header h1 { font-size: 20px; }
-      .header { margin-bottom: 20px; }
-      .filters { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-      .input-group { margin-bottom: 0; }
-      .item { padding: 16px; }
-      .item h2 { font-size: 16px; }
-      .list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+      .home-container { padding: 16px; }
+      .welcome-banner { padding: 24px 28px; }
+      .banner-content h1 { font-size: 24px; }
+      .banner-content p { font-size: 15px; }
     }
   `]
 })
@@ -119,12 +198,10 @@ export class HomeComponent implements OnInit {
   categories: any[] = [];
   filteredCategories: any[] = [];
   companies: any[] = [];
-  unreadCount = 0;
-  currentStep = 1;
 
   constructor(
     private apiService: ApiService,
-    private router: Router,
+    public router: Router,
     private notificationService: NotificationService,
     private authService: AuthService
   ) {}
@@ -158,7 +235,6 @@ export class HomeComponent implements OnInit {
   onCourseChange() {
     this.selectedCategory = '';
     this.companies = [];
-    this.currentStep = this.selectedCourse ? 2 : 1;
 
     if (this.selectedCourse) {
       this.apiService.getCategoriesByCourse(+this.selectedCourse).subscribe({
@@ -176,7 +252,6 @@ export class HomeComponent implements OnInit {
   }
 
   onCategoryChange() {
-    this.currentStep = this.selectedCategory ? 3 : 2;
     if (this.selectedCategory) {
       this.apiService.getCompaniesByCategory(+this.selectedCategory).subscribe({
         next: (response) => {
@@ -195,6 +270,13 @@ export class HomeComponent implements OnInit {
   viewInternships(company: any) {
     this.router.navigate(['/internships'], {
       queryParams: { companyId: company.id, companyName: company.name }
+    });
+  }
+
+  selectPopularCategory(categoryName: string) {
+    // Navigate to internships page with category filter
+    this.router.navigate(['/internships'], {
+      queryParams: { category: categoryName }
     });
   }
 }

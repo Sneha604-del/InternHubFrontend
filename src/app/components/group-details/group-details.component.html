@@ -1,0 +1,118 @@
+<div class="group-details-container" *ngIf="!loading">
+  <div class="header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2>{{group?.groupName}}</h2>
+  </div>
+
+  <div class="content" *ngIf="group">
+    <!-- Group Information -->
+    <mat-card class="group-info-card">
+      <mat-card-header>
+        <mat-card-title>Group Information</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>College:</strong> {{group.collegeName}}
+          </div>
+          <div class="info-item">
+            <strong>Department:</strong> {{group.department}}
+          </div>
+          <div class="info-item">
+            <strong>Academic Year:</strong> {{group.academicYear}}
+          </div>
+          <div class="info-item">
+            <strong>Semester:</strong> {{group.semester}}
+          </div>
+          <div class="info-item">
+            <strong>Total Students:</strong> {{group.totalStudents}}
+          </div>
+          <div class="info-item">
+            <strong>Duration:</strong> {{group.durationMonths}} months
+          </div>
+          <div class="info-item">
+            <strong>Mode:</strong> {{group.preferredMode}}
+          </div>
+          <div class="info-item">
+            <strong>Type:</strong> {{group.internshipType}}
+          </div>
+        </div>
+        
+        <div class="status-section">
+          <mat-chip [color]="getStatusColor(group.status)" selected>
+            {{group.status}}
+          </mat-chip>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Faculty Coordinator -->
+    <mat-card class="faculty-card">
+      <mat-card-header>
+        <mat-card-title>Faculty Coordinator</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="faculty-info">
+          <div><strong>Name:</strong> {{group.facultyName}}</div>
+          <div><strong>Email:</strong> {{group.facultyEmail}}</div>
+          <div><strong>Phone:</strong> {{group.facultyPhone}}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Invite Students -->
+    <mat-card class="invite-card">
+      <mat-card-header>
+        <mat-card-title>Invite Students</mat-card-title>
+        <mat-card-subtitle>Send invitation to other students</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="invite-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Student Email</mat-label>
+            <input matInput [(ngModel)]="inviteEmail" type="email" placeholder="student@college.edu">
+          </mat-form-field>
+          <button mat-raised-button color="primary" 
+                  (click)="inviteStudent()" 
+                  [disabled]="!inviteEmail || inviting">
+            {{inviting ? 'Sending...' : 'Send Invitation'}}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Group Members -->
+    <mat-card class="members-card">
+      <mat-card-header>
+        <mat-card-title>Group Members ({{members.length}})</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list *ngIf="members.length > 0">
+          <mat-list-item *ngFor="let member of members">
+            <div class="member-info">
+              <div class="member-name">{{member.studentName}}</div>
+              <div class="member-details">
+                <span>{{member.student?.email}}</span>
+              </div>
+              <div class="member-skills" *ngIf="member.githubLink">GitHub: {{member.githubLink}}</div>
+            </div>
+            <mat-chip [color]="getStatusColor(member.status)" selected>
+              {{member.status}}
+            </mat-chip>
+          </mat-list-item>
+        </mat-list>
+        
+        <div *ngIf="members.length === 0" class="no-members">
+          <mat-icon>group_add</mat-icon>
+          <p>No members yet. Start inviting students to join your group!</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">
+  Loading group details...
+</div>

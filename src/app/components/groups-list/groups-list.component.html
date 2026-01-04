@@ -1,0 +1,199 @@
+<div class="groups-page">
+  <div class="action-buttons-center">
+    <p-button 
+      label="View Invitations" 
+      icon="pi pi-envelope" 
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="viewInvitations()"
+      [badge]="invitationCount > 0 ? invitationCount.toString() : undefined"
+      badgeClass="p-badge-danger">
+    </p-button>
+    <p-button 
+      label="Create Group" 
+      icon="pi pi-plus" 
+      severity="primary"
+      size="small"
+      (onClick)="createGroup()">
+    </p-button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <h3>Loading your groups...</h3>
+    <p>Please wait while we fetch your data</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && groups.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <i class="pi pi-users"></i>
+    </div>
+    <h3>No Groups Found</h3>
+    <p>You haven't created any groups yet. Start by creating your first internship group.</p>
+    <p-button 
+      label="Create Your First Group" 
+      icon="pi pi-plus" 
+      severity="primary"
+      (onClick)="createGroup()">
+    </p-button>
+  </div>
+
+  <!-- Groups Grid -->
+  <div *ngIf="!loading && groups.length > 0" class="groups-container">
+    <div class="groups-grid">
+      <p-card *ngFor="let group of groups" class="group-card" [class.featured]="group.status === 'APPROVED'">
+        
+        <!-- Card Header -->
+        <ng-template pTemplate="header">
+          <div class="card-header">
+            <div class="group-info">
+              <div class="group-avatar">
+                <i class="pi pi-building"></i>
+              </div>
+              <div class="group-details">
+                <h3>{{group.groupName}}</h3>
+                <p>{{group.collegeName}}</p>
+              </div>
+            </div>
+            <div class="header-badges">
+              <p-tag 
+                [value]="group.status" 
+                [severity]="getStatusSeverity(group.status)"
+                [icon]="'pi ' + getStatusIcon(group.status)">
+              </p-tag>
+              <span class="member-count">
+                <i class="pi pi-users"></i>
+                {{group.totalStudents}} members
+              </span>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Card Content -->
+        <div class="card-content">
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="pi pi-building info-icon"></i>
+              <div class="info-text">
+                <span class="info-label">Department</span>
+                <span class="info-value">{{group.department}}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-calendar info-icon"></i>
+              <div class="info-text">
+                <span class="info-label">Academic Year</span>
+                <span class="info-value">{{group.academicYear}}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-clock info-icon"></i>
+              <div class="info-text">
+                <span class="info-label">Duration</span>
+                <span class="info-value">{{group.durationMonths}} months</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="pi pi-map-marker info-icon"></i>
+              <div class="info-text">
+                <span class="info-label">Mode</span>
+                <span class="info-value">{{group.preferredMode}}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tags-section">
+            <span class="type-tag">{{group.internshipType}}</span>
+            <span class="mode-tag">{{group.preferredMode}}</span>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <ng-template pTemplate="footer">
+          <div class="card-actions">
+            <p-button 
+              label="View Details" 
+              icon="pi pi-eye" 
+              severity="primary"
+              [outlined]="true"
+              size="small"
+              (onClick)="viewGroup(group.id!)">
+            </p-button>
+            <p-button 
+              label="Invite Members" 
+              icon="pi pi-user-plus" 
+              severity="secondary"
+              [outlined]="true"
+              size="small"
+              (onClick)="inviteMembers(group.id!)">
+            </p-button>
+            <p-button 
+              *ngIf="group.status === 'PENDING'"
+              label="Edit" 
+              icon="pi pi-pencil" 
+              severity="info"
+              [outlined]="true"
+              size="small"
+              (onClick)="editGroup(group.id!)">
+            </p-button>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div *ngIf="showSuccessMessage" class="success-message">
+    <i class="pi pi-check-circle"></i>
+    <span>Invitation sent successfully!</span>
+  </div>
+
+  <!-- Invite Members Dialog -->
+  <p-dialog 
+    header="Invite Members" 
+    [(visible)]="showInviteDialog" 
+    [modal]="true" 
+    [style]="{width: '400px'}"
+    [closable]="true">
+    <div class="invite-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          [(ngModel)]="inviteEmail" 
+          placeholder="Enter email address"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="message">Invitation Message (Optional)</label>
+        <textarea 
+          id="message" 
+          [(ngModel)]="inviteMessage" 
+          placeholder="Add a personal message..."
+          class="form-textarea"
+          rows="3">
+        </textarea>
+      </div>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="Cancel" 
+        icon="pi pi-times" 
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeInviteDialog()">
+      </p-button>
+      <p-button 
+        label="Send Invitation" 
+        icon="pi pi-send" 
+        severity="primary"
+        (onClick)="sendInvitation()"
+        [loading]="sendingInvite">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+</div>

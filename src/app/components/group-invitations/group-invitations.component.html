@@ -1,0 +1,83 @@
+<div class="invitations-container">
+  <div class="header">
+    <h2>Group Invitations</h2>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    Loading invitations...
+  </div>
+
+  <div *ngIf="!loading && invitations.length === 0" class="no-invitations">
+    <mat-icon>mail_outline</mat-icon>
+    <h3>No pending invitations</h3>
+    <p>You don't have any group invitations at the moment</p>
+  </div>
+
+  <div class="invitations-list" *ngIf="!loading && invitations.length > 0">
+    <mat-card *ngFor="let invitation of invitations" class="invitation-card">
+      <mat-card-header>
+        <mat-card-title>{{invitation.group?.groupName}}</mat-card-title>
+        <mat-card-subtitle>{{invitation.group?.collegeName}}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="group-details">
+          <div class="detail-item">
+            <strong>Department:</strong> {{invitation.group?.department}}
+          </div>
+          <div class="detail-item">
+            <strong>Academic Year:</strong> {{invitation.group?.academicYear}}
+          </div>
+          <div class="detail-item">
+            <strong>Duration:</strong> {{invitation.group?.durationMonths}} months
+          </div>
+          <div class="detail-item">
+            <strong>Mode:</strong> {{invitation.group?.preferredMode}}
+          </div>
+          <div class="detail-item">
+            <strong>Type:</strong> {{invitation.group?.internshipType}}
+          </div>
+        </div>
+        
+        <div class="faculty-info">
+          <h4>Faculty Coordinator</h4>
+          <div>{{invitation.group?.facultyName}} - {{invitation.group?.facultyEmail}}</div>
+        </div>
+
+        <!-- Join Form -->
+        <div *ngIf="joiningGroupId === invitation.group?.id" class="join-form">
+          <h4>Join Group</h4>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Your Name</mat-label>
+            <input matInput [(ngModel)]="studentName" required>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>GitHub Username (Optional)</mat-label>
+            <input matInput [(ngModel)]="githubUsername" 
+                   placeholder="username">
+            <mat-hint>Just the username, not the full URL</mat-hint>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <div *ngIf="joiningGroupId !== invitation.group?.id" class="action-buttons">
+          <button mat-raised-button color="primary" (click)="startJoining(invitation)">
+            Join Group
+          </button>
+        </div>
+        
+        <div *ngIf="joiningGroupId === invitation.group?.id" class="form-actions">
+          <button mat-button (click)="cancelJoining()">Cancel</button>
+          <button mat-raised-button color="primary" 
+                  (click)="joinGroup(invitation)"
+                  [disabled]="!studentName">
+            Confirm Join
+          </button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

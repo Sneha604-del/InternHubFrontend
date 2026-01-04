@@ -19,52 +19,77 @@ import { ToastService } from '../../services/toast.service';
   template: `
     <div class="profile-container">
       <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Loading profile...</p>
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="loading-text">Loading profile...</p>
       </div>
 
       <div *ngIf="!loading && profile" class="content">
         <div *ngIf="!editMode" class="profile-section">
+          <!-- Profile Header -->
           <div class="profile-header">
             <div class="profile-avatar">
-              <mat-icon>person</mat-icon>
+              <span class="avatar-text">{{ getInitials() }}</span>
             </div>
-            <h2>{{ profile.fullName }}</h2>
-            <p>Student</p>
+            <div class="profile-info">
+              <h1 class="profile-name">{{ profile.fullName }}</h1>
+              <p class="profile-role">Student</p>
+              <div class="profile-details">
+                <span class="detail-item">{{ profile.college }}</span>
+                <span class="separator">•</span>
+                <span class="detail-item">{{ profile.course }}</span>
+              </div>
+            </div>
           </div>
 
-          <mat-list class="menu-list">
-            <mat-list-item (click)="enableEdit()">
-              <mat-icon matListItemIcon>edit</mat-icon>
-              <span matListItemTitle>Edit Profile</span>
-            </mat-list-item>
-            <mat-list-item (click)="openFavorites()">
-              <mat-icon matListItemIcon>favorite</mat-icon>
-              <span matListItemTitle>Favorites</span>
-            </mat-list-item>
-            <mat-list-item (click)="openNotifications()">
-              <mat-icon matListItemIcon>notifications</mat-icon>
-              <span matListItemTitle>Notifications</span>
-            </mat-list-item>
-            <mat-list-item (click)="openSettings()">
-              <mat-icon matListItemIcon>settings</mat-icon>
-              <span matListItemTitle>Settings</span>
-            </mat-list-item>
-            <mat-list-item (click)="changePassword()">
-              <mat-icon matListItemIcon>lock</mat-icon>
-              <span matListItemTitle>Change Password</span>
-            </mat-list-item>
-            <mat-list-item (click)="openHelpSupport()">
-              <mat-icon matListItemIcon>help</mat-icon>
-              <span matListItemTitle>Help & Support</span>
-            </mat-list-item>
-            <mat-list-item (click)="openReviewRating()">
-              <mat-icon matListItemIcon>star</mat-icon>
-              <span matListItemTitle>Review & Rating</span>
-            </mat-list-item>
-          </mat-list>
+          <!-- Menu List -->
+          <div class="menu-section">
+            <div class="menu-item" (click)="enableEdit()">
+              <mat-icon class="menu-icon">edit</mat-icon>
+              <div class="menu-content">
+                <span class="menu-title">Edit Profile</span>
+                <span class="menu-subtitle">Update your personal information</span>
+              </div>
+              <mat-icon class="chevron">chevron_right</mat-icon>
+            </div>
+            
+            <div class="menu-item" (click)="openFavorites()">
+              <mat-icon class="menu-icon">bookmark_border</mat-icon>
+              <div class="menu-content">
+                <span class="menu-title">Saved Internships</span>
+                <span class="menu-subtitle">View your bookmarked opportunities</span>
+              </div>
+              <mat-icon class="chevron">chevron_right</mat-icon>
+            </div>
+            
+            <div class="menu-item" (click)="openSecurity()">
+              <mat-icon class="menu-icon">lock_outline</mat-icon>
+              <div class="menu-content">
+                <span class="menu-title">Security</span>
+                <span class="menu-subtitle">Password, 2FA and login activity</span>
+              </div>
+              <mat-icon class="chevron">chevron_right</mat-icon>
+            </div>
+            
+            <div class="menu-item" (click)="openHelpSupport()">
+              <mat-icon class="menu-icon">help_outline</mat-icon>
+              <div class="menu-content">
+                <span class="menu-title">Help & Support</span>
+                <span class="menu-subtitle">Get assistance and contact support</span>
+              </div>
+              <mat-icon class="chevron">chevron_right</mat-icon>
+            </div>
+            
+            <div class="menu-item" (click)="openReviewRating()">
+              <mat-icon class="menu-icon">rate_review</mat-icon>
+              <div class="menu-content">
+                <span class="menu-title">Reviews & Feedback</span>
+                <span class="menu-subtitle">Rate your internship experience</span>
+              </div>
+              <mat-icon class="chevron">chevron_right</mat-icon>
+            </div>
+          </div>
 
-          <button mat-raised-button color="warn" (click)="confirmDelete()" class="signout-btn">
+          <button mat-stroked-button class="signout-btn" (click)="confirmDelete()">
             <mat-icon>logout</mat-icon>
             Sign Out
           </button>
@@ -96,7 +121,7 @@ import { ToastService } from '../../services/toast.service';
                 <mat-icon *ngIf="saving">hourglass_empty</mat-icon>
                 {{ saving ? 'Saving...' : 'Save Changes' }}
               </button>
-              <button mat-button type="button" (click)="cancelEdit()">Cancel</button>
+              <button mat-stroked-button type="button" (click)="cancelEdit()">Cancel</button>
             </div>
           </form>
         </div>
@@ -104,8 +129,8 @@ import { ToastService } from '../../services/toast.service';
 
       <div *ngIf="showDeleteConfirm" class="modal-overlay" (click)="showDeleteConfirm = false">
         <div class="modal-content" (click)="$event.stopPropagation()">
-          <h2>Sign Out</h2>
-          <p>Are you sure you want to sign out?</p>
+          <h2>Confirm Sign Out</h2>
+          <p class="modal-text">Are you sure you want to sign out of your account?</p>
           <div class="modal-actions">
             <button mat-button (click)="showDeleteConfirm = false">Cancel</button>
             <button mat-raised-button color="warn" (click)="deleteProfile()">Sign Out</button>
@@ -120,19 +145,16 @@ import { ToastService } from '../../services/toast.service';
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Current Password</mat-label>
               <input matInput type="password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" required>
-              <mat-icon matSuffix>lock</mat-icon>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>New Password</mat-label>
               <input matInput type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required minlength="6">
-              <mat-icon matSuffix>lock_open</mat-icon>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Confirm New Password</mat-label>
               <input matInput type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
-              <mat-icon matSuffix>lock_open</mat-icon>
             </mat-form-field>
 
             <div class="modal-actions">
@@ -148,24 +170,261 @@ import { ToastService } from '../../services/toast.service';
     </div>
   `,
   styles: [`
-    .profile-container { max-width: 600px; margin: 0 auto; padding: 20px; min-height: 100vh; background: #f5f5f5; }
-    .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px; gap: 16px; }
-    .profile-section, .edit-section { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .profile-header { text-align: center; margin-bottom: 24px; }
-    .profile-avatar { background: #1976d2; color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-    .profile-header h2 { margin: 0 0 8px 0; font-size: 24px; font-weight: 500; }
-    .profile-header p { margin: 0; color: #666; }
-    .menu-list { padding: 0; margin-bottom: 24px; }
-    .signout-btn { width: 100%; }
-    .edit-section h2 { margin: 0 0 24px 0; font-size: 24px; font-weight: 500; }
-    .full-width { width: 100%; margin-bottom: 16px; }
-    .form-actions { display: flex; gap: 12px; margin-top: 20px; }
-    .form-actions button { flex: 1; }
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: white; padding: 24px; border-radius: 8px; max-width: 400px; width: 90%; margin: 20px; }
-    .modal-content h2 { margin: 0 0 16px 0; font-size: 20px; font-weight: 500; }
-    .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-    .modal-actions button { flex: 1; }
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+      background: #fafafa;
+    }
+    
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      gap: 16px;
+    }
+    
+    .loading-text {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .profile-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .profile-header {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #1976d2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .avatar-text {
+      color: white;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .profile-info {
+      flex: 1;
+    }
+    
+    .profile-name {
+      margin: 0 0 4px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #212121;
+    }
+    
+    .profile-role {
+      margin: 0 0 8px 0;
+      color: #757575;
+      font-size: 14px;
+    }
+    
+    .profile-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #616161;
+      font-size: 14px;
+    }
+    
+    .separator {
+      color: #bdbdbd;
+    }
+    
+    .menu-section {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+      overflow: hidden;
+    }
+    
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    
+    .menu-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .menu-icon {
+      color: #616161;
+      margin-right: 16px;
+      font-size: 20px !important;
+    }
+    
+    .menu-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .menu-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #212121;
+      margin-bottom: 2px;
+    }
+    
+    .menu-subtitle {
+      font-size: 13px;
+      color: #757575;
+    }
+    
+    .chevron {
+      color: #bdbdbd;
+      font-size: 18px !important;
+    }
+    
+    .signout-btn {
+      width: 100%;
+      height: 48px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #d32f2f;
+      border-color: #d32f2f;
+    }
+    
+    .signout-btn:hover {
+      background-color: #fef2f2;
+    }
+    
+    .edit-section {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+    }
+    
+    .edit-section h2 {
+      margin: 0 0 24px 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #212121;
+    }
+    
+    .full-width {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    .form-actions button {
+      flex: 1;
+      height: 40px;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      margin: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .modal-content h2 {
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #212121;
+    }
+    
+    .modal-text {
+      color: #616161;
+      font-size: 14px;
+      line-height: 1.4;
+      margin: 0 0 20px 0;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    
+    .modal-actions button {
+      flex: 1;
+      height: 40px;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-container {
+        padding: 16px;
+      }
+      
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+      }
+      
+      .profile-details {
+        justify-content: center;
+      }
+      
+      .menu-item {
+        padding: 14px 16px;
+      }
+      
+      .modal-content {
+        padding: 20px;
+        margin: 16px;
+      }
+    }
   `]
 })
 export class ProfileComponent implements OnInit {
@@ -244,10 +503,8 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  changePassword() {
-    this.passwordData = { currentPassword: '', newPassword: '' };
-    this.confirmPassword = '';
-    this.showPasswordModal = true;
+  openSecurity() {
+    this.router.navigate(['/security']);
   }
 
   submitPasswordChange() {

@@ -1,0 +1,95 @@
+.invitations-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.header h2 {
+  color: #2d3748;
+  margin: 0;
+}
+
+.loading, .no-invitations {
+  text-align: center;
+  padding: 60px 20px;
+  color: #718096;
+}
+
+.no-invitations mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  color: #cbd5e0;
+}
+
+.invitations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.invitation-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.invitation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.group-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.detail-item {
+  font-size: 14px;
+}
+
+.faculty-info {
+  margin: 20px 0;
+  padding: 16px;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.faculty-info h4 {
+  margin: 0 0 8px 0;
+  color: #2d3748;
+  font-size: 16px;
+}
+
+.join-form {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.join-form h4 {
+  margin: 0 0 20px 0;
+  color: #2d3748;
+}
+
+.join-form mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.action-buttons, .form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.form-actions {
+  margin-top: 20px;
+}

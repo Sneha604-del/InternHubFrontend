@@ -1,0 +1,134 @@
+<div class="group-create-container">
+  <mat-card class="group-form-card">
+    <mat-card-header>
+      <mat-card-title>Create Internship Group</mat-card-title>
+      <mat-card-subtitle>Form a group for internship applications</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()" #groupForm="ngForm">
+        <!-- Group Information -->
+        <div class="form-section">
+          <h3>Group Information</h3>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Group Name</mat-label>
+            <input matInput [(ngModel)]="group.groupName" name="groupName" required>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>College Name</mat-label>
+            <input matInput [(ngModel)]="group.collegeName" name="collegeName" required>
+          </mat-form-field>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Department</mat-label>
+              <input matInput [(ngModel)]="group.department" name="department" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Academic Year</mat-label>
+              <mat-select [(ngModel)]="group.academicYear" name="academicYear" required>
+                <mat-option value="2nd Year">2nd Year</mat-option>
+                <mat-option value="3rd Year">3rd Year</mat-option>
+                <mat-option value="Final Year">Final Year</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Semester</mat-label>
+              <input matInput [(ngModel)]="group.semester" name="semester" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Total Students</mat-label>
+              <input matInput type="number" [(ngModel)]="group.totalStudents" name="totalStudents" required>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Internship Preferences -->
+        <div class="form-section">
+          <h3>Internship Preferences</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Internship Type</mat-label>
+              <mat-select [(ngModel)]="group.internshipType" name="internshipType" required>
+                <mat-option *ngFor="let type of internshipTypes" [value]="type">
+                  {{type.replace('_', ' ')}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Preferred Mode</mat-label>
+              <mat-select [(ngModel)]="group.preferredMode" name="preferredMode" required>
+                <mat-option *ngFor="let mode of internshipModes" [value]="mode">
+                  {{mode}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Duration (Months)</mat-label>
+            <mat-select [(ngModel)]="group.durationMonths" name="durationMonths" required>
+              <mat-option value="1">1 Month</mat-option>
+              <mat-option value="2">2 Months</mat-option>
+              <mat-option value="3">3 Months</mat-option>
+              <mat-option value="6">6 Months</mat-option>
+            </mat-select>
+          </mat-form-field>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Start Date</mat-label>
+              <input matInput [matDatepicker]="startPicker" [(ngModel)]="group.startDate" name="startDate" required>
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>End Date</mat-label>
+              <input matInput [matDatepicker]="endPicker" [(ngModel)]="group.endDate" name="endDate" required>
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Faculty Coordinator -->
+        <div class="form-section">
+          <h3>Faculty Coordinator</h3>
+          
+          <mat-form-field appearance="outline">
+            <mat-label>Faculty Name</mat-label>
+            <input matInput [(ngModel)]="group.facultyName" name="facultyName" required>
+          </mat-form-field>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Faculty Email</mat-label>
+              <input matInput type="email" [(ngModel)]="group.facultyEmail" name="facultyEmail" required>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline">
+              <mat-label>Faculty Phone</mat-label>
+              <input matInput [(ngModel)]="group.facultyPhone" name="facultyPhone" required>
+            </mat-form-field>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!groupForm.form.valid || loading">
+            {{loading ? 'Creating...' : 'Create Group'}}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

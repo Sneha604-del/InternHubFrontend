@@ -34,4 +34,16 @@ export class ApiService {
     }
     return this.http.get(url);
   }
+
+  getAllInternships(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/admin/internships`);
+  }
+
+  getMyApplications(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/applications/my`);
+  }
+
+  getFavorites(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/favorites`);
+  }
 }
