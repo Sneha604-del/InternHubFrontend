@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -46,7 +45,7 @@ import { DocumentService } from '../../services/document.service';
       </div>
 
       <!-- Content Wrapper with Slide Animation -->
-      <div class="content-wrapper">
+      <div class="slider-wrapper">
         <div class="content-slider" [style.transform]="'translateX(' + getSlideOffset() + '%)'">
           <!-- Documents Tab -->
           <div class="content-section slide">
@@ -126,10 +125,10 @@ import { DocumentService } from '../../services/document.service';
                 </div>
                 
                 <div class="card-actions">
-                  <button mat-raised-button color="primary" class="view-cert-btn" (click)="viewCertificate(cert)">
-                    <mat-icon>visibility</mat-icon>
+                  <a [href]="getCertificateUrl(cert.fileName)" target="_blank" class="action-btn primary view-cert-btn">
+                    <mat-icon>picture_as_pdf</mat-icon>
                     View Certificate
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -137,18 +136,7 @@ import { DocumentService } from '../../services/document.service';
         </div>
       </div>
 
-      <!-- Certificate Modal -->
-      <div *ngIf="selectedCertificate" class="modal-overlay" (click)="closeCertificate()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <div class="modal-header">
-            <h2>Certificate</h2>
-            <button mat-icon-button class="close-btn" (click)="closeCertificate()">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>
-          <div [innerHTML]="certificateHtml" class="cert-html"></div>
-        </div>
-      </div>
+
     </div>
   `,
   styles: [`
@@ -162,6 +150,7 @@ import { DocumentService } from '../../services/document.service';
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
+      overflow-x: hidden;
     }
     
     .tab-navigation {
@@ -243,12 +232,9 @@ import { DocumentService } from '../../services/document.service';
       font-style: italic;
     }
     
-    .content-wrapper {
+    .slider-wrapper {
       overflow: hidden;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e0e0e0;
+      width: 100%;
     }
     
     .content-slider {
@@ -259,7 +245,7 @@ import { DocumentService } from '../../services/document.service';
     
     .content-section {
       width: 50%;
-      padding: 24px;
+      padding: 0;
       min-height: 400px;
       flex-shrink: 0;
     }
@@ -316,16 +302,18 @@ import { DocumentService } from '../../services/document.service';
     }
     
     .item-card {
-      background: #f8f9fa;
+      background: white;
       border-radius: 8px;
       padding: 20px;
-      border: 1px solid #e9ecef;
+      border: 1px solid #e0e0e0;
+      border-left: 4px solid #ff9800;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       transition: all 0.2s;
     }
     
     .item-card:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
     }
     
     .certificate-card {
@@ -482,62 +470,10 @@ import { DocumentService } from '../../services/document.service';
       width: 100%;
       height: 40px;
       font-weight: 500;
-    }
-    
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
       justify-content: center;
-      z-index: 1000;
-      padding: 20px;
     }
     
-    .modal-content {
-      background: white;
-      border-radius: 8px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow: auto;
-      position: relative;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 24px;
-      border-bottom: 1px solid #e0e0e0;
-      background: #f8f9fa;
-    }
-    
-    .modal-header h2 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: #212121;
-    }
-    
-    .close-btn {
-      color: #616161;
-    }
-    
-    .close-btn:hover {
-      color: #212121;
-      background-color: #f5f5f5;
-    }
-    
-    .cert-html {
-      padding: 24px;
-      min-width: 600px;
-    }
+
     
     @media (max-width: 768px) {
       .doc-container {
@@ -550,7 +486,7 @@ import { DocumentService } from '../../services/document.service';
       }
       
       .content-section {
-        padding: 20px;
+        padding: 0;
       }
       
       .item-card {
@@ -588,26 +524,7 @@ import { DocumentService } from '../../services/document.service';
         font-size: 12px;
       }
       
-      .modal-content {
-        margin: 10px;
-        max-width: calc(100vw - 20px);
-        max-height: calc(100vh - 20px);
-      }
-      
-      .modal-header {
-        padding: 16px 20px;
-      }
-      
-      .modal-header h2 {
-        font-size: 16px;
-      }
-      
-      .cert-html {
-        padding: 20px;
-        min-width: auto;
-        transform: scale(0.8);
-        transform-origin: top left;
-      }
+
     }
   `]
 })
@@ -616,18 +533,13 @@ export class DocumentationComponent implements OnInit {
   applications: any[] = [];
   certificates: any[] = [];
   loading = false;
-  selectedCertificate: any = null;
-  certificateHtml: SafeHtml = '';
   private touchStartX = 0;
   private touchEndX = 0;
   private mouseStartX = 0;
   private mouseEndX = 0;
   private isDragging = false;
 
-  constructor(
-    private documentService: DocumentService,
-    private sanitizer: DomSanitizer
-  ) {}
+  constructor(private documentService: DocumentService) {}
 
   ngOnInit() {
     this.loadApplications();
@@ -741,21 +653,8 @@ export class DocumentationComponent implements OnInit {
     });
   }
 
-  viewCertificate(cert: any) {
-    this.selectedCertificate = cert;
-    this.documentService.getCertificateContent(cert.fileName).subscribe({
-      next: (html) => {
-        this.certificateHtml = this.sanitizer.bypassSecurityTrustHtml(html);
-      },
-      error: (err) => {
-        console.error('Error loading certificate:', err);
-      }
-    });
-  }
-
-  closeCertificate() {
-    this.selectedCertificate = null;
-    this.certificateHtml = '';
+  getCertificateUrl(fileName: string): string {
+    return this.documentService.getCertificateUrl(fileName);
   }
 
   getFileUrl(filePath: string): string {

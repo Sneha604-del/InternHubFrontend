@@ -7,8 +7,8 @@
   </div>
 
   <div class="content" *ngIf="group">
-    <!-- Group Information -->
-    <mat-card class="group-info-card">
+    <mat-card>
+      <!-- Group Information -->
       <mat-card-header>
         <mat-card-title>Group Information</mat-card-title>
       </mat-card-header>
@@ -45,30 +45,17 @@
             {{group.status}}
           </mat-chip>
         </div>
-      </mat-card-content>
-    </mat-card>
 
-    <!-- Faculty Coordinator -->
-    <mat-card class="faculty-card">
-      <mat-card-header>
-        <mat-card-title>Faculty Coordinator</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+        <!-- Faculty Coordinator -->
+        <h3>Faculty Coordinator</h3>
         <div class="faculty-info">
           <div><strong>Name:</strong> {{group.facultyName}}</div>
           <div><strong>Email:</strong> {{group.facultyEmail}}</div>
           <div><strong>Phone:</strong> {{group.facultyPhone}}</div>
         </div>
-      </mat-card-content>
-    </mat-card>
 
-    <!-- Invite Students -->
-    <mat-card class="invite-card">
-      <mat-card-header>
-        <mat-card-title>Invite Students</mat-card-title>
-        <mat-card-subtitle>Send invitation to other students</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
+        <!-- Invite Students -->
+        <h3>Invite Students</h3>
         <div class="invite-form">
           <mat-form-field appearance="outline">
             <mat-label>Student Email</mat-label>
@@ -80,15 +67,9 @@
             {{inviting ? 'Sending...' : 'Send Invitation'}}
           </button>
         </div>
-      </mat-card-content>
-    </mat-card>
 
-    <!-- Group Members -->
-    <mat-card class="members-card">
-      <mat-card-header>
-        <mat-card-title>Group Members ({{members.length}})</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+        <!-- Group Members -->
+        <h3>Group Members ({{members.length}})</h3>
         <mat-list *ngIf="members.length > 0">
           <mat-list-item *ngFor="let member of members">
             <div class="member-info">

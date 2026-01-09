@@ -19,11 +19,20 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
-.group-info-card, .faculty-card, .invite-card, .members-card {
-  margin-bottom: 20px;
+.content h3 {
+  margin: 2rem 0 1rem 0;
+  color: #2d3748;
+  font-size: 1.1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.content h3:first-of-type {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
 .info-grid {

@@ -33,11 +33,6 @@ import { ToastService } from '../../services/toast.service';
             <div class="profile-info">
               <h1 class="profile-name">{{ profile.fullName }}</h1>
               <p class="profile-role">Student</p>
-              <div class="profile-details">
-                <span class="detail-item">{{ profile.college }}</span>
-                <span class="separator">•</span>
-                <span class="detail-item">{{ profile.course }}</span>
-              </div>
             </div>
           </div>
 
@@ -175,7 +170,7 @@ import { ToastService } from '../../services/toast.service';
       margin: 0 auto;
       padding: 20px;
       min-height: 100vh;
-      background: #fafafa;
+      background: #f5f5f5;
     }
     
     .loading-container {
@@ -195,25 +190,27 @@ import { ToastService } from '../../services/toast.service';
     .profile-section {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 12px;
     }
     
     .profile-header {
       background: white;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e0e0e0;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: none;
       display: flex;
+      flex-direction: row;
       align-items: center;
-      gap: 20px;
+      gap: 16px;
+      text-align: left;
     }
     
     .profile-avatar {
-      width: 64px;
-      height: 64px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: #1976d2;
+      background: #667eea;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -222,8 +219,8 @@ import { ToastService } from '../../services/toast.service';
     
     .avatar-text {
       color: white;
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 22px;
+      font-weight: 700;
     }
     
     .profile-info {
@@ -232,15 +229,16 @@ import { ToastService } from '../../services/toast.service';
     
     .profile-name {
       margin: 0 0 4px 0;
-      font-size: 24px;
-      font-weight: 600;
+      font-size: 20px;
+      font-weight: 700;
       color: #212121;
     }
     
     .profile-role {
-      margin: 0 0 8px 0;
+      margin: 0 0 4px 0;
       color: #757575;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 500;
     }
     
     .profile-details {
@@ -248,7 +246,7 @@ import { ToastService } from '../../services/toast.service';
       align-items: center;
       gap: 8px;
       color: #616161;
-      font-size: 14px;
+      font-size: 12px;
     }
     
     .separator {
@@ -256,11 +254,14 @@ import { ToastService } from '../../services/toast.service';
     }
     
     .menu-section {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e0e0e0;
-      overflow: hidden;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      overflow: visible;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     
     .menu-item {
@@ -268,8 +269,11 @@ import { ToastService } from '../../services/toast.service';
       align-items: center;
       padding: 16px 20px;
       cursor: pointer;
-      transition: background-color 0.2s;
-      border-bottom: 1px solid #f5f5f5;
+      transition: all 0.2s;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: none;
     }
     
     .menu-item:last-child {
@@ -277,13 +281,21 @@ import { ToastService } from '../../services/toast.service';
     }
     
     .menu-item:hover {
-      background-color: #f8f9fa;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
     
     .menu-icon {
-      color: #616161;
+      color: #667eea;
       margin-right: 16px;
-      font-size: 20px !important;
+      font-size: 22px !important;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f3ff;
+      border-radius: 10px;
     }
     
     .menu-content {
@@ -312,14 +324,19 @@ import { ToastService } from '../../services/toast.service';
     .signout-btn {
       width: 100%;
       height: 48px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #d32f2f;
-      border-color: #d32f2f;
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border: none;
+      border-radius: 12px;
+      margin-top: 12px;
+      box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
     }
     
     .signout-btn:hover {
-      background-color: #fef2f2;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(245, 87, 108, 0.4);
     }
     
     .edit-section {
@@ -407,8 +424,6 @@ import { ToastService } from '../../services/toast.service';
       }
       
       .profile-header {
-        flex-direction: column;
-        text-align: center;
         padding: 20px;
       }
       
@@ -468,7 +483,11 @@ export class ProfileComponent implements OnInit {
   }
 
   getInitials(): string {
-    return this.profile?.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+    const names = this.profile?.fullName.split(' ') || [];
+    if (names.length >= 2) {
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    }
+    return names[0]?.[0]?.toUpperCase() || 'U';
   }
 
   enableEdit() {

@@ -147,13 +147,13 @@ export class GroupsListComponent implements OnInit {
     });
   }
 
-  getStatusSeverity(status: string): "warn" | "success" | "info" | "danger" | "secondary" | "contrast" | undefined {
+  getStatusSeverity(status: string): "warning" | "success" | "info" | "danger" | "secondary" | "contrast" | undefined {
     switch (status) {
       case 'APPROVED': return 'success';
       case 'REJECTED': return 'danger';
       case 'APPLIED': return 'info';
-      case 'SELECTED': return 'warn';
-      case 'PENDING': return 'warn';
+      case 'SELECTED': return 'warning';
+      case 'PENDING': return 'warning';
       default: return 'secondary';
     }
   }

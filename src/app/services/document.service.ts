@@ -24,11 +24,8 @@ export class DocumentService {
     return this.http.get<any[]>(`${this.apiUrl}/certificates`, { headers: this.getHeaders() });
   }
 
-  getCertificateContent(fileName: string): Observable<string> {
-    return this.http.get(`${this.apiUrl}/certificates/${fileName}`, { 
-      headers: this.getHeaders(),
-      responseType: 'text'
-    });
+  getCertificateUrl(fileName: string): string {
+    return `${environment.apiUrl}/api/student/documents/certificates/${fileName}`;
   }
 
   getFileUrl(filePath: string): string {

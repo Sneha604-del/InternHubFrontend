@@ -14,7 +14,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 6px 16px;
   background: #007bff;
   color: white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -99,7 +99,6 @@
 .content {
   flex: 1;
   overflow-y: auto;
-  margin-top: 48px;
   margin-bottom: 50px;
   width: 100%;
 }

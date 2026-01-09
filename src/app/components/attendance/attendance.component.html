@@ -27,151 +27,150 @@
     </div>
   </div>
 
-  <!-- Statistics -->
-  <div class="stats-grid">
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <div class="stat-icon today-icon">
-          <i class="pi pi-calendar"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Today's Status</h3>
-          <p-tag 
-            *ngIf="todayAttendance" 
-            [value]="todayAttendance.status" 
-            [severity]="getStatusSeverity(todayAttendance.status)">
-          </p-tag>
-          <span *ngIf="!todayAttendance" class="no-status">Not checked in</span>
-        </div>
-      </div>
-    </p-card>
-
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <div class="stat-icon hours-icon">
-          <i class="pi pi-clock"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Hours Today</h3>
-          <div class="hours-display">{{ todayAttendance?.totalHours || 0 }}h</div>
-        </div>
-      </div>
-    </p-card>
-
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <div class="stat-icon weekly-icon">
-          <i class="pi pi-chart-bar"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Weekly Total</h3>
-          <div class="weekly-stats">
-            <span class="hours-display">{{ totalWeeklyHours }}h</span>
-            <small>{{ getPresentDaysCount() }} days present</small>
-          </div>
-        </div>
-      </div>
-    </p-card>
-
-    <p-card class="stat-card">
-      <div class="stat-content">
-        <div class="stat-icon avg-icon">
-          <i class="pi pi-calculator"></i>
-        </div>
-        <div class="stat-info">
-          <h3>Daily Average</h3>
-          <div class="hours-display">
-            {{ weeklyAttendance.length > 0 ? (totalWeeklyHours / weeklyAttendance.length).toFixed(1) : 0 }}h
-          </div>
-        </div>
-      </div>
-    </p-card>
-  </div>
-
-  <!-- Time Details -->
-  <p-card *ngIf="todayAttendance" class="time-details-card">
+  <!-- Statistics and Records -->
+  <p-card>
     <ng-template pTemplate="header">
       <div class="card-header">
-        <h3><i class="pi pi-info-circle"></i>Today's Time Log</h3>
+        <h3><i class="pi pi-chart-bar"></i>Attendance Overview</h3>
       </div>
     </ng-template>
-    
-    <div class="time-grid">
-      <div class="time-item">
-        <div class="time-label">
-          <i class="pi pi-sign-in"></i>
-          <span>Check In Time</span>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon today-icon">
+            <i class="pi pi-calendar"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Today's Status</h3>
+            <p-tag 
+              *ngIf="todayAttendance" 
+              [value]="todayAttendance.status" 
+              [severity]="getStatusSeverity(todayAttendance.status)">
+            </p-tag>
+            <span *ngIf="!todayAttendance" class="no-status">Not checked in</span>
+          </div>
         </div>
-        <div class="time-value">{{ formatTime(todayAttendance.checkInTime) }}</div>
       </div>
-      
-      <div class="time-item">
-        <div class="time-label">
-          <i class="pi pi-sign-out"></i>
-          <span>Check Out Time</span>
+
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon hours-icon">
+            <i class="pi pi-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Hours Today</h3>
+            <div class="hours-display">{{ todayAttendance?.totalHours || 0 }}h</div>
+          </div>
         </div>
-        <div class="time-value">{{ formatTime(todayAttendance.checkOutTime) }}</div>
       </div>
-      
-      <div class="time-item">
-        <div class="time-label">
-          <i class="pi pi-stopwatch"></i>
-          <span>Total Duration</span>
+
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon weekly-icon">
+            <i class="pi pi-chart-bar"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Weekly Total</h3>
+            <div class="weekly-stats">
+              <span class="hours-display">{{ totalWeeklyHours }}h</span>
+              <small>{{ getPresentDaysCount() }} days present</small>
+            </div>
+          </div>
         </div>
-        <div class="time-value">{{ todayAttendance.totalHours || 0 }} hours</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon avg-icon">
+            <i class="pi pi-calculator"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Daily Average</h3>
+            <div class="hours-display">
+              {{ weeklyAttendance.length > 0 ? (totalWeeklyHours / weeklyAttendance.length).toFixed(1) : 0 }}h
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </p-card>
 
-  <!-- Attendance Records -->
-  <p-card class="table-card">
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <h3><i class="pi pi-table"></i>Attendance Records</h3>
+    <!-- Time Details -->
+    <div *ngIf="todayAttendance" class="time-details-section">
+      <h3><i class="pi pi-info-circle"></i>Today's Time Log</h3>
+      <div class="time-grid">
+        <div class="time-item">
+          <div class="time-label">
+            <i class="pi pi-sign-in"></i>
+            <span>Check In Time</span>
+          </div>
+          <div class="time-value">{{ formatTime(todayAttendance.checkInTime) }}</div>
+        </div>
+        
+        <div class="time-item">
+          <div class="time-label">
+            <i class="pi pi-sign-out"></i>
+            <span>Check Out Time</span>
+          </div>
+          <div class="time-value">{{ formatTime(todayAttendance.checkOutTime) }}</div>
+        </div>
+        
+        <div class="time-item">
+          <div class="time-label">
+            <i class="pi pi-stopwatch"></i>
+            <span>Total Duration</span>
+          </div>
+          <div class="time-value">{{ todayAttendance.totalHours || 0 }} hours</div>
+        </div>
       </div>
-    </ng-template>
-    
-    <p-table 
-      [value]="weeklyAttendance" 
-      [responsive]="true"
-      styleClass="p-datatable-sm">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Date</th>
-          <th>Status</th>
-          <th>Check In</th>
-          <th>Check Out</th>
-          <th>Hours</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-attendance>
-        <tr>
-          <td>
-            <div class="date-cell">
-              <strong>{{ formatDate(attendance.date) }}</strong>
-            </div>
-          </td>
-          <td>
-            <p-tag 
-              [value]="attendance.status" 
-              [severity]="getStatusSeverity(attendance.status)">
-            </p-tag>
-          </td>
-          <td class="time-cell">{{ formatTime(attendance.checkInTime) }}</td>
-          <td class="time-cell">{{ formatTime(attendance.checkOutTime) }}</td>
-          <td>
-            <span class="hours-badge">{{ attendance.totalHours || 0 }}h</span>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="5" class="empty-message">
-            <i class="pi pi-info-circle"></i>
-            No attendance records available
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+    </div>
+
+    <!-- Attendance Records -->
+    <div class="table-section">
+      <h3><i class="pi pi-table"></i>Attendance Records</h3>
+      <p-table 
+        [value]="weeklyAttendance" 
+        [responsive]="true"
+        styleClass="p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Hours</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-attendance>
+          <tr>
+            <td>
+              <div class="date-cell">
+                <strong>{{ formatDate(attendance.date) }}</strong>
+              </div>
+            </td>
+            <td>
+              <p-tag 
+                [value]="attendance.status" 
+                [severity]="getStatusSeverity(attendance.status)">
+              </p-tag>
+            </td>
+            <td class="time-cell">{{ formatTime(attendance.checkInTime) }}</td>
+            <td class="time-cell">{{ formatTime(attendance.checkOutTime) }}</td>
+            <td>
+              <span class="hours-badge">{{ attendance.totalHours || 0 }}h</span>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="empty-message">
+              <i class="pi pi-info-circle"></i>
+              No attendance records available
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
   </p-card>
 </div>

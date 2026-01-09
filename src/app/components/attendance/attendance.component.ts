@@ -98,10 +98,10 @@ export class AttendanceComponent implements OnInit {
     });
   }
 
-  getStatusSeverity(status: string): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" | undefined {
+  getStatusSeverity(status: string): "success" | "info" | "warning" | "danger" | "secondary" | "contrast" | undefined {
     switch (status) {
       case 'PRESENT': return 'success';
-      case 'LATE': return 'warn';
+      case 'LATE': return 'warning';
       case 'HALF_DAY': return 'info';
       case 'ABSENT': return 'danger';
       default: return 'secondary';
