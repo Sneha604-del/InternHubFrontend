@@ -116,7 +116,6 @@ import { ToastService } from '../../services/toast.service';
                 <mat-icon *ngIf="saving">hourglass_empty</mat-icon>
                 {{ saving ? 'Saving...' : 'Save Changes' }}
               </button>
-              <button mat-stroked-button type="button" (click)="cancelEdit()">Cancel</button>
             </div>
           </form>
         </div>
@@ -363,10 +362,11 @@ import { ToastService } from '../../services/toast.service';
       display: flex;
       gap: 12px;
       margin-top: 24px;
+      justify-content: center;
     }
     
     .form-actions button {
-      flex: 1;
+      min-width: 200px;
       height: 40px;
     }
     
@@ -463,6 +463,15 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     this.loadProfile();
+    
+    // Listen for edit mode changes from navbar
+    this.profileService.editMode$.subscribe(isEditMode => {
+      if (this.editMode && !isEditMode) {
+        // Edit mode was turned off externally (from navbar back button)
+        this.editMode = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
   }
 
 
@@ -498,11 +507,14 @@ export class ProfileComponent implements OnInit {
         course: this.profile.course
       };
       this.editMode = true;
+      this.profileService.setEditMode(true);
     }
   }
 
   cancelEdit() {
     this.editMode = false;
+    this.profileService.setEditMode(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   updateProfile() {
@@ -512,8 +524,10 @@ export class ProfileComponent implements OnInit {
       next: (data) => {
         this.profile = data;
         this.editMode = false;
+        this.profileService.setEditMode(false);
         this.saving = false;
         this.toastService.showSuccess('Profile updated successfully!', 'Success');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (error) => {
         this.saving = false;

@@ -1,5 +1,10 @@
-<div class="group-create-container">
-  <form (ngSubmit)="onSubmit()" #groupForm="ngForm">
+<div class="group-edit-container">
+  <div class="page-header" *ngIf="!loadingData">
+    <h1>Edit Internship Group</h1>
+    <p>Update your group information</p>
+  </div>
+  
+  <form (ngSubmit)="onSubmit()" #groupForm="ngForm" *ngIf="!loadingData">
     <!-- Group Information -->
     <div class="form-section">
       <h3>Group Information</h3>
@@ -110,7 +115,13 @@
     </div>
     
     <div class="form-actions">
-      <p-button label="{{loading ? 'Creating...' : 'Create Group'}}" type="submit" [disabled]="!groupForm.form.valid || loading"></p-button>
+      <p-button label="Cancel" severity="secondary" (onClick)="cancel()" [outlined]="true"></p-button>
+      <p-button label="{{loading ? 'Updating...' : 'Update Group'}}" type="submit" [disabled]="!groupForm.form.valid || loading"></p-button>
     </div>
   </form>
+
+  <div *ngIf="loadingData" class="loading-container">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Loading group data...</p>
+  </div>
 </div>

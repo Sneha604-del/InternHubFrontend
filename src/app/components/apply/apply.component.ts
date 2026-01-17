@@ -3,105 +3,94 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatOptionModule } from '@angular/material/core';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { FileUploadModule } from 'primeng/fileupload';
 import { ToastService } from '../../services/toast.service';
 import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-apply',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatOptionModule],
+  imports: [CommonModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, CardModule, FileUploadModule],
   template: `
     <div class="apply-container">
       <div class="apply-header">
-        <mat-icon>school</mat-icon>
+        <i class="pi pi-graduation-cap"></i>
         <h1>Educational Information</h1>
       </div>
 
       <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="apply-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Name of your college</mat-label>
-          <input matInput [(ngModel)]="applicationData.college" name="college" required>
-          <mat-icon matSuffix>account_balance</mat-icon>
-        </mat-form-field>
+        <div class="field">
+          <label for="college">Name of your college *</label>
+          <input pInputText id="college" [(ngModel)]="applicationData.college" name="college" required class="w-full" />
+        </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Degree you are studying</mat-label>
-          <input matInput [(ngModel)]="applicationData.degree" name="degree" required>
-          <mat-icon matSuffix>book</mat-icon>
-        </mat-form-field>
+        <div class="field">
+          <label for="degree">Degree you are studying *</label>
+          <input pInputText id="degree" [(ngModel)]="applicationData.degree" name="degree" required class="w-full" />
+        </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Year of study</mat-label>
-          <mat-select [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" required>
-            <mat-option value="1st year">1st year</mat-option>
-            <mat-option value="2nd year">2nd year</mat-option>
-            <mat-option value="3rd year">3rd year</mat-option>
-            <mat-option value="4th year">4th year</mat-option>
-            <mat-option value="5th year">5th year</mat-option>
-          </mat-select>
-          <mat-icon matSuffix>calendar_today</mat-icon>
-        </mat-form-field>
+        <div class="field">
+          <label for="yearOfStudy">Year of study *</label>
+          <p-dropdown id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
+                      [options]="yearOptions" optionLabel="label" optionValue="value" 
+                      placeholder="Select year" [required]="true" styleClass="w-full"></p-dropdown>
+        </div>
 
         <div class="documents-section">
           <h2>
-            <mat-icon>attach_file</mat-icon>
+            <i class="pi pi-paperclip"></i>
             Documents for Verification
           </h2>
 
-          <div class="file-upload">
-            <label class="file-label">Student ID card *</label>
-            <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')"
+          <div class="field">
+            <label>Student ID card *</label>
+            <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
                    accept=".pdf,.jpg,.jpeg,.png" required style="display: none;">
-            <button mat-stroked-button (click)="studentIdInput.click()" class="file-button">
-              <mat-icon>cloud_upload</mat-icon>
-              {{ studentIdFileName || 'Choose File' }}
-            </button>
+            <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
+                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
             <small class="file-hint">Upload PDF, JPG, or PNG (Max 5MB)</small>
           </div>
 
-          <div class="file-upload">
-            <label class="file-label">Resume/CV *</label>
-            <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')"
+          <div class="field">
+            <label>Resume/CV *</label>
+            <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
                    accept=".pdf" required style="display: none;">
-            <button mat-stroked-button (click)="resumeInput.click()" class="file-button">
-              <mat-icon>cloud_upload</mat-icon>
-              {{ resumeFileName || 'Choose File' }}
-            </button>
+            <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
+                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
             <small class="file-hint">Upload PDF only (Max 5MB)</small>
           </div>
         </div>
 
-        <button mat-raised-button color="primary" type="submit"
-                [disabled]="isFormValid() || loading" class="full-width submit-btn">
-          <mat-icon *ngIf="loading">hourglass_empty</mat-icon>
-          {{ loading ? 'Submitting...' : 'Submit Application' }}
-        </button>
+        <p-button type="submit" [label]="loading ? 'Submitting...' : 'Submit Application'" 
+                  [disabled]="!isFormValid() || loading" [loading]="loading" 
+                  icon="pi pi-check" styleClass="w-full submit-btn"></p-button>
       </form>
     </div>
   `,
   styles: [`
-    .apply-container { max-width: 600px; margin: 0 auto; padding: 20px; min-height: 100vh; background: #f5f5f5; }
-    .apply-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-    .apply-header h1 { margin: 0; font-size: 24px; font-weight: 500; color: #333; }
-    .apply-form { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .full-width { width: 100%; margin-bottom: 16px; }
-    .submit-btn { height: 48px; font-size: 16px; font-weight: 500; margin-top: 20px; }
-    .documents-section { margin: 24px 0; }
-    .documents-section h2 { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 500; color: #333; margin-bottom: 16px; }
-    .file-upload { margin: 16px 0; }
-    .file-label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
-    .file-button { width: 100%; justify-content: flex-start; padding: 12px; margin-bottom: 8px; }
-    .file-hint { display: block; margin-top: 4px; font-size: 12px; color: #666; }
+    .apply-container { max-width: 700px; margin: 0 auto; padding: 24px; min-height: 100vh; }
+    .apply-header { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+    .apply-header i { font-size: 32px; color: #667eea; }
+    .apply-header h1 { margin: 0; font-size: 28px; font-weight: 600; color: #333; }
+    .apply-form { }
+    .field { margin-bottom: 24px; }
+    .field label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .w-full { width: 100%; }
+    .submit-btn { height: 48px; font-size: 16px; font-weight: 600; margin-top: 24px; }
+    .documents-section { margin: 32px 0; padding-top: 24px; border-top: 2px solid #e0e0e0; }
+    .documents-section h2 { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 600; color: #333; margin-bottom: 24px; }
+    .documents-section h2 i { font-size: 24px; color: #667eea; }
+    .file-hint { display: block; margin-top: 8px; font-size: 12px; color: #666; }
   `]
 })
 export class ApplyComponent implements OnInit {
   internshipId: number = 0;
+  companyId: number = 0;
+  companyName: string = '';
   currentYear = new Date().getFullYear();
   loading = false;
 
@@ -116,6 +105,14 @@ export class ApplyComponent implements OnInit {
   studentIdFileName = '';
   resumeFileName = '';
 
+  yearOptions = [
+    { label: '1st year', value: '1st year' },
+    { label: '2nd year', value: '2nd year' },
+    { label: '3rd year', value: '3rd year' },
+    { label: '4th year', value: '4th year' },
+    { label: '5th year', value: '5th year' }
+  ];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -126,6 +123,8 @@ export class ApplyComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.internshipId = +params['internshipId'];
+      this.companyId = +params['companyId'];
+      this.companyName = params['companyName'] || '';
     });
   }
 
@@ -182,7 +181,11 @@ export class ApplyComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         this.toastService.showSuccess('Application submitted successfully!', 'Success');
-        setTimeout(() => this.router.navigate(['/home']), 2000);
+        setTimeout(() => {
+          this.router.navigate(['/internships'], {
+            queryParams: { companyId: this.companyId, companyName: this.companyName }
+          });
+        }, 2000);
       },
       error: (error) => {
         this.loading = false;

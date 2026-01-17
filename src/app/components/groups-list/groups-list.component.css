@@ -385,6 +385,17 @@
   padding: 16px 20px !important;
 }
 
+::ng-deep .p-dialog-header-icon {
+  color: white !important;
+  width: 2rem !important;
+  height: 2rem !important;
+}
+
+::ng-deep .p-dialog-header-icon:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
 ::ng-deep .p-dialog-title {
   font-weight: 600 !important;
   font-size: 1.1rem !important;
@@ -406,6 +417,17 @@
 
 .invite-form {
   padding: 0;
+}
+
+.invite-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.invite-actions ::ng-deep .p-button {
+  width: auto;
+  min-width: 150px;
 }
 
 .form-group {
@@ -465,4 +487,85 @@
   .card-actions ::ng-deep .p-button {
     width: 100%;
   }
+}
+
+/* Details Dialog */
+.details-content {
+  padding: 0;
+}
+
+.detail-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detail-section h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-section h4 i {
+  color: #667eea;
+  font-size: 1.1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f7fafc;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #718096;
+}
+
+.detail-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
+  text-align: right;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f7fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.member-item span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3748;
 }

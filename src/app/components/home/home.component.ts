@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ApiService } from '../../services/api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
+import { HomeStateService } from '../../services/home-state.service';
 
 @Component({
   selector: 'app-home',
@@ -146,15 +147,15 @@ import { AuthService } from '../../services/auth.service';
     
     /* Companies Section - Smaller */
     .companies-section { margin-bottom: 20px; }
-    .companies-section h2 { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px; }
-    .companies-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .company-card { background: white; padding: 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .company-card:hover { transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-    .company-header { display: flex; align-items: center; margin-bottom: 8px; }
-    .company-logo { width: 32px; height: 32px; background: #667eea; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; margin-right: 12px; }
-    .company-info h3 { margin: 0 0 2px 0; font-size: 14px; font-weight: 600; color: #333; }
-    .company-skills { margin: 0; font-size: 12px; color: #666; }
-    .view-link { color: #667eea; font-weight: 500; font-size: 12px; }
+    .companies-section h2 { font-size: 20px; font-weight: 600; color: #333; margin-bottom: 16px; }
+    .companies-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .company-card { background: white; padding: 20px; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .company-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .company-header { display: flex; align-items: center; margin-bottom: 12px; }
+    .company-logo { width: 56px; height: 56px; background: #667eea; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600; margin-right: 16px; }
+    .company-info h3 { margin: 0 0 6px 0; font-size: 20px; font-weight: 600; color: #333; }
+    .company-skills { margin: 0; font-size: 15px; color: #666; }
+    .view-link { color: #667eea; font-weight: 600; font-size: 16px; }
     
     /* Popular Categories - Smaller */
     .categories-section { margin-bottom: 20px; }
@@ -203,12 +204,31 @@ export class HomeComponent implements OnInit {
     private apiService: ApiService,
     public router: Router,
     private notificationService: NotificationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private homeStateService: HomeStateService
   ) {}
 
   ngOnInit() {
     this.loadCourses();
     this.loadCategories();
+    this.restoreState();
+  }
+
+  restoreState() {
+    const state = this.homeStateService.getState();
+    if (state.selectedCourse) {
+      this.selectedCourse = state.selectedCourse;
+      this.selectedCategory = state.selectedCategory;
+      this.companies = state.companies;
+      
+      if (this.selectedCourse) {
+        this.apiService.getCategoriesByCourse(+this.selectedCourse).subscribe({
+          next: (data) => {
+            this.filteredCategories = data;
+          }
+        });
+      }
+    }
   }
 
 
@@ -256,6 +276,7 @@ export class HomeComponent implements OnInit {
       this.apiService.getCompaniesByCategory(+this.selectedCategory).subscribe({
         next: (response) => {
           this.companies = response.data || response;
+          this.homeStateService.saveState(this.selectedCourse, this.selectedCategory, this.companies);
         },
         error: (err) => {
           console.error('Error loading companies:', err);

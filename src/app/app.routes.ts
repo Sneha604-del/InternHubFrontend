@@ -14,6 +14,7 @@ import { GroupCreateComponent } from './components/group-create/group-create.com
 import { GroupsListComponent } from './components/groups-list/groups-list.component';
 import { GroupDetailsComponent } from './components/group-details/group-details.component';
 import { GroupInvitationsComponent } from './components/group-invitations/group-invitations.component';
+import { GroupEditComponent } from './components/group-edit/group-edit.component';
 import { AttendanceComponent } from './components/attendance/attendance.component';
 
 export const routes: Routes = [
@@ -31,6 +32,7 @@ export const routes: Routes = [
   { path: 'favorites', component: FavoritesComponent },
   { path: 'groups', component: GroupsListComponent },
   { path: 'group-create', component: GroupCreateComponent },
+  { path: 'group-edit/:id', component: GroupEditComponent },
   { path: 'group-details/:id', component: GroupDetailsComponent },
   { path: 'group-invitations', component: GroupInvitationsComponent },
   { path: 'attendance', component: AttendanceComponent }

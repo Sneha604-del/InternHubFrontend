@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ProfileService } from '../../services/profile.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -15,37 +16,85 @@ export class TopNavbarComponent implements OnInit {
   notificationCount = 3;
   showLogoutPopup = false;
   showBackButton = false;
+  pageTitle = 'InternHub';
+
+  private pageTitles: { [key: string]: string } = {
+    '/home': 'InternHub',
+    '/groups': 'Groups',
+    '/profile': 'Profile',
+    '/notifications': 'Notifications',
+    '/documentation': 'Documentation',
+    '/security': 'Security',
+    '/internships': 'Internships',
+    '/apply': 'Apply',
+    '/help-support': 'Help & Support',
+    '/favorites': 'Favorites',
+    '/group-create': 'Create Group',
+    '/group-edit': 'Edit Group',
+    '/group-details': 'Group Details',
+    '/group-invitations': 'Group Invitations',
+    '/attendance': 'Attendance'
+  };
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private profileService: ProfileService
   ) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
       this.updateBackButtonVisibility(event.url);
     });
+    
+    // Subscribe to profile edit mode changes
+    this.profileService.editMode$.subscribe(isEditMode => {
+      if (this.router.url === '/profile') {
+        this.showBackButton = isEditMode;
+        this.pageTitle = isEditMode ? 'Edit Profile' : 'Profile';
+      }
+    });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Initialize on component load
+    this.updateBackButtonVisibility(this.router.url);
+  }
 
   updateBackButtonVisibility(url: string): void {
     const mainRoutes = ['/home', '/groups', '/profile', '/notifications', '/documentation'];
-    this.showBackButton = !mainRoutes.includes(url.split('?')[0]);
+    const cleanUrl = url.split('?')[0];
+    this.showBackButton = !mainRoutes.includes(cleanUrl);
+    this.updatePageTitle(cleanUrl);
+  }
+
+  updatePageTitle(url: string): void {
+    // Check for dynamic routes with IDs
+    if (url.includes('/group-edit/')) {
+      this.pageTitle = 'Edit Group';
+    } else if (url.includes('/group-details/')) {
+      this.pageTitle = 'Group Details';
+    } else {
+      // Use the mapping for static routes
+      this.pageTitle = this.pageTitles[url] || 'InternHub';
+    }
   }
 
   goBack(): void {
     const currentUrl = this.router.url;
     
-    if (currentUrl.includes('/group')) {
+    if (currentUrl === '/profile') {
+      this.profileService.setEditMode(false);
+    } else if (currentUrl.includes('/apply')) {
+      window.history.back();
+    } else if (currentUrl.includes('/internships')) {
+      window.history.back();
+    } else if (currentUrl.includes('/group')) {
       this.router.navigate(['/groups']);
     } else if (currentUrl.includes('/favorites') || 
                currentUrl.includes('/help-support') || 
                currentUrl.includes('/reviews') || 
-               currentUrl.includes('/security') ||
-               currentUrl === '/profile/edit') {
-      this.router.navigate(['/profile']);
-    } else if (currentUrl.includes('/profile')) {
+               currentUrl.includes('/security')) {
       this.router.navigate(['/profile']);
     } else if (currentUrl.includes('/documentation')) {
       this.router.navigate(['/documentation']);

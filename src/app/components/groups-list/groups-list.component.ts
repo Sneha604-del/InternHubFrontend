@@ -9,6 +9,7 @@ import { BadgeModule } from 'primeng/badge';
 import { DialogModule } from 'primeng/dialog';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { Group } from '../../models/group.model';
 
 @Component({
@@ -28,11 +29,15 @@ export class GroupsListComponent implements OnInit {
   sendingInvite = false;
   selectedGroupId: number | null = null;
   showSuccessMessage = false;
+  showDetailsDialog = false;
+  selectedGroup: Group | null = null;
+  groupInvitations: any[] = [];
 
   constructor(
     private groupService: GroupService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +94,28 @@ export class GroupsListComponent implements OnInit {
   }
 
   viewGroup(groupId: number): void {
-    this.router.navigate(['/group-details', groupId]);
+    this.selectedGroup = this.groups.find(g => g.id === groupId) || null;
+    if (this.selectedGroup) {
+      this.loadGroupInvitations(groupId);
+    }
+    this.showDetailsDialog = true;
+  }
+
+  loadGroupInvitations(groupId: number): void {
+    this.groupService.getGroupInvitations(groupId).subscribe({
+      next: (invitations) => {
+        this.groupInvitations = invitations;
+      },
+      error: (error) => {
+        console.error('Error loading group invitations:', error);
+        this.groupInvitations = [];
+      }
+    });
+  }
+
+  closeDetailsDialog(): void {
+    this.showDetailsDialog = false;
+    this.selectedGroup = null;
   }
 
   editGroup(groupId: number): void {
@@ -112,6 +138,7 @@ export class GroupsListComponent implements OnInit {
 
   sendInvitation(): void {
     if (!this.inviteEmail || !this.selectedGroupId) {
+      alert('Please enter an email address');
       return;
     }
 
@@ -119,6 +146,7 @@ export class GroupsListComponent implements OnInit {
     
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.id) {
+      alert('User not logged in');
       this.sendingInvite = false;
       return;
     }
@@ -130,19 +158,28 @@ export class GroupsListComponent implements OnInit {
       message: this.inviteMessage
     };
 
+    console.log('Sending invitation with data:', invitationData);
+
     this.groupService.sendInvitation(invitationData).subscribe({
       next: (response) => {
         console.log('Invitation sent successfully:', response);
         this.sendingInvite = false;
         this.closeInviteDialog();
-        this.showSuccessMessage = true;
-        setTimeout(() => {
-          this.showSuccessMessage = false;
-        }, 3000);
+        this.toastService.showSuccess('Invitation sent successfully!', 'Success');
       },
       error: (error) => {
-        console.error('Error sending invitation:', error);
+        let errorMessage = 'Failed to send invitation';
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        this.toastService.showError(errorMessage, 'Error');
         this.sendingInvite = false;
+        this.closeInviteDialog();
       }
     });
   }

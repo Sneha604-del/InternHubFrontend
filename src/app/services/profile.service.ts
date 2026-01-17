@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environment';
 
 export interface Profile {
@@ -29,8 +29,14 @@ export interface PasswordChangeRequest {
 })
 export class ProfileService {
   private apiUrl = environment.apiUrl;
+  private editModeSubject = new BehaviorSubject<boolean>(false);
+  editMode$ = this.editModeSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  setEditMode(isEditMode: boolean): void {
+    this.editModeSubject.next(isEditMode);
+  }
 
   getProfile(id: number): Observable<Profile> {
     return this.http.get<Profile>(`${this.apiUrl}/api/profile/${id}`);

@@ -43,6 +43,10 @@ export class GroupService {
     return this.http.put<Group>(`${this.apiUrl}/api/groups/${groupId}/status?status=${status}`, {});
   }
   
+  updateGroup(groupId: number, group: Group): Observable<Group> {
+    return this.http.put<Group>(`${this.apiUrl}/api/groups/${groupId}`, group);
+  }
+  
   inviteStudent(groupId: number, email: string): Observable<string> {
     return this.http.post(`${this.apiUrl}/api/groups/${groupId}/invite?email=${email}`, {}, { responseType: 'text' });
   }
@@ -61,5 +65,9 @@ export class GroupService {
 
   sendInvitation(invitationData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/api/group-invitations/send`, invitationData);
+  }
+
+  getGroupInvitations(groupId: number): Observable<GroupInvitation[]> {
+    return this.http.get<GroupInvitation[]>(`${this.apiUrl}/api/group-invitations/group/${groupId}`);
   }
 }

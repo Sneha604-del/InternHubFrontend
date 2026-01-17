@@ -2,13 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { TagModule } from 'primeng/tag';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { GroupService } from '../../services/group.service';
 import { ToastService } from '../../services/toast.service';
 import { Group, GroupMember } from '../../models/group.model';
@@ -17,8 +14,8 @@ import { Group, GroupMember } from '../../models/group.model';
   selector: 'app-group-details',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatCardModule, MatButtonModule, 
-    MatFormFieldModule, MatInputModule, MatChipsModule, MatIconModule, MatListModule
+    CommonModule, FormsModule, ButtonModule, 
+    InputTextModule, TagModule, ProgressSpinnerModule
   ],
   templateUrl: './group-details.component.html',
   styleUrls: ['./group-details.component.css']
@@ -90,13 +87,13 @@ export class GroupDetailsComponent implements OnInit {
     this.router.navigate(['/groups']);
   }
 
-  getStatusColor(status: string): string {
+  getStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (status) {
-      case 'APPROVED': return 'primary';
-      case 'REJECTED': return 'warn';
-      case 'APPLIED': return 'accent';
-      case 'SELECTED': return 'primary';
-      default: return '';
+      case 'APPROVED': return 'success';
+      case 'REJECTED': return 'danger';
+      case 'APPLIED': return 'info';
+      case 'SELECTED': return 'success';
+      default: return 'secondary';
     }
   }
 }
