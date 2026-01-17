@@ -89,3 +89,168 @@ mat-card-actions {
     height: auto;
   }
 }
+
+/* Mobile Dialog Responsive */
+@media (max-width: 768px) {
+  ::ng-deep .p-dialog {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 10px !important;
+  }
+  
+  .dialog-content {
+    max-height: 300px;
+  }
+  
+  .terms-container mat-checkbox {
+    font-size: 12px;
+  }
+  
+  .requirements-list li {
+    font-size: 12px;
+  }
+  
+  .register-btn {
+    height: 44px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 10px;
+  }
+  
+  .register-card {
+    padding: 12px;
+  }
+  
+  .logo {
+    width: 100px;
+  }
+  
+  mat-card-title {
+    font-size: 18px;
+  }
+  
+  .requirements-title {
+    font-size: 12px;
+  }
+  
+  .dialog-content h3 {
+    font-size: 16px;
+  }
+  
+  .dialog-content p {
+    font-size: 14px;
+  }
+}
+
+/* Password Requirements Styles */
+.password-requirements {
+  margin: 10px 0 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.requirements-title {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.requirements-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requirements-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  transition: color 0.3s ease;
+}
+
+.requirements-list li mat-icon {
+  margin-right: 8px;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.requirements-list li.valid {
+  color: #28a745;
+}
+
+.requirements-list li.valid mat-icon {
+  color: #28a745;
+}
+
+.requirements-list li.invalid {
+  color: #dc3545;
+}
+
+.requirements-list li.invalid mat-icon {
+  color: #dc3545;
+}
+
+/* Terms and Conditions Styles */
+.terms-container {
+  margin: 20px 0;
+}
+
+.terms-container mat-checkbox {
+  font-size: 14px;
+}
+
+.terms-container a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.terms-container a:hover {
+  text-decoration: underline;
+}
+
+/* Dialog Content Styles */
+.dialog-content {
+  line-height: 1.6;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dialog-content h3 {
+  color: #1976d2;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.dialog-content p {
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+/* PrimeNG Dialog Styling */
+::ng-deep .p-dialog {
+  background: white !important;
+}
+
+::ng-deep .p-dialog .p-dialog-header {
+  background: #f8f9fa !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+::ng-deep .p-dialog .p-dialog-content {
+  background: white !important;
+  padding: 20px !important;
+}
+
+::ng-deep .p-dialog .p-dialog-footer {
+  background: #f8f9fa !important;
+  border-top: 1px solid #dee2e6 !important;
+}

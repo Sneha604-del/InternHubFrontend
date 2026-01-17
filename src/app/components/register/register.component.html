@@ -61,24 +61,60 @@
           <mat-label>Password</mat-label>
           <input matInput [type]="hidePassword ? 'password' : 'text'" name="password" 
                  [(ngModel)]="registrationData.password" 
-                 required minlength="6" placeholder="Enter password (min 6 characters)">
+                 (input)="onPasswordChange()"
+                 required minlength="8" placeholder="Enter password (min 8 characters)">
           <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
         </mat-form-field>
 
+        <!-- Password Requirements -->
+        <div class="password-requirements" *ngIf="registrationData.password">
+          <p class="requirements-title">Password Requirements:</p>
+          <ul class="requirements-list">
+            <li [class.valid]="registrationData.password.length >= 8" 
+                [class.invalid]="registrationData.password.length < 8">
+              <mat-icon>{{registrationData.password.length >= 8 ? 'check_circle' : 'cancel'}}</mat-icon>
+              At least 8 characters
+            </li>
+            <li [class.valid]="hasUppercase()" [class.invalid]="!hasUppercase()">
+              <mat-icon>{{hasUppercase() ? 'check_circle' : 'cancel'}}</mat-icon>
+              One uppercase letter
+            </li>
+            <li [class.valid]="hasLowercase()" [class.invalid]="!hasLowercase()">
+              <mat-icon>{{hasLowercase() ? 'check_circle' : 'cancel'}}</mat-icon>
+              One lowercase letter
+            </li>
+            <li [class.valid]="hasNumber()" [class.invalid]="!hasNumber()">
+              <mat-icon>{{hasNumber() ? 'check_circle' : 'cancel'}}</mat-icon>
+              One number
+            </li>
+            <li [class.valid]="hasSpecialChar()" [class.invalid]="!hasSpecialChar()">
+              <mat-icon>{{hasSpecialChar() ? 'check_circle' : 'cancel'}}</mat-icon>
+              One special character
+            </li>
+          </ul>
+        </div>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Confirm Password</mat-label>
           <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" name="confirmPassword" 
                  [(ngModel)]="confirmPassword" 
-                 required minlength="6" placeholder="Confirm your password">
+                 required minlength="8" placeholder="Confirm your password">
           <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword" type="button">
             <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
         </mat-form-field>
 
+        <!-- Terms and Conditions -->
+        <div class="terms-container">
+          <mat-checkbox [(ngModel)]="acceptTerms" name="acceptTerms" required>
+            I agree to the <a (click)="openTermsDialog()" style="cursor: pointer;">Terms and Conditions</a> and <a (click)="openPrivacyDialog()" style="cursor: pointer;">Privacy Policy</a>
+          </mat-checkbox>
+        </div>
+
         <button mat-raised-button color="primary" type="submit" 
-                [disabled]="!registerForm.form.valid || loading" class="full-width register-btn">
+                [disabled]="!registerForm.form.valid || loading || !acceptTerms" class="full-width register-btn">
           <mat-icon *ngIf="loading">hourglass_empty</mat-icon>
           {{ loading ? 'Registering...' : 'Register' }}
         </button>
@@ -92,4 +128,47 @@
       </p>
     </mat-card-actions>
   </mat-card>
+
+  <!-- Terms and Conditions Dialog -->
+  <p-dialog header="Terms and Conditions" [(visible)]="showTermsDialog" [modal]="true" [style]="{width: '350px'}" [draggable]="false" [resizable]="false">
+    <div class="dialog-content">
+      <h3>1. Acceptance of Terms</h3>
+      <p>By using InternHub, you agree to these terms and conditions.</p>
+      
+      <h3>2. User Responsibilities</h3>
+      <p>Users must provide accurate information and maintain account security.</p>
+      
+      <h3>3. Privacy</h3>
+      <p>We protect your personal information as outlined in our Privacy Policy.</p>
+      
+      <h3>4. Prohibited Activities</h3>
+      <p>Users may not engage in illegal activities or misuse the platform.</p>
+      
+      <h3>5. Termination</h3>
+      <p>We reserve the right to terminate accounts for violations of these terms.</p>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button label="Close" (onClick)="showTermsDialog = false"></p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Privacy Policy Dialog -->
+  <p-dialog header="Privacy Policy" [(visible)]="showPrivacyDialog" [modal]="true" [style]="{width: '350px'}" [draggable]="false" [resizable]="false">
+    <div class="dialog-content">
+      <h3>Information We Collect</h3>
+      <p>We collect information you provide during registration and platform usage.</p>
+      
+      <h3>How We Use Information</h3>
+      <p>Information is used to provide services, improve user experience, and communicate with users.</p>
+      
+      <h3>Information Sharing</h3>
+      <p>We do not sell personal information to third parties.</p>
+      
+      <h3>Data Security</h3>
+      <p>We implement security measures to protect your personal information.</p>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button label="Close" (onClick)="showPrivacyDialog = false"></p-button>
+    </ng-template>
+  </p-dialog>
 </div>
