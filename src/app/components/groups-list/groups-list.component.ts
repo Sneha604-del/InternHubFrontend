@@ -146,19 +146,25 @@ export class GroupsListComponent implements OnInit {
     
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.id) {
-      alert('User not logged in');
+      alert('User not logged in or user ID missing');
       this.sendingInvite = false;
       return;
     }
 
     const invitationData = {
-      groupId: this.selectedGroupId,
-      inviterId: currentUser.id,
-      inviteeEmail: this.inviteEmail,
-      message: this.inviteMessage
+      groupId: Number(this.selectedGroupId),
+      inviterId: Number(currentUser.id),
+      inviteeEmail: this.inviteEmail.trim(),
+      message: this.inviteMessage || 'You have been invited to join our team!'
     };
 
     console.log('Sending invitation with data:', invitationData);
+    console.log('Data types:', {
+      groupId: typeof invitationData.groupId,
+      inviterId: typeof invitationData.inviterId,
+      inviteeEmail: typeof invitationData.inviteeEmail,
+      message: typeof invitationData.message
+    });
 
     this.groupService.sendInvitation(invitationData).subscribe({
       next: (response) => {
@@ -168,14 +174,22 @@ export class GroupsListComponent implements OnInit {
         this.toastService.showSuccess('Invitation sent successfully!', 'Success');
       },
       error: (error) => {
+        console.error('Full error object:', error);
+        console.error('Error status:', error.status);
+        console.error('Error body:', error.error);
+        console.error('Error message:', error.message);
+        
         let errorMessage = 'Failed to send invitation';
-        if (typeof error.error === 'string') {
+        if (error.error && typeof error.error === 'string') {
           errorMessage = error.error;
-        } else if (error.error?.message) {
+        } else if (error.error && error.error.message) {
           errorMessage = error.error.message;
         } else if (error.message) {
           errorMessage = error.message;
         }
+        
+        // Show the actual backend error message
+        alert(`Error: ${errorMessage}`);
         
         this.toastService.showError(errorMessage, 'Error');
         this.sendingInvite = false;
