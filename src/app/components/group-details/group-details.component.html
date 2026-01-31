@@ -58,17 +58,29 @@
     </div>
 
     <!-- Group Members -->
-    <h3>Group Members ({{members.length}})</h3>
+    <h3>Group Members ({{members.length}}/{{group.totalStudents}})</h3>
     <div *ngIf="members.length > 0" class="members-list">
       <div *ngFor="let member of members" class="member-card">
+        <div class="member-avatar">
+          <i class="pi pi-user"></i>
+        </div>
         <div class="member-info">
           <div class="member-name">{{member.studentName}}</div>
           <div class="member-details">
-            <span>{{member.student?.email}}</span>
+            <span><i class="pi pi-envelope"></i> {{member.student?.email}}</span>
+            <span *ngIf="member.student?.college"><i class="pi pi-building"></i> {{member.student?.college}}</span>
           </div>
-          <div class="member-skills" *ngIf="member.githubLink">GitHub: {{member.githubLink}}</div>
+          <div class="member-skills" *ngIf="member.githubLink">
+            <i class="pi pi-github"></i> 
+            <a [href]="member.githubLink" target="_blank">{{member.githubLink}}</a>
+          </div>
         </div>
-        <p-tag [value]="member.status" [severity]="getStatusSeverity(member.status)"></p-tag>
+        <div class="member-status">
+          <p-tag [value]="member.status" [severity]="getStatusSeverity(member.status)"></p-tag>
+          <div class="member-role" *ngIf="group.leader?.id === member.student?.id">
+            <small><i class="pi pi-star-fill"></i> Leader</small>
+          </div>
+        </div>
       </div>
     </div>
     

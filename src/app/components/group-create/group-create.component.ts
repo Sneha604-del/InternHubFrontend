@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
@@ -17,7 +15,7 @@ import { Group, InternshipType, InternshipMode } from '../../models/group.model'
   standalone: true,
   imports: [
     CommonModule, FormsModule, ButtonModule, InputTextModule, 
-    DropdownModule, CalendarModule, InputNumberModule
+    InputNumberModule
   ],
   templateUrl: './group-create.component.html',
   styleUrls: ['./group-create.component.css']

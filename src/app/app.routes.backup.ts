@@ -15,10 +15,10 @@ import { GroupsListComponent } from './components/groups-list/groups-list.compon
 import { GroupDetailsComponent } from './components/group-details/group-details.component';
 import { GroupInvitationsComponent } from './components/group-invitations/group-invitations.component';
 import { GroupEditComponent } from './components/group-edit/group-edit.component';
+
 import { CompanyJoinComponent } from './components/company-join/company-join.component';
 import { CompanySelectionComponent } from './components/company-selection/company-selection.component';
 import { AttendanceComponent } from './components/attendance/attendance.component';
-import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -41,5 +41,5 @@ export const routes: Routes = [
   { path: 'company-join', component: CompanyJoinComponent },
   { path: 'company-selection/:groupId', component: CompanySelectionComponent },
   { path: 'attendance', component: AttendanceComponent },
-  { path: 'admin', component: AdminDashboardComponent }
+
 ];

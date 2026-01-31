@@ -2,20 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environment';
-
-export interface Attendance {
-  id?: number;
-  userId: number;
-  groupId: number;
-  date: string;
-  checkInTime?: string;
-  checkOutTime?: string;
-  totalHours?: number;
-  status: 'PRESENT' | 'ABSENT' | 'LATE' | 'HALF_DAY';
-  notes?: string;
-  isManual: boolean;
-  createdAt?: string;
-}
+import { AttendanceRequest, AttendanceResponse, AttendanceStatus } from '../models/attendance.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,31 +12,25 @@ export class AttendanceService {
 
   constructor(private http: HttpClient) {}
 
-  checkIn(userId: number, groupId: number): Observable<Attendance> {
-    return this.http.post<Attendance>(`${this.apiUrl}/check-in`, { userId, groupId });
+  markAttendance(request: AttendanceRequest): Observable<AttendanceResponse> {
+    return this.http.post<AttendanceResponse>(`${this.apiUrl}/checkin`, request);
   }
 
-  checkOut(userId: number): Observable<Attendance> {
-    return this.http.post<Attendance>(`${this.apiUrl}/check-out`, { userId });
+  getStudentAttendance(studentId: number): Observable<AttendanceResponse[]> {
+    return this.http.get<AttendanceResponse[]>(`${this.apiUrl}/student/${studentId}`);
   }
 
-  markManualAttendance(userId: number, groupId: number, date: string, status: string, notes?: string): Observable<Attendance> {
-    return this.http.post<Attendance>(`${this.apiUrl}/manual`, { userId, groupId, date, status, notes });
+  getGroupAttendance(groupId: number): Observable<AttendanceResponse[]> {
+    return this.http.get<AttendanceResponse[]>(`${this.apiUrl}/group/${groupId}`);
   }
 
-  getUserAttendance(userId: number, startDate: string, endDate: string): Observable<Attendance[]> {
-    return this.http.get<Attendance[]>(`${this.apiUrl}/user/${userId}?startDate=${startDate}&endDate=${endDate}`);
+  getGroupAttendanceByDateRange(groupId: number, startDate: string, endDate: string): Observable<AttendanceResponse[]> {
+    return this.http.get<AttendanceResponse[]>(`${this.apiUrl}/group/${groupId}/date-range`, {
+      params: { startDate, endDate }
+    });
   }
 
-  getGroupAttendance(groupId: number, date: string): Observable<Attendance[]> {
-    return this.http.get<Attendance[]>(`${this.apiUrl}/group/${groupId}?date=${date}`);
-  }
-
-  getUserTotalHours(userId: number, startDate: string, endDate: string): Observable<{totalHours: number}> {
-    return this.http.get<{totalHours: number}>(`${this.apiUrl}/user/${userId}/hours?startDate=${startDate}&endDate=${endDate}`);
-  }
-
-  getTodayAttendance(userId: number): Observable<Attendance> {
-    return this.http.get<Attendance>(`${this.apiUrl}/user/${userId}/today`);
+  getAllAttendance(): Observable<AttendanceResponse[]> {
+    return this.http.get<AttendanceResponse[]>(`${this.apiUrl}/all`);
   }
 }

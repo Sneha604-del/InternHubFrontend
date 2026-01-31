@@ -31,11 +31,13 @@
           
           <div class="field">
             <label for="academicYear">Academic Year *</label>
-            <p-dropdown id="academicYear" [(ngModel)]="group.academicYear" name="academicYear" 
-                        [options]="academicYearOptions" 
-                        placeholder="Select Academic Year" 
-                        [required]="true">
-            </p-dropdown>
+            <select id="academicYear" [(ngModel)]="group.academicYear" name="academicYear" 
+                    required class="p-inputtext p-component">
+              <option value="">Select Academic Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="Final Year">Final Year</option>
+            </select>
           </div>
         </div>
         
@@ -65,49 +67,49 @@
         <div class="form-row">
           <div class="field">
             <label for="internshipType">Internship Type *</label>
-            <p-dropdown id="internshipType" [(ngModel)]="group.internshipType" name="internshipType" 
-                        [options]="internshipTypeOptions" 
-                        placeholder="Select Internship Type" 
-                        [required]="true">
-            </p-dropdown>
+            <select id="internshipType" [(ngModel)]="group.internshipType" name="internshipType" 
+                    required class="p-inputtext p-component">
+              <option value="">Select Internship Type</option>
+              <option value="TECHNICAL">Technical</option>
+              <option value="NON_TECHNICAL">Non Technical</option>
+            </select>
           </div>
           
           <div class="field">
             <label for="preferredMode">Preferred Mode *</label>
-            <p-dropdown id="preferredMode" [(ngModel)]="group.preferredMode" name="preferredMode" 
-                        [options]="internshipModeOptions" 
-                        placeholder="Select Preferred Mode" 
-                        [required]="true">
-            </p-dropdown>
+            <select id="preferredMode" [(ngModel)]="group.preferredMode" name="preferredMode" 
+                    required class="p-inputtext p-component">
+              <option value="">Select Preferred Mode</option>
+              <option value="ONLINE">Online</option>
+              <option value="OFFLINE">Offline</option>
+              <option value="HYBRID">Hybrid</option>
+            </select>
           </div>
         </div>
         
         <div class="field">
           <label for="durationMonths">Duration (Months) *</label>
-          <p-dropdown id="durationMonths" [(ngModel)]="group.durationMonths" name="durationMonths" 
-                      [options]="durationOptions" 
-                      placeholder="Select Duration" 
-                      [required]="true">
-          </p-dropdown>
+          <select id="durationMonths" [(ngModel)]="group.durationMonths" name="durationMonths" 
+                  required class="p-inputtext p-component">
+            <option value="">Select Duration</option>
+            <option value="1">1 Month</option>
+            <option value="2">2 Months</option>
+            <option value="3">3 Months</option>
+            <option value="6">6 Months</option>
+          </select>
         </div>
         
         <div class="form-row">
           <div class="field">
             <label for="startDate">Start Date *</label>
-            <p-calendar id="startDate" [(ngModel)]="group.startDate" name="startDate" 
-                        dateFormat="yy-mm-dd" [required]="true" 
-                        placeholder="Select start date"
-                        [showIcon]="true">
-            </p-calendar>
+            <input type="date" id="startDate" [(ngModel)]="group.startDate" name="startDate" 
+                   required class="p-inputtext p-component" />
           </div>
           
           <div class="field">
             <label for="endDate">End Date *</label>
-            <p-calendar id="endDate" [(ngModel)]="group.endDate" name="endDate" 
-                        dateFormat="yy-mm-dd" [required]="true" 
-                        placeholder="Select end date"
-                        [showIcon]="true">
-            </p-calendar>
+            <input type="date" id="endDate" [(ngModel)]="group.endDate" name="endDate" 
+                   required class="p-inputtext p-component" />
           </div>
         </div>
       </div>

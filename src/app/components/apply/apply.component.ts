@@ -4,13 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { DividerModule } from 'primeng/divider';
 import { PanelModule } from 'primeng/panel';
 import { ToastService } from '../../services/toast.service';
 import { GroupService } from '../../services/group.service';
@@ -20,7 +17,7 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-apply',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, DropdownModule, ButtonModule, CardModule, FileUploadModule, InputNumberModule, InputTextareaModule, DividerModule, PanelModule],
+  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, CardModule, FileUploadModule, InputNumberModule, PanelModule],
   template: `
     <div class="apply-container">
       <div class="apply-header">
@@ -79,56 +76,69 @@ import { environment } from '../../../environment';
 
             <div class="field">
               <label for="teamMembers">Team Members (Names) *</label>
-              <textarea pInputTextarea id="teamMembers" [(ngModel)]="teamData.teamMembers" name="teamMembers" 
-                        required class="w-full" rows="4" 
+              <textarea id="teamMembers" [(ngModel)]="teamData.teamMembers" name="teamMembers" 
+                        required class="w-full p-inputtext p-component" rows="4" 
                         placeholder="Enter all team member names (one per line)&#10;Example:&#10;John Smith&#10;Jane Doe&#10;Mike Johnson"></textarea>
             </div>
 
             <div class="field">
               <label for="memberEmails">Team Member Emails</label>
-              <textarea pInputTextarea id="memberEmails" [(ngModel)]="teamData.memberEmails" name="memberEmails" 
-                        class="w-full" rows="3" 
+              <textarea id="memberEmails" [(ngModel)]="teamData.memberEmails" name="memberEmails" 
+                        class="w-full p-inputtext p-component" rows="3" 
                         placeholder="Enter team member emails (one per line)&#10;john@example.com&#10;jane@example.com"></textarea>
             </div>
 
             <div class="field">
               <label for="academicYear">Academic Year *</label>
-              <p-dropdown id="academicYear" [(ngModel)]="teamData.academicYear" name="academicYear" 
-                          [options]="academicYearOptions" optionLabel="label" optionValue="value" 
-                          placeholder="Select academic year" [required]="true" styleClass="w-full"></p-dropdown>
+              <select id="academicYear" [(ngModel)]="teamData.academicYear" name="academicYear" 
+                      required class="w-full p-inputtext p-component">
+                <option value="">Select academic year</option>
+                <option value="2023-24">2023-24</option>
+                <option value="2024-25">2024-25</option>
+                <option value="2025-26">2025-26</option>
+              </select>
             </div>
 
             <div class="field">
               <label for="semester">Current Semester *</label>
-              <p-dropdown id="semester" [(ngModel)]="teamData.semester" name="semester" 
-                          [options]="semesterOptions" optionLabel="label" optionValue="value" 
-                          placeholder="Select semester" [required]="true" styleClass="w-full"></p-dropdown>
+              <select id="semester" [(ngModel)]="teamData.semester" name="semester" 
+                      required class="w-full p-inputtext p-component">
+                <option value="">Select semester</option>
+                <option value="1st Semester">1st Semester</option>
+                <option value="2nd Semester">2nd Semester</option>
+                <option value="3rd Semester">3rd Semester</option>
+                <option value="4th Semester">4th Semester</option>
+                <option value="5th Semester">5th Semester</option>
+                <option value="6th Semester">6th Semester</option>
+                <option value="7th Semester">7th Semester</option>
+                <option value="8th Semester">8th Semester</option>
+              </select>
             </div>
 
             <div class="field">
               <label for="skills">Team Skills & Expertise</label>
-              <textarea pInputTextarea id="skills" [(ngModel)]="teamData.skills" name="skills" 
-                        class="w-full" rows="3" 
+              <textarea id="skills" [(ngModel)]="teamData.skills" name="skills" 
+                        class="w-full p-inputtext p-component" rows="3" 
                         placeholder="List key skills and expertise of your team&#10;Example: Java, React, Python, UI/UX Design, Database Management"></textarea>
             </div>
 
             <div class="field">
               <label for="experience">Previous Project Experience</label>
-              <textarea pInputTextarea id="experience" [(ngModel)]="teamData.experience" name="experience" 
-                        class="w-full" rows="3" 
+              <textarea id="experience" [(ngModel)]="teamData.experience" name="experience" 
+                        class="w-full p-inputtext p-component" rows="3" 
                         placeholder="Describe any relevant projects or experience your team has worked on together"></textarea>
             </div>
 
             <div class="field">
               <label for="motivation">Why This Internship? *</label>
-              <textarea pInputTextarea id="motivation" [(ngModel)]="teamData.motivation" name="motivation" 
-                        required class="w-full" rows="4" 
+              <textarea id="motivation" [(ngModel)]="teamData.motivation" name="motivation" 
+                        required class="w-full p-inputtext p-component" rows="4" 
                         placeholder="Explain why your team is interested in this internship and what you hope to achieve"></textarea>
             </div>
           </div>
         </p-panel>
 
-        <p-divider></p-divider>
+        <hr style="margin: 32px 0; border: none; border-top: 1px solid #dee2e6;">
 
         <p-panel header="Educational Information" [toggleable]="false">
           <div class="p-fluid">
@@ -144,9 +154,15 @@ import { environment } from '../../../environment';
 
             <div class="field">
               <label for="yearOfStudy">Year of study *</label>
-              <p-dropdown id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
-                          [options]="yearOptions" optionLabel="label" optionValue="value" 
-                          placeholder="Select year" [required]="true" styleClass="w-full"></p-dropdown>
+              <select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
+                      required class="w-full p-inputtext p-component">
+                <option value="">Select year</option>
+                <option value="1st year">1st year</option>
+                <option value="2nd year">2nd year</option>
+                <option value="3rd year">3rd year</option>
+                <option value="4th year">4th year</option>
+                <option value="5th year">5th year</option>
+              </select>
             </div>
           </div>
         </p-panel>

@@ -1,176 +1,114 @@
 <div class="attendance-container">
-  <!-- Header -->
-  <div class="page-header">
-    <div class="header-content">
-      <div class="header-text">
-        <h1><i class="pi pi-clock"></i>Attendance Management</h1>
-        <p>Monitor work hours and attendance records</p>
-      </div>
-      <div class="header-actions">
-        <p-button 
-          *ngIf="!todayAttendance" 
-          label="Check In" 
-          icon="pi pi-play" 
-          severity="success"
-          [loading]="loading"
-          (onClick)="checkIn()">
-        </p-button>
-        <p-button 
-          *ngIf="todayAttendance && !todayAttendance.checkOutTime" 
-          label="Check Out" 
-          icon="pi pi-stop" 
-          severity="danger"
-          [loading]="loading"
-          (onClick)="checkOut()">
-        </p-button>
-      </div>
-    </div>
+  <h2>Attendance</h2>
+  
+  <!-- Not Enrolled Message -->
+  <div *ngIf="!hasJoinedGroup" class="not-enrolled-container">
+    <mat-card>
+      <mat-card-content class="text-center">
+        <mat-icon class="large-icon">school</mat-icon>
+        <h3>Not Enrolled</h3>
+        <p>You are not enrolled in any internship group.</p>
+        <button mat-raised-button color="primary" routerLink="/groups">
+          Browse Groups
+        </button>
+      </mat-card-content>
+    </mat-card>
   </div>
 
-  <!-- Statistics and Records -->
-  <p-card>
-    <ng-template pTemplate="header">
-      <div class="card-header">
-        <h3><i class="pi pi-chart-bar"></i>Attendance Overview</h3>
-      </div>
-    </ng-template>
+  <!-- Attendance Section -->
+  <div *ngIf="hasJoinedGroup && currentGroup">
+    <!-- Group Info -->
+    <mat-card class="group-info">
+      <mat-card-header>
+        <mat-card-title>{{ currentGroup.groupName }}</mat-card-title>
+        <mat-card-subtitle>{{ currentGroup.company?.name }}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
 
-    <!-- Statistics -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon today-icon">
-            <i class="pi pi-calendar"></i>
-          </div>
-          <div class="stat-info">
-            <h3>Today's Status</h3>
-            <p-tag 
-              *ngIf="todayAttendance" 
-              [value]="todayAttendance.status" 
-              [severity]="getStatusSeverity(todayAttendance.status)">
-            </p-tag>
-            <span *ngIf="!todayAttendance" class="no-status">Not checked in</span>
+    <!-- Today's Attendance Status -->
+    <mat-card *ngIf="todayAttendance" class="attendance-status">
+      <mat-card-header>
+        <mat-card-title class="success-text">Today's Attendance</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="status-item">
+          <mat-icon [class]="getStatusColor(todayAttendance.status)">check_circle</mat-icon>
+          <div class="status-details">
+            <h4>{{ getStatusText(todayAttendance.status) }}</h4>
+            <p>Check-in: {{ todayAttendance.checkInTime | date:'short' }}</p>
+            <p *ngIf="todayAttendance.distanceMeters">Distance: {{ todayAttendance.distanceMeters | number:'1.0-0' }}m</p>
           </div>
         </div>
-      </div>
+      </mat-card-content>
+    </mat-card>
 
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon hours-icon">
-            <i class="pi pi-clock"></i>
-          </div>
-          <div class="stat-info">
-            <h3>Hours Today</h3>
-            <div class="hours-display">{{ todayAttendance?.totalHours || 0 }}h</div>
+    <!-- Location Permission -->
+    <mat-card *ngIf="!locationPermissionGranted" class="warning-card">
+      <mat-card-header>
+        <mat-card-title class="warning-text">Location Required</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Location access is required to mark attendance.</p>
+        <button mat-raised-button color="warn" (click)="getCurrentLocation()" [disabled]="isLoading">
+          <mat-icon>location_on</mat-icon>
+          Enable Location
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Current Location -->
+    <mat-card *ngIf="currentLocation" class="location-card">
+      <mat-card-content>
+        <div class="location-item">
+          <mat-icon color="primary">location_on</mat-icon>
+          <div class="location-details">
+            <h4>Current Location</h4>
+            <p>Lat: {{ currentLocation.latitude | number:'1.6-6' }}</p>
+            <p>Lng: {{ currentLocation.longitude | number:'1.6-6' }}</p>
+            <p>Accuracy: {{ currentLocation.accuracy | number:'1.0-0' }}m</p>
           </div>
         </div>
-      </div>
+      </mat-card-content>
+    </mat-card>
 
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon weekly-icon">
-            <i class="pi pi-chart-bar"></i>
-          </div>
-          <div class="stat-info">
-            <h3>Weekly Total</h3>
-            <div class="weekly-stats">
-              <span class="hours-display">{{ totalWeeklyHours }}h</span>
-              <small>{{ getPresentDaysCount() }} days present</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-content">
-          <div class="stat-icon avg-icon">
-            <i class="pi pi-calculator"></i>
-          </div>
-          <div class="stat-info">
-            <h3>Daily Average</h3>
-            <div class="hours-display">
-              {{ weeklyAttendance.length > 0 ? (totalWeeklyHours / weeklyAttendance.length).toFixed(1) : 0 }}h
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Check-in Button -->
+    <div class="checkin-section">
+      <button 
+        mat-raised-button 
+        color="primary"
+        class="checkin-button"
+        (click)="markAttendance()"
+        [disabled]="isLoading || !!todayAttendance || !locationPermissionGranted">
+        <mat-icon>fingerprint</mat-icon>
+        <span *ngIf="!isLoading">Check-In Attendance</span>
+        <span *ngIf="isLoading">Marking Attendance...</span>
+      </button>
+      
+      <p class="checkin-note" *ngIf="!todayAttendance">
+        Make sure you are at the internship location before checking in.
+      </p>
+      
+      <p class="checkin-note success-text" *ngIf="todayAttendance">
+        Attendance already marked for today.
+      </p>
     </div>
 
-    <!-- Time Details -->
-    <div *ngIf="todayAttendance" class="time-details-section">
-      <h3><i class="pi pi-info-circle"></i>Today's Time Log</h3>
-      <div class="time-grid">
-        <div class="time-item">
-          <div class="time-label">
-            <i class="pi pi-sign-in"></i>
-            <span>Check In Time</span>
-          </div>
-          <div class="time-value">{{ formatTime(todayAttendance.checkInTime) }}</div>
-        </div>
-        
-        <div class="time-item">
-          <div class="time-label">
-            <i class="pi pi-sign-out"></i>
-            <span>Check Out Time</span>
-          </div>
-          <div class="time-value">{{ formatTime(todayAttendance.checkOutTime) }}</div>
-        </div>
-        
-        <div class="time-item">
-          <div class="time-label">
-            <i class="pi pi-stopwatch"></i>
-            <span>Total Duration</span>
-          </div>
-          <div class="time-value">{{ todayAttendance.totalHours || 0 }} hours</div>
-        </div>
-      </div>
-    </div>
+    <!-- Refresh Location Button -->
+    <button 
+      *ngIf="locationPermissionGranted && !todayAttendance"
+      mat-stroked-button 
+      color="primary"
+      class="refresh-button"
+      (click)="getCurrentLocation()"
+      [disabled]="isLoading">
+      <mat-icon>refresh</mat-icon>
+      Refresh Location
+    </button>
+  </div>
 
-    <!-- Attendance Records -->
-    <div class="table-section">
-      <h3><i class="pi pi-table"></i>Attendance Records</h3>
-      <p-table 
-        [value]="weeklyAttendance" 
-        [responsive]="true"
-        styleClass="p-datatable-sm">
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Check In</th>
-            <th>Check Out</th>
-            <th>Hours</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-attendance>
-          <tr>
-            <td>
-              <div class="date-cell">
-                <strong>{{ formatDate(attendance.date) }}</strong>
-              </div>
-            </td>
-            <td>
-              <p-tag 
-                [value]="attendance.status" 
-                [severity]="getStatusSeverity(attendance.status)">
-              </p-tag>
-            </td>
-            <td class="time-cell">{{ formatTime(attendance.checkInTime) }}</td>
-            <td class="time-cell">{{ formatTime(attendance.checkOutTime) }}</td>
-            <td>
-              <span class="hours-badge">{{ attendance.totalHours || 0 }}h</span>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5" class="empty-message">
-              <i class="pi pi-info-circle"></i>
-              No attendance records available
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </div>
-  </p-card>
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Processing...</p>
+  </div>
 </div>

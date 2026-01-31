@@ -558,16 +558,42 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
+  padding: 12px;
   background: #f7fafc;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   border: 1px solid #e2e8f0;
+  margin-bottom: 8px;
 }
 
-.member-item span {
-  font-size: 0.875rem;
+.member-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.member-name {
   font-weight: 600;
   color: #2d3748;
+  font-size: 14px;
+}
+
+.member-email {
+  font-size: 12px;
+  color: #718096;
+}
+
+.member-github {
+  font-size: 12px;
+  color: #4a5568;
+}
+
+.member-github a {
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.member-github a:hover {
+  text-decoration: underline;
 }
 
 /* Company Section Styles */

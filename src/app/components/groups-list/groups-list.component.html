@@ -347,11 +347,18 @@
         </div>
       </div>
 
-      <div class="detail-section" *ngIf="selectedGroup.members && selectedGroup.members.length > 0">
-        <h4><i class="pi pi-users"></i> Members</h4>
+      <div class="detail-section" *ngIf="groupMembers && groupMembers.length > 0">
+        <h4><i class="pi pi-users"></i> Group Members ({{groupMembers.length}})</h4>
         <div class="members-list">
-          <div *ngFor="let member of selectedGroup.members" class="member-item">
-            <span>{{member.studentName}}</span>
+          <div *ngFor="let member of groupMembers" class="member-item">
+            <div class="member-info">
+              <span class="member-name">{{member.studentName}}</span>
+              <span class="member-email" *ngIf="member.student?.email">{{member.student.email}}</span>
+              <span class="member-github" *ngIf="member.githubLink">
+                <i class="pi pi-github"></i> 
+                <a [href]="member.githubLink" target="_blank">GitHub</a>
+              </span>
+            </div>
             <p-tag [value]="member.status" [severity]="getStatusSeverity(member.status)"></p-tag>
           </div>
         </div>

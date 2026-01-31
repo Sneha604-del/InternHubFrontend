@@ -1,0 +1,110 @@
+<div class="admin-dashboard">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Admin Dashboard</mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <mat-tab-group>
+        <!-- Attendance Management Tab -->
+        <mat-tab label="Attendance Management">
+          <div class="attendance-section">
+            <div class="filters">
+              <mat-form-field appearance="outline">
+                <mat-label>Select Group</mat-label>
+                <mat-select [(value)]="selectedGroupId" (selectionChange)="onGroupChange()">
+                  <mat-option *ngFor="let group of groups" [value]="group.id">
+                    {{group.groupName}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Start Date</mat-label>
+                <input matInput type="date" [(ngModel)]="startDate" (change)="onDateChange()">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>End Date</mat-label>
+                <input matInput type="date" [(ngModel)]="endDate" (change)="onDateChange()">
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" (click)="loadAttendance()">
+                <mat-icon>refresh</mat-icon>
+                Refresh
+              </button>
+
+              <button mat-raised-button color="accent" (click)="exportAttendance()">
+                <mat-icon>download</mat-icon>
+                Export
+              </button>
+            </div>
+
+            <div class="attendance-table" *ngIf="!isLoading">
+              <mat-table [dataSource]="attendanceData" class="mat-elevation-z8">
+                <ng-container matColumnDef="studentName">
+                  <mat-header-cell *matHeaderCellDef>Student Name</mat-header-cell>
+                  <mat-cell *matCellDef="let attendance">{{attendance.studentName}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="attendanceDate">
+                  <mat-header-cell *matHeaderCellDef>Date</mat-header-cell>
+                  <mat-cell *matCellDef="let attendance">{{attendance.attendanceDate}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="checkInTime">
+                  <mat-header-cell *matHeaderCellDef>Check-in Time</mat-header-cell>
+                  <mat-cell *matCellDef="let attendance">{{attendance.checkInTime}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+                  <mat-cell *matCellDef="let attendance">
+                    <span [class]="'status-badge status-' + getStatusColor(attendance.status)">
+                      {{attendance.status}}
+                    </span>
+                  </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="location">
+                  <mat-header-cell *matHeaderCellDef>Location</mat-header-cell>
+                  <mat-cell *matCellDef="let attendance">
+                    <button mat-icon-button (click)="viewLocation(attendance)">
+                      <mat-icon>location_on</mat-icon>
+                    </button>
+                  </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+              </mat-table>
+            </div>
+
+            <div *ngIf="isLoading" class="loading-spinner">
+              <mat-icon>refresh</mat-icon>
+              Loading attendance data...
+            </div>
+
+            <div *ngIf="!isLoading && attendanceData.length === 0" class="no-data">
+              <mat-icon>info</mat-icon>
+              No attendance data found for the selected criteria.
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Other Admin Tabs -->
+        <mat-tab label="Groups Management">
+          <div class="groups-section">
+            <p>Groups management functionality will be implemented here.</p>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Reports">
+          <div class="reports-section">
+            <p>Reports and analytics will be implemented here.</p>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>

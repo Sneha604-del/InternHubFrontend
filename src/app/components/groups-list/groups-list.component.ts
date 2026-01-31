@@ -33,6 +33,7 @@ export class GroupsListComponent implements OnInit {
   showDetailsDialog = false;
   selectedGroup: Group | null = null;
   groupInvitations: any[] = [];
+  groupMembers: any[] = [];
 
   constructor(
     private groupService: GroupService,
@@ -99,8 +100,21 @@ export class GroupsListComponent implements OnInit {
     this.selectedGroup = this.groups.find(g => g.id === groupId) || null;
     if (this.selectedGroup) {
       this.loadGroupInvitations(groupId);
+      this.loadGroupMembers(groupId);
     }
     this.showDetailsDialog = true;
+  }
+
+  loadGroupMembers(groupId: number): void {
+    this.groupService.getGroupMembers(groupId).subscribe({
+      next: (members) => {
+        this.groupMembers = members;
+      },
+      error: (error) => {
+        console.error('Error loading group members:', error);
+        this.groupMembers = [];
+      }
+    });
   }
 
   loadGroupInvitations(groupId: number): void {
@@ -207,13 +221,13 @@ export class GroupsListComponent implements OnInit {
     });
   }
 
-  getStatusSeverity(status: string): "warning" | "success" | "info" | "danger" | "secondary" | "contrast" | undefined {
+  getStatusSeverity(status: string): "warn" | "success" | "info" | "danger" | "secondary" | "contrast" | undefined {
     switch (status) {
       case 'APPROVED': return 'success';
       case 'REJECTED': return 'danger';
       case 'APPLIED': return 'info';
-      case 'SELECTED': return 'warning';
-      case 'PENDING': return 'warning';
+      case 'SELECTED': return 'warn';
+      case 'PENDING': return 'warn';
       default: return 'secondary';
     }
   }
