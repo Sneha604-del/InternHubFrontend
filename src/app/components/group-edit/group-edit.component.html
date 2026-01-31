@@ -11,38 +11,47 @@
       
       <div class="p-fluid">
         <div class="field">
-          <label for="groupName">Group Name</label>
-          <input pInputText id="groupName" [(ngModel)]="group.groupName" name="groupName" required />
+          <label for="groupName">Group Name *</label>
+          <input pInputText id="groupName" [(ngModel)]="group.groupName" name="groupName" required 
+                 placeholder="Enter group name" />
         </div>
         
         <div class="field">
-          <label for="collegeName">College Name</label>
-          <input pInputText id="collegeName" [(ngModel)]="group.collegeName" name="collegeName" required />
+          <label for="collegeName">College Name *</label>
+          <input pInputText id="collegeName" [(ngModel)]="group.collegeName" name="collegeName" required 
+                 placeholder="Enter college name" />
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="department">Department</label>
-            <input pInputText id="department" [(ngModel)]="group.department" name="department" required />
+            <label for="department">Department *</label>
+            <input pInputText id="department" [(ngModel)]="group.department" name="department" required 
+                   placeholder="Enter department" />
           </div>
           
           <div class="field">
-            <label for="academicYear">Academic Year</label>
+            <label for="academicYear">Academic Year *</label>
             <p-dropdown id="academicYear" [(ngModel)]="group.academicYear" name="academicYear" 
                         [options]="academicYearOptions" 
-                        placeholder="Select Year" [required]="true"></p-dropdown>
+                        placeholder="Select Academic Year" 
+                        [required]="true">
+            </p-dropdown>
           </div>
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="semester">Semester</label>
-            <input pInputText id="semester" [(ngModel)]="group.semester" name="semester" required />
+            <label for="semester">Semester *</label>
+            <input pInputText id="semester" [(ngModel)]="group.semester" name="semester" required 
+                   placeholder="Enter semester" />
           </div>
           
           <div class="field">
-            <label for="totalStudents">Total Students</label>
-            <p-inputNumber id="totalStudents" [(ngModel)]="group.totalStudents" name="totalStudents" [required]="true"></p-inputNumber>
+            <label for="totalStudents">Total Students *</label>
+            <p-inputNumber id="totalStudents" [(ngModel)]="group.totalStudents" name="totalStudents" 
+                           [required]="true" [min]="1" [max]="100" 
+                           placeholder="Enter number of students">
+            </p-inputNumber>
           </div>
         </div>
       </div>
@@ -55,36 +64,50 @@
       <div class="p-fluid">
         <div class="form-row">
           <div class="field">
-            <label for="internshipType">Internship Type</label>
+            <label for="internshipType">Internship Type *</label>
             <p-dropdown id="internshipType" [(ngModel)]="group.internshipType" name="internshipType" 
                         [options]="internshipTypeOptions" 
-                        placeholder="Select Type" [required]="true"></p-dropdown>
+                        placeholder="Select Internship Type" 
+                        [required]="true">
+            </p-dropdown>
           </div>
           
           <div class="field">
-            <label for="preferredMode">Preferred Mode</label>
+            <label for="preferredMode">Preferred Mode *</label>
             <p-dropdown id="preferredMode" [(ngModel)]="group.preferredMode" name="preferredMode" 
                         [options]="internshipModeOptions" 
-                        placeholder="Select Mode" [required]="true"></p-dropdown>
+                        placeholder="Select Preferred Mode" 
+                        [required]="true">
+            </p-dropdown>
           </div>
         </div>
         
         <div class="field">
-          <label for="durationMonths">Duration (Months)</label>
+          <label for="durationMonths">Duration (Months) *</label>
           <p-dropdown id="durationMonths" [(ngModel)]="group.durationMonths" name="durationMonths" 
                       [options]="durationOptions" 
-                      placeholder="Select Duration" [required]="true"></p-dropdown>
+                      placeholder="Select Duration" 
+                      [required]="true">
+          </p-dropdown>
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="startDate">Start Date</label>
-            <p-calendar id="startDate" [(ngModel)]="group.startDate" name="startDate" dateFormat="yy-mm-dd" [required]="true"></p-calendar>
+            <label for="startDate">Start Date *</label>
+            <p-calendar id="startDate" [(ngModel)]="group.startDate" name="startDate" 
+                        dateFormat="yy-mm-dd" [required]="true" 
+                        placeholder="Select start date"
+                        [showIcon]="true">
+            </p-calendar>
           </div>
           
           <div class="field">
-            <label for="endDate">End Date</label>
-            <p-calendar id="endDate" [(ngModel)]="group.endDate" name="endDate" dateFormat="yy-mm-dd" [required]="true"></p-calendar>
+            <label for="endDate">End Date *</label>
+            <p-calendar id="endDate" [(ngModel)]="group.endDate" name="endDate" 
+                        dateFormat="yy-mm-dd" [required]="true" 
+                        placeholder="Select end date"
+                        [showIcon]="true">
+            </p-calendar>
           </div>
         </div>
       </div>
@@ -96,32 +119,41 @@
       
       <div class="p-fluid">
         <div class="field">
-          <label for="facultyName">Faculty Name</label>
-          <input pInputText id="facultyName" [(ngModel)]="group.facultyName" name="facultyName" required />
+          <label for="facultyName">Faculty Name *</label>
+          <input pInputText id="facultyName" [(ngModel)]="group.facultyName" name="facultyName" required 
+                 placeholder="Enter faculty name" />
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="facultyEmail">Faculty Email</label>
-            <input pInputText id="facultyEmail" type="email" [(ngModel)]="group.facultyEmail" name="facultyEmail" required />
+            <label for="facultyEmail">Faculty Email *</label>
+            <input pInputText id="facultyEmail" type="email" [(ngModel)]="group.facultyEmail" 
+                   name="facultyEmail" required placeholder="Enter faculty email" />
           </div>
           
           <div class="field">
-            <label for="facultyPhone">Faculty Phone</label>
-            <input pInputText id="facultyPhone" [(ngModel)]="group.facultyPhone" name="facultyPhone" required />
+            <label for="facultyPhone">Faculty Phone *</label>
+            <input pInputText id="facultyPhone" [(ngModel)]="group.facultyPhone" name="facultyPhone" 
+                   required placeholder="Enter faculty phone" />
           </div>
         </div>
       </div>
     </div>
     
     <div class="form-actions">
-      <p-button label="Cancel" severity="secondary" (onClick)="cancel()" [outlined]="true"></p-button>
-      <p-button label="{{loading ? 'Updating...' : 'Update Group'}}" type="submit" [disabled]="!groupForm.form.valid || loading"></p-button>
+      <p-button label="Cancel" severity="secondary" (onClick)="cancel()" 
+                [outlined]="true" type="button">
+      </p-button>
+      <p-button [label]="loading ? 'Updating...' : 'Update Group'" 
+                type="submit" 
+                [disabled]="!groupForm.form.valid || loading"
+                [loading]="loading">
+      </p-button>
     </div>
   </form>
 
   <div *ngIf="loadingData" class="loading-container">
-    <p-progressSpinner></p-progressSpinner>
+    <p-progressSpinner [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
     <p>Loading group data...</p>
   </div>
 </div>

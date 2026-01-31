@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { NotificationService } from '../../services/notification.service';
 import { GroupInvitation, GroupMember, Availability } from '../../models/group.model';
 
 @Component({
@@ -43,11 +44,30 @@ export class GroupInvitationsComponent implements OnInit {
   constructor(
     private groupService: GroupService,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.loadInvitations();
+    this.checkPendingInvitation();
+  }
+
+  checkPendingInvitation(): void {
+    const pendingInvitation = localStorage.getItem('pendingInvitation');
+    if (pendingInvitation) {
+      const notification = JSON.parse(pendingInvitation);
+      // Auto-focus on the invitation from notification
+      setTimeout(() => {
+        const invitation = this.invitations.find(inv => 
+          inv.group?.groupName && notification.message.includes(inv.group.groupName)
+        );
+        if (invitation) {
+          this.startJoining(invitation);
+        }
+      }, 1000);
+      localStorage.removeItem('pendingInvitation');
+    }
   }
 
   loadInvitations(): void {
@@ -85,6 +105,10 @@ export class GroupInvitationsComponent implements OnInit {
     this.groupService.acceptInvitation(invitation.invitationToken, this.memberData).subscribe({
       next: (member) => {
         this.toastService.showSuccess('Successfully joined the group!', 'Success');
+        
+        // Mark related notification as read
+        this.markInvitationNotificationAsRead(invitation);
+        
         this.loadInvitations(); // Refresh invitations
         this.cancelJoining();
       },
@@ -92,6 +116,24 @@ export class GroupInvitationsComponent implements OnInit {
         this.toastService.showError('Failed to join group', 'Error');
       }
     });
+  }
+
+  private markInvitationNotificationAsRead(invitation: GroupInvitation): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.id) {
+      this.notificationService.getNotifications(currentUser.id).subscribe({
+        next: (notifications) => {
+          const relatedNotification = notifications.find(n => 
+            n.type === 'GROUP_INVITATION' && 
+            n.message.includes(invitation.group?.groupName || '') &&
+            !n.read
+          );
+          if (relatedNotification) {
+            this.notificationService.markAsRead(relatedNotification.id).subscribe();
+          }
+        }
+      });
+    }
   }
 
   private resetForm(): void {

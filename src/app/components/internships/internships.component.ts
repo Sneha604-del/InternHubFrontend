@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { FavoritesService } from '../../services/favorites.service';
+import { GroupService } from '../../services/group.service';
+import { AuthService } from '../../services/auth.service';
 
 
 @Component({
@@ -82,13 +84,15 @@ export class InternshipsComponent implements OnInit {
   companyId: number = 0;
   companyName: string = '';
   internships: any[] = [];
-
+  userGroup: any = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
-    private favoritesService: FavoritesService
+    private favoritesService: FavoritesService,
+    private groupService: GroupService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -99,6 +103,21 @@ export class InternshipsComponent implements OnInit {
         this.loadInternships();
       }
     });
+    this.loadUserGroup();
+  }
+
+  loadUserGroup() {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.id) {
+      this.groupService.getUserGroup(currentUser.id).subscribe({
+        next: (group) => {
+          this.userGroup = group;
+        },
+        error: (error) => {
+          console.error('Error loading user group:', error);
+        }
+      });
+    }
   }
 
   loadInternships() {
@@ -114,13 +133,17 @@ export class InternshipsComponent implements OnInit {
   }
 
   applyNow(internshipId: number) {
-    this.router.navigate(['/apply'], {
-      queryParams: { 
-        internshipId,
-        companyId: this.companyId,
-        companyName: this.companyName
-      }
-    });
+    const queryParams: any = { 
+      internshipId,
+      companyId: this.companyId,
+      companyName: this.companyName
+    };
+    
+    if (this.userGroup) {
+      queryParams.groupId = this.userGroup.id;
+    }
+    
+    this.router.navigate(['/apply'], { queryParams });
   }
 
   toggleFavorite(internship: any) {

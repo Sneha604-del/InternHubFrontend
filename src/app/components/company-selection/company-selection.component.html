@@ -1,0 +1,67 @@
+<div class="company-selection-container">
+  <div class="page-header" *ngIf="!loadingData">
+    <h1>Select Company for Internship</h1>
+    <p>Choose a company for your group's internship program</p>
+  </div>
+
+  <div *ngIf="loadingData" class="loading-container">
+    <p-progressSpinner [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+    <p>Loading companies...</p>
+  </div>
+
+  <div *ngIf="!loadingData" class="companies-grid">
+    <p-card *ngFor="let company of companies" class="company-card">
+      <ng-template pTemplate="header">
+        <div class="company-header">
+          <h3>{{ company.name }}</h3>
+          <span class="company-category" *ngIf="company.category">{{ company.category.name }}</span>
+        </div>
+      </ng-template>
+      
+      <div class="company-details">
+        <div class="detail-item" *ngIf="company.industry">
+          <strong>Industry:</strong> {{ company.industry }}
+        </div>
+        <div class="detail-item" *ngIf="company.description">
+          <strong>Description:</strong> {{ company.description }}
+        </div>
+        <div class="detail-item" *ngIf="company.contactPerson">
+          <strong>Contact Person:</strong> {{ company.contactPerson }}
+        </div>
+        <div class="detail-item" *ngIf="company.contactPhone">
+          <strong>Phone:</strong> {{ company.contactPhone }}
+        </div>
+        <div class="detail-item" *ngIf="company.email">
+          <strong>Email:</strong> {{ company.email }}
+        </div>
+        <div class="detail-item" *ngIf="company.website">
+          <strong>Website:</strong> 
+          <a [href]="company.website" target="_blank">{{ company.website }}</a>
+        </div>
+        <div class="detail-item" *ngIf="company.address">
+          <strong>Address:</strong> {{ company.address }}
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="card-actions">
+          <p-button 
+            label="Select Company" 
+            (onClick)="selectCompany(company.id)"
+            [loading]="loading"
+            [disabled]="loading">
+          </p-button>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+
+  <div class="page-actions" *ngIf="!loadingData">
+    <p-button 
+      label="Back to Groups" 
+      severity="secondary" 
+      (onClick)="goBack()"
+      [outlined]="true">
+    </p-button>
+  </div>
+</div>

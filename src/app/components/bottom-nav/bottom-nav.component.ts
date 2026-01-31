@@ -17,13 +17,6 @@ import { RouterModule } from '@angular/router';
         </svg>
         <span>Documentation</span>
       </a>
-      <a routerLink="/home" routerLinkActive="active" class="nav-item">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-          <polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-        <span>Home</span>
-      </a>
       <a routerLink="/groups" routerLinkActive="active" class="nav-item">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -33,13 +26,14 @@ import { RouterModule } from '@angular/router';
         </svg>
         <span>Groups</span>
       </a>
-      <a routerLink="/attendance" routerLinkActive="active" class="nav-item">
+      <a routerLink="/home" routerLinkActive="active" class="nav-item home-tab">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <polyline points="12 6 12 12 16 14"/>
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
-        <span>Attendance</span>
+        <span>Home</span>
       </a>
+
       <a routerLink="/profile" routerLinkActive="active" class="nav-item">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -86,10 +80,30 @@ import { RouterModule } from '@angular/router';
     }
 
 
-    @media (min-width: 768px) {
-      .bottom-nav { padding: 8px 0; }
-      .nav-item { padding: 4px 12px; font-size: 12px; }
-      .icon { width: 20px; height: 20px; margin-bottom: 3px; }
+    .home-tab {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white !important;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      margin: -20px 8px 0 8px;
+      box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+      transform: scale(1.2);
+      font-weight: 600;
+      position: relative;
+      z-index: 10;
+      border: 3px solid white;
+    }
+    .home-tab .icon {
+      width: 26px;
+      height: 26px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      margin-bottom: 1px;
+    }
+    .home-tab span {
+      font-size: 9px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      font-weight: 700;
     }
   `]
 })

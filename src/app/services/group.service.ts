@@ -63,11 +63,19 @@ export class GroupService {
     return this.http.get<number>(`${this.apiUrl}/api/group-invitations/count/${email}`);
   }
 
+  getUserGroup(userId: number): Observable<Group | null> {
+    return this.http.get<Group>(`${this.apiUrl}/api/groups/user/${userId}`);
+  }
+
   sendInvitation(invitationData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/api/group-invitations/send`, invitationData);
   }
 
   getGroupInvitations(groupId: number): Observable<GroupInvitation[]> {
     return this.http.get<GroupInvitation[]>(`${this.apiUrl}/api/group-invitations/group/${groupId}`);
+  }
+
+  joinCompany(groupId: number, companyId: number): Observable<Group> {
+    return this.http.post<Group>(`${this.apiUrl}/api/groups/${groupId}/join-company/${companyId}`, {});
   }
 }

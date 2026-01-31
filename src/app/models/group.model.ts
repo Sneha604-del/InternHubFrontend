@@ -19,6 +19,19 @@ export interface Group {
   leader?: Student;
   members?: GroupMember[];
   status: GroupStatus;
+  company?: Company;
+}
+
+export interface Company {
+  id: number;
+  name: string;
+  email: string;
+  website?: string;
+  industry?: string;
+  description?: string;
+  contactPerson?: string;
+  contactPhone?: string;
+  address?: string;
 }
 
 export interface GroupMember {

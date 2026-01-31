@@ -15,7 +15,9 @@ import { GroupsListComponent } from './components/groups-list/groups-list.compon
 import { GroupDetailsComponent } from './components/group-details/group-details.component';
 import { GroupInvitationsComponent } from './components/group-invitations/group-invitations.component';
 import { GroupEditComponent } from './components/group-edit/group-edit.component';
-import { AttendanceComponent } from './components/attendance/attendance.component';
+
+import { CompanyJoinComponent } from './components/company-join/company-join.component';
+import { CompanySelectionComponent } from './components/company-selection/company-selection.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -35,5 +37,7 @@ export const routes: Routes = [
   { path: 'group-edit/:id', component: GroupEditComponent },
   { path: 'group-details/:id', component: GroupDetailsComponent },
   { path: 'group-invitations', component: GroupInvitationsComponent },
-  { path: 'attendance', component: AttendanceComponent }
+  { path: 'company-join', component: CompanyJoinComponent },
+  { path: 'company-selection/:groupId', component: CompanySelectionComponent },
+
 ];

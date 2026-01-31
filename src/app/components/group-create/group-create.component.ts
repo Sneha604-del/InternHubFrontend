@@ -84,6 +84,7 @@ export class GroupCreateComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         this.toastService.showSuccess('Group created successfully!', 'Success');
+        // Navigate to groups page
         this.router.navigate(['/groups']);
       },
       error: (error) => {

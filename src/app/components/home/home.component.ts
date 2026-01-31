@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ApiService } from '../../services/api.service';
@@ -28,7 +28,7 @@ import { HomeStateService } from '../../services/home-state.service';
       </div>
 
       <!-- Quick Search -->
-      <div class="search-card">
+      <div class="search-card" #searchCard [class.highlight]="highlightSearch">
         <h2>Find Internships</h2>
         <div class="search-form">
           <mat-form-field appearance="outline" class="search-field">
@@ -140,7 +140,9 @@ import { HomeStateService } from '../../services/home-state.service';
     .placeholder-icon { font-size: 40px; }
     
     /* Search Card - Smaller */
-    .search-card { background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .search-card { background: white; padding: 16px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+    .search-card.highlight { border: 2px solid #667eea; box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); } 50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.5); } }
     .search-card h2 { margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #333; }
     .search-form { display: grid; grid-template-columns: 1fr; gap: 12px; }
     .search-field { width: 100%; }
@@ -193,16 +195,20 @@ import { HomeStateService } from '../../services/home-state.service';
   `]
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('searchCard') searchCard!: ElementRef;
+  
   selectedCourse = '';
   selectedCategory = '';
   courses: any[] = [];
   categories: any[] = [];
   filteredCategories: any[] = [];
   companies: any[] = [];
+  highlightSearch = false;
 
   constructor(
     private apiService: ApiService,
     public router: Router,
+    private route: ActivatedRoute,
     private notificationService: NotificationService,
     private authService: AuthService,
     private homeStateService: HomeStateService
@@ -212,6 +218,21 @@ export class HomeComponent implements OnInit {
     this.loadCourses();
     this.loadCategories();
     this.restoreState();
+    this.checkForGroupRedirect();
+  }
+
+  checkForGroupRedirect() {
+    this.route.queryParams.subscribe(params => {
+      if (params['groupId']) {
+        this.highlightSearch = true;
+        setTimeout(() => {
+          this.searchCard?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+        setTimeout(() => {
+          this.highlightSearch = false;
+        }, 5000);
+      }
+    });
   }
 
   restoreState() {

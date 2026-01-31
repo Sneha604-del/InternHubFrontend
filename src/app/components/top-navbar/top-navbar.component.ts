@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ProfileService } from '../../services/profile.service';
+import { NotificationService } from '../../services/notification.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -13,7 +14,7 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./top-navbar.component.css']
 })
 export class TopNavbarComponent implements OnInit {
-  notificationCount = 3;
+  notificationCount = 0;
   showLogoutPopup = false;
   showBackButton = false;
   pageTitle = 'InternHub';
@@ -39,7 +40,8 @@ export class TopNavbarComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private notificationService: NotificationService
   ) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -59,6 +61,19 @@ export class TopNavbarComponent implements OnInit {
   ngOnInit(): void {
     // Initialize on component load
     this.updateBackButtonVisibility(this.router.url);
+    this.loadNotificationCount();
+    
+    // Subscribe to notification count changes
+    this.notificationService.unreadCount$.subscribe(count => {
+      this.notificationCount = count;
+    });
+  }
+
+  loadNotificationCount(): void {
+    const user = this.authService.getCurrentUser();
+    if (user?.id) {
+      this.notificationService.loadUnreadCount(user.id);
+    }
   }
 
   updateBackButtonVisibility(url: string): void {

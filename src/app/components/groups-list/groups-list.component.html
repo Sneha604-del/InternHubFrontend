@@ -105,6 +105,28 @@
             </div>
           </div>
           
+          <!-- Company Details Section -->
+          <div *ngIf="group.company" class="company-section">
+            <div class="company-header">
+              <i class="pi pi-briefcase"></i>
+              <span class="company-title">Applied Company</span>
+            </div>
+            <div class="company-details">
+              <div class="company-name">{{group.company.name}}</div>
+              <div class="company-info">
+                <span *ngIf="group.company.industry" class="company-industry">
+                  <i class="pi pi-tag"></i> {{group.company.industry}}
+                </span>
+                <span *ngIf="group.company.contactPerson" class="company-contact">
+                  <i class="pi pi-user"></i> {{group.company.contactPerson}}
+                </span>
+              </div>
+              <div *ngIf="group.company.description" class="company-description">
+                {{group.company.description}}
+              </div>
+            </div>
+          </div>
+          
           <div class="tags-section">
             <span class="type-tag">{{group.internshipType}}</span>
             <span class="mode-tag">{{group.preferredMode}}</span>
@@ -121,6 +143,15 @@
               [outlined]="true"
               size="small"
               (onClick)="viewGroup(group.id!)">
+            </p-button>
+            <p-button 
+              *ngIf="!group.company"
+              label="Select Company" 
+              icon="pi pi-building" 
+              severity="success"
+              [outlined]="true"
+              size="small"
+              (onClick)="selectCompany(group.id!)">
             </p-button>
             <p-button 
               label="Invite Members" 
@@ -275,6 +306,44 @@
         <div class="detail-row">
           <span class="detail-label">Phone:</span>
           <span class="detail-value">{{selectedGroup.facultyPhone}}</span>
+        </div>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedGroup.company">
+        <h4><i class="pi pi-briefcase"></i> Applied Company</h4>
+        <div class="detail-row">
+          <span class="detail-label">Company Name:</span>
+          <span class="detail-value">{{selectedGroup.company.name}}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.industry">
+          <span class="detail-label">Industry:</span>
+          <span class="detail-value">{{selectedGroup.company.industry}}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.contactPerson">
+          <span class="detail-label">Contact Person:</span>
+          <span class="detail-value">{{selectedGroup.company.contactPerson}}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.contactPhone">
+          <span class="detail-label">Contact Phone:</span>
+          <span class="detail-value">{{selectedGroup.company.contactPhone}}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.email">
+          <span class="detail-label">Company Email:</span>
+          <span class="detail-value">{{selectedGroup.company.email}}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.website">
+          <span class="detail-label">Website:</span>
+          <span class="detail-value">
+            <a [href]="selectedGroup.company.website" target="_blank">{{selectedGroup.company.website}}</a>
+          </span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.address">
+          <span class="detail-label">Address:</span>
+          <span class="detail-value">{{selectedGroup.company.address}}</span>
+        </div>
+        <div class="detail-row" *ngIf="selectedGroup.company.description">
+          <span class="detail-label">Description:</span>
+          <span class="detail-value">{{selectedGroup.company.description}}</span>
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import { DialogModule } from 'primeng/dialog';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { NotificationService } from '../../services/notification.service';
 import { Group } from '../../models/group.model';
 
 @Component({
@@ -37,7 +38,8 @@ export class GroupsListComponent implements OnInit {
     private groupService: GroupService,
     private authService: AuthService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -122,6 +124,10 @@ export class GroupsListComponent implements OnInit {
     this.router.navigate(['/group-edit', groupId]);
   }
 
+  selectCompany(groupId: number): void {
+    this.router.navigate(['/home'], { queryParams: { groupId: groupId } });
+  }
+
   inviteMembers(groupId: number): void {
     this.selectedGroupId = groupId;
     this.showInviteDialog = true;
@@ -172,6 +178,12 @@ export class GroupsListComponent implements OnInit {
         this.sendingInvite = false;
         this.closeInviteDialog();
         this.toastService.showSuccess('Invitation sent successfully!', 'Success');
+        
+        // Refresh notification count for all users
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser?.id) {
+          this.notificationService.loadUnreadCount(currentUser.id);
+        }
       },
       error: (error) => {
         console.error('Full error object:', error);
@@ -187,9 +199,6 @@ export class GroupsListComponent implements OnInit {
         } else if (error.message) {
           errorMessage = error.message;
         }
-        
-        // Show the actual backend error message
-        alert(`Error: ${errorMessage}`);
         
         this.toastService.showError(errorMessage, 'Error');
         this.sendingInvite = false;
