@@ -87,12 +87,12 @@ export class GroupDetailsComponent implements OnInit {
     this.router.navigate(['/groups']);
   }
 
-  getStatusSeverity(status: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
+  getStatusSeverity(status: string): 'success' | 'info' | 'warning' | 'danger' | 'secondary' | 'contrast' {
     switch (status) {
       case 'APPROVED': return 'success';
       case 'REJECTED': return 'danger';
       case 'APPLIED': return 'info';
-      case 'SELECTED': return 'warn';
+      case 'SELECTED': return 'warning';
       default: return 'secondary';
     }
   }
