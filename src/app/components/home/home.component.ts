@@ -8,6 +8,7 @@ import { ApiService } from '../../services/api.service';
 import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { HomeStateService } from '../../services/home-state.service';
+import { GroupService } from '../../services/group.service';
 
 @Component({
   selector: 'app-home',
@@ -55,7 +56,7 @@ import { HomeStateService } from '../../services/home-state.service';
       <div class="companies-section" *ngIf="companies.length > 0">
         <h2>Available Companies</h2>
         <div class="companies-grid">
-          <div *ngFor="let company of companies" class="company-card" (click)="viewInternships(company)">
+          <div *ngFor="let company of companies" class="company-card">
             <div class="company-header">
               <div class="company-logo">{{company.name.charAt(0)}}</div>
               <div class="company-info">
@@ -64,8 +65,27 @@ import { HomeStateService } from '../../services/home-state.service';
               </div>
             </div>
             <div class="company-actions">
-              <span class="view-link">View Positions →</span>
+              <button class="view-btn" (click)="loadInternships(company)">View Internships</button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Internships Section -->
+      <div class="internships-section" *ngIf="internships.length > 0">
+        <h2>Available Internships at {{selectedCompanyName}}</h2>
+        <div class="internships-grid">
+          <div *ngFor="let internship of internships" class="internship-card">
+            <h3>{{internship.title}}</h3>
+            <div class="internship-details">
+              <p><strong>Location:</strong> {{internship.location}}</p>
+              <p><strong>Duration:</strong> {{internship.duration}}</p>
+              <p><strong>Stipend:</strong> {{internship.stipend}}</p>
+              <div class="badge" [class.paid]="internship.isPaid" [class.free]="!internship.isPaid">
+                {{internship.isPaid ? 'PAID' : 'FREE'}}
+              </div>
+            </div>
+            <button class="apply-btn" (click)="applyNow(internship, $event)">Apply Now</button>
           </div>
         </div>
       </div>
@@ -172,6 +192,8 @@ import { HomeStateService } from '../../services/home-state.service';
       border-radius: 16px; 
       box-shadow: 0 4px 16px rgba(0,0,0,0.06); 
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
     }
     .search-card.highlight { 
       border: 2px solid #667eea; 
@@ -194,11 +216,10 @@ import { HomeStateService } from '../../services/home-state.service';
       background: white; 
       padding: 24px; 
       border-radius: 16px; 
-      cursor: pointer; 
       transition: all 0.3s; 
       box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     }
-    .company-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    .company-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
     .company-header { display: flex; align-items: center; margin-bottom: 16px; }
     .company-logo { 
       width: 60px; 
@@ -216,7 +237,58 @@ import { HomeStateService } from '../../services/home-state.service';
     }
     .company-info h3 { margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
     .company-skills { margin: 0; font-size: 14px; color: #666; }
-    .view-link { color: #667eea; font-weight: 600; font-size: 15px; }
+    .view-btn { 
+      background: #667eea; 
+      color: white; 
+      border: none; 
+      padding: 10px 20px; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.3s;
+    }
+    .view-btn:hover { background: #5a67d8; transform: translateY(-1px); }
+    
+    /* Internships Section */
+    .internships-section { margin: 0 16px 24px; }
+    .internships-section h2 { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+    .internships-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .internship-card { 
+      background: white; 
+      padding: 24px; 
+      border-radius: 16px; 
+      transition: all 0.3s; 
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border-left: 4px solid #667eea;
+    }
+    .internship-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+    .internship-card h3 { margin: 0 0 16px 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+    .internship-details p { margin: 8px 0; font-size: 14px; color: #555; }
+    .internship-details strong { color: #333; font-weight: 600; }
+    .badge { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      border-radius: 6px; 
+      font-size: 12px; 
+      font-weight: 600; 
+      margin: 12px 0 16px 0; 
+    }
+    .badge.paid { background: #4CAF50; color: white; }
+    .badge.free { background: #FF9800; color: white; }
+    .apply-btn { 
+      background: #2196F3; 
+      color: white; 
+      border: none; 
+      padding: 12px 24px; 
+      border-radius: 8px; 
+      font-size: 16px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      width: 100%; 
+      transition: all 0.3s;
+    }
+    .apply-btn:hover { background: #1976D2; transform: translateY(-1px); }
     
     /* Popular Categories */
     .categories-section { margin: 0 16px 24px; }
@@ -268,6 +340,7 @@ import { HomeStateService } from '../../services/home-state.service';
     @media (min-width: 640px) {
       .search-form { grid-template-columns: 1fr 1fr; }
       .companies-grid { grid-template-columns: repeat(2, 1fr); }
+      .internships-grid { grid-template-columns: repeat(2, 1fr); }
       .categories-grid { grid-template-columns: repeat(4, 1fr); }
       .banner-image { display: block; margin-left: 32px; }
       .placeholder-icon { font-size: 64px; }
@@ -278,7 +351,7 @@ import { HomeStateService } from '../../services/home-state.service';
       .welcome-banner { padding: 48px 32px; }
       .banner-content h1 { font-size: 36px; }
       .banner-content p { font-size: 18px; }
-      .search-card, .companies-section, .categories-section, .getting-started { 
+      .search-card, .companies-section, .internships-section, .categories-section, .getting-started { 
         margin-left: auto; 
         margin-right: auto; 
         max-width: 1200px; 
@@ -300,6 +373,10 @@ export class HomeComponent implements OnInit {
   categories: any[] = [];
   filteredCategories: any[] = [];
   companies: any[] = [];
+  internships: any[] = [];
+  selectedCompanyId: number = 0;
+  selectedCompanyName: string = '';
+  userGroup: any = null;
   highlightSearch = false;
 
   constructor(
@@ -308,7 +385,8 @@ export class HomeComponent implements OnInit {
     private route: ActivatedRoute,
     private notificationService: NotificationService,
     private authService: AuthService,
-    private homeStateService: HomeStateService
+    private homeStateService: HomeStateService,
+    private groupService: GroupService
   ) {}
 
   ngOnInit() {
@@ -316,6 +394,7 @@ export class HomeComponent implements OnInit {
     this.loadCategories();
     this.restoreState();
     this.checkForGroupRedirect();
+    this.loadUserGroup();
   }
 
   checkForGroupRedirect() {
@@ -373,6 +452,7 @@ export class HomeComponent implements OnInit {
   onCourseChange() {
     this.selectedCategory = '';
     this.companies = [];
+    this.internships = []; // Clear internships when course changes
 
     if (this.selectedCourse) {
       this.apiService.getCategoriesByCourse(+this.selectedCourse).subscribe({
@@ -390,6 +470,7 @@ export class HomeComponent implements OnInit {
   }
 
   onCategoryChange() {
+    this.internships = []; // Clear internships when category changes
     if (this.selectedCategory) {
       this.apiService.getCompaniesByCategory(+this.selectedCategory).subscribe({
         next: (response) => {
@@ -406,10 +487,47 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  viewInternships(company: any) {
-    this.router.navigate(['/internships'], {
-      queryParams: { companyId: company.id, companyName: company.name }
+  loadUserGroup() {
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.id) {
+      this.groupService.getUserGroup(currentUser.id).subscribe({
+        next: (group) => {
+          this.userGroup = group;
+        },
+        error: (error) => {
+          console.error('Error loading user group:', error);
+        }
+      });
+    }
+  }
+
+  loadInternships(company: any) {
+    // Navigate to company internships page
+    this.router.navigate(['/company-internships'], {
+      queryParams: {
+        companyId: company.id,
+        companyName: company.name,
+        categoryId: this.selectedCategory
+      }
     });
+  }
+
+  applyNow(internship: any, event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    const queryParams: any = { 
+      internshipId: internship.id,
+      companyId: this.selectedCompanyId,
+      companyName: this.selectedCompanyName
+    };
+    
+    // Don't pass groupId for individual applications from home page
+    // Only pass groupId when applying from group details page
+    
+    this.router.navigate(['/apply'], { queryParams });
   }
 
   selectPopularCategory(categoryName: string) {

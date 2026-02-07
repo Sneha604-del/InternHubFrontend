@@ -49,7 +49,8 @@ import { RouterModule } from '@angular/router';
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       border-top: 1px solid rgba(0, 0, 0, 0.06);
-      padding: 12px 8px 8px;
+      padding: 12px 8px;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom));
       z-index: 1000;
       box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
     }
@@ -61,18 +62,20 @@ import { RouterModule } from '@angular/router';
       gap: 4px;
       text-decoration: none;
       color: #6b7280;
-      padding: 4px;
+      padding: 8px 4px;
       border-radius: 12px;
       transition: all 0.2s;
+      min-height: 44px;
+      justify-content: center;
     }
     .nav-item svg {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       stroke-width: 1.5;
       transition: all 0.2s;
     }
     .nav-item span {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       transition: all 0.2s;
     }
@@ -85,6 +88,15 @@ import { RouterModule } from '@angular/router';
     }
     .nav-item.active span {
       font-weight: 600;
+    }
+    @media (max-width: 480px) {
+      .nav-item span {
+        font-size: 10px;
+      }
+      .nav-item svg {
+        width: 22px;
+        height: 22px;
+      }
     }
   `]
 })

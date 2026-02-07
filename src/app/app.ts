@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { Location } from '@angular/common';
 import { BottomNavComponent } from './components/bottom-nav/bottom-nav.component';
 import { SplashScreenComponent } from './components/splash-screen/splash-screen.component';
 import { TopNavbarComponent } from './components/top-navbar/top-navbar.component';
@@ -10,6 +11,9 @@ import { NotificationService } from './services/notification.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { App } from '@capacitor/app';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-root',
@@ -17,24 +21,37 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App implements OnInit {
+export class AppComponent implements OnInit {
   protected title = 'InternHubFrontend';
   showBackButton = false;
   showNavigation = true;
   unreadCount = 0;
   currentPageTitle = 'InternHub';
   showSplash = true;
+  navigationHistory: string[] = [];
+  mainPages = ['/home', '/profile', '/groups', '/attendance', '/documentation'];
   
   constructor(
     private router: Router, 
     private authService: AuthService,
     private notificationService: NotificationService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private location: Location
   ) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       const url = event.url.split('?')[0];
+      
+      // Track navigation history
+      if (this.navigationHistory[this.navigationHistory.length - 1] !== url) {
+        this.navigationHistory.push(url);
+        // Keep only last 10 pages in history
+        if (this.navigationHistory.length > 10) {
+          this.navigationHistory.shift();
+        }
+      }
+      
       const authRoutes = ['/login', '/register', '/'];
       this.showNavigation = !authRoutes.includes(url);
       const mainRoutes = ['/home', '/documentation', '/profile'];
@@ -89,6 +106,41 @@ export class App implements OnInit {
     if (user?.id) {
       this.notificationService.loadUnreadCount(user.id);
     }
+    
+    this.initializeBackButton();
+  }
+  
+  initializeBackButton() {
+    App.addListener('backButton', () => {
+      const currentUrl = this.router.url.split('?')[0];
+      console.log('Back button pressed. Current URL:', currentUrl);
+      console.log('Navigation history:', this.navigationHistory);
+      
+      // Check if on main page
+      if (this.mainPages.includes(currentUrl)) {
+        console.log('On main page, showing exit confirmation');
+        this.showExitConfirmation();
+        return;
+      }
+      
+      // Navigate back using Location service
+      console.log('Navigating back');
+      this.location.back();
+    });
+  }
+  
+  showExitConfirmation() {
+    const dialogRef = this.dialog.open(ExitConfirmationComponent, {
+      width: '320px',
+      maxWidth: '90vw',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        App.exitApp();
+      }
+    });
   }
   
   goToNotifications() {
@@ -115,53 +167,62 @@ export class App implements OnInit {
     </div>
   `,
   styles: [`
-    .logout-dialog-wrapper {
-      text-align: center;
-      padding: 8px;
-    }
-    .dialog-title {
-      font-size: 28px;
-      font-weight: 600;
-      color: #2d3748;
-      margin: 0 0 12px 0;
-    }
-    .dialog-message {
-      font-size: 16px;
-      color: #718096;
-      margin: 0 0 32px 0;
-      line-height: 1.6;
-    }
-    .button-group {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-    .cancel-btn, .logout-btn {
-      flex: 1;
-      height: 48px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 8px;
-      text-transform: none;
-      letter-spacing: 0.3px;
-    }
-    .cancel-btn {
-      background: #e2e8f0;
-      color: #4a5568;
-    }
-    .cancel-btn:hover {
-      background: #cbd5e0;
-    }
-    .logout-btn {
-      background: #dc3545 !important;
-      color: white !important;
-      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-    }
-    .logout-btn:hover {
-      background: #c82333 !important;
-      box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
-      transform: translateY(-1px);
-    }
+    .logout-dialog-wrapper { text-align: center; padding: 8px; }
+    .dialog-title { font-size: 28px; font-weight: 600; color: #2d3748; margin: 0 0 12px 0; }
+    .dialog-message { font-size: 16px; color: #718096; margin: 0 0 32px 0; line-height: 1.6; }
+    .button-group { display: flex; gap: 12px; justify-content: center; }
+    .cancel-btn, .logout-btn { flex: 1; height: 48px; font-size: 15px; font-weight: 600; border-radius: 8px; }
+    .cancel-btn { background: #e2e8f0; color: #4a5568; }
+    .logout-btn { background: #dc3545 !important; color: white !important; }
   `]
 })
 export class LogoutDialogComponent {}
+
+@Component({
+  selector: 'exit-confirmation',
+  standalone: true,
+  imports: [CommonModule, DialogModule, ButtonModule],
+  template: `
+    <p-dialog [(visible)]="visible" [modal]="true" [closable]="false" 
+              [style]="{width: '85vw', maxWidth: '320px'}" [draggable]="false"
+              styleClass="exit-dialog">
+      <ng-template pTemplate="header">
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <i class="pi pi-sign-out" style="font-size: 1.25rem; color: #ef4444;"></i>
+          <span style="font-size: 1.1rem; font-weight: 600; color: #1f2937;">Exit App</span>
+        </div>
+      </ng-template>
+      <div style="padding: 1rem 0; text-align: center;">
+        <p style="font-size: 0.95rem; color: #64748b; margin: 0; line-height: 1.5;">
+          Are you sure you want to exit?
+        </p>
+      </div>
+      <ng-template pTemplate="footer">
+        <div style="display: flex; gap: 0.75rem; justify-content: center; width: 100%;">
+          <p-button label="Cancel" 
+                    (onClick)="onCancel()" 
+                    [style]="{flex: '1', height: '42px', 'font-weight': '600'}" 
+                    styleClass="p-button-secondary"></p-button>
+          <p-button label="Exit" 
+                    (onClick)="onConfirm()" 
+                    [style]="{flex: '1', height: '42px', 'font-weight': '600'}" 
+                    severity="danger"></p-button>
+        </div>
+      </ng-template>
+    </p-dialog>
+  `
+})
+export class ExitConfirmationComponent {
+  visible = true;
+  
+  constructor(private dialogRef: MatDialog) {}
+  
+  onCancel() {
+    this.dialogRef.closeAll();
+  }
+  
+  onConfirm() {
+    this.visible = false;
+    App.exitApp();
+  }
+}

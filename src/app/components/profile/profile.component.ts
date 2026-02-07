@@ -367,7 +367,17 @@ import { ToastService } from '../../services/toast.service';
     
     .form-actions button {
       min-width: 200px;
-      height: 40px;
+      height: 48px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s;
+    }
+    
+    .form-actions button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     
     .modal-overlay {

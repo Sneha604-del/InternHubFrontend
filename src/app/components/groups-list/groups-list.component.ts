@@ -118,8 +118,10 @@ export class GroupsListComponent implements OnInit {
   }
 
   loadGroupInvitations(groupId: number): void {
+    console.log('Loading invitations for group:', groupId);
     this.groupService.getGroupInvitations(groupId).subscribe({
       next: (invitations) => {
+        console.log('Received invitations:', invitations);
         this.groupInvitations = invitations;
       },
       error: (error) => {
@@ -221,13 +223,13 @@ export class GroupsListComponent implements OnInit {
     });
   }
 
-  getStatusSeverity(status: string): "warning" | "success" | "info" | "danger" | "secondary" | "contrast" | undefined {
+  getStatusSeverity(status: string): "warn" | "success" | "info" | "danger" | "secondary" | "contrast" | undefined {
     switch (status) {
       case 'APPROVED': return 'success';
       case 'REJECTED': return 'danger';
       case 'APPLIED': return 'info';
-      case 'SELECTED': return 'warning';
-      case 'PENDING': return 'warning';
+      case 'SELECTED': return 'warn';
+      case 'PENDING': return 'warn';
       default: return 'secondary';
     }
   }

@@ -9,11 +9,6 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="container">
-      <div class="header">
-        <button class="back-btn" (click)="goBack()">‹</button>
-        <h1>Help & Support</h1>
-      </div>
-
       <div class="tabs">
         <button [class.active]="activeTab === 'faq'" (click)="activeTab = 'faq'">FAQ</button>
         <button [class.active]="activeTab === 'contact'" (click)="activeTab = 'contact'">Contact Us</button>
@@ -68,11 +63,6 @@ import { Router } from '@angular/router';
   `,
   styles: [`
     .container { max-width: 600px; margin: 0 auto; padding: 16px; min-height: 100vh; background: #f8f9fa; }
-    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .back-btn { width: 36px; height: 36px; border: none; background: white; border-radius: 8px; font-size: 24px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .back-btn:active { transform: scale(0.95); }
-    h1 { font-size: 22px; font-weight: 700; color: #2c3e50; margin: 0; }
-
     .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: white; padding: 4px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .tabs button { flex: 1; padding: 10px; border: none; background: none; border-radius: 8px; font-size: 14px; font-weight: 600; color: #7f8c8d; cursor: pointer; transition: all 0.2s; }
     .tabs button.active { background: #007bff; color: white; }
@@ -109,7 +99,6 @@ import { Router } from '@angular/router';
 
     @media (min-width: 768px) {
       .container { padding: 24px; }
-      h1 { font-size: 24px; }
       .tabs button { padding: 12px; font-size: 15px; }
       .faq-question { padding: 18px; font-size: 16px; }
       .faq-question:hover { background: #f8f9fa; }

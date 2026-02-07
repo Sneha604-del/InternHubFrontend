@@ -3,16 +3,121 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  background: #667eea;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  padding: 16px;
+  -webkit-font-smoothing: antialiased;
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: white !important;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.logo {
+  width: 80px;
+  height: auto;
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: drop-shadow(0 0 0 transparent);
+}
+
+mat-card-title {
+  text-align: center;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 16px;
+  font-size: 1.25rem !important;
+}
+
+.login-card mat-form-field {
+  width: 100%;
+  margin-bottom: 12px !important;
+}
+
+.login-card .mat-mdc-text-field-wrapper {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+}
+
+.login-card input.mat-mdc-input-element {
+  background: white !important;
+  color: #1f2937 !important;
+  padding: 10px 12px !important;
+  font-size: 15px !important;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.login-btn {
+  height: 44px !important;
+  font-size: 15px !important;
+  font-weight: 500;
+  margin-top: 12px !important;
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.register-link {
+  text-align: center;
+  margin: 12px 0 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.register-link a {
+  text-decoration: none;
+}
+
+mat-form-field {
+  font-size: 14px;
+}
+
+mat-card-header {
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 0;
+}
+
+mat-card-content {
+  padding: 12px 0 !important;
+}
+
+mat-card-actions {
+  padding: 8px 0 0 0 !important;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    padding: 18px;
+    max-width: 100%;
+  }
+  
+  mat-form-field {
+    width: 100% !important;
+  }
 }
 
 .logo-container {

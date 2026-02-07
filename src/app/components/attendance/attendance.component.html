@@ -1,114 +1,82 @@
-<div class="attendance-container">
-  <h2>Attendance</h2>
-  
-  <!-- Not Enrolled Message -->
-  <div *ngIf="!hasJoinedGroup" class="not-enrolled-container">
-    <mat-card>
-      <mat-card-content class="text-center">
-        <mat-icon class="large-icon">school</mat-icon>
-        <h3>Not Enrolled</h3>
-        <p>You are not enrolled in any internship group.</p>
-        <button mat-raised-button color="primary" routerLink="/groups">
-          Browse Groups
-        </button>
-      </mat-card-content>
-    </mat-card>
+<div class="page">
+  <!-- Not Enrolled -->
+  <div *ngIf="!hasJoinedGroup" class="empty">
+    <i class="pi pi-users"></i>
+    <h2>Not Enrolled</h2>
+    <p>You need to be in a group assigned to a company to mark attendance</p>
+    <p *ngIf="currentGroup && !currentGroup.company" class="warning-text">Your group needs to be assigned to a company first</p>
   </div>
 
-  <!-- Attendance Section -->
+  <!-- Main Content -->
   <div *ngIf="hasJoinedGroup && currentGroup">
-    <!-- Group Info -->
-    <mat-card class="group-info">
-      <mat-card-header>
-        <mat-card-title>{{ currentGroup.groupName }}</mat-card-title>
-        <mat-card-subtitle>{{ currentGroup.company?.name }}</mat-card-subtitle>
-      </mat-card-header>
-    </mat-card>
-
-    <!-- Today's Attendance Status -->
-    <mat-card *ngIf="todayAttendance" class="attendance-status">
-      <mat-card-header>
-        <mat-card-title class="success-text">Today's Attendance</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="status-item">
-          <mat-icon [class]="getStatusColor(todayAttendance.status)">check_circle</mat-icon>
-          <div class="status-details">
-            <h4>{{ getStatusText(todayAttendance.status) }}</h4>
-            <p>Check-in: {{ todayAttendance.checkInTime | date:'short' }}</p>
-            <p *ngIf="todayAttendance.distanceMeters">Distance: {{ todayAttendance.distanceMeters | number:'1.0-0' }}m</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Location Permission -->
-    <mat-card *ngIf="!locationPermissionGranted" class="warning-card">
-      <mat-card-header>
-        <mat-card-title class="warning-text">Location Required</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p>Location access is required to mark attendance.</p>
-        <button mat-raised-button color="warn" (click)="getCurrentLocation()" [disabled]="isLoading">
-          <mat-icon>location_on</mat-icon>
-          Enable Location
-        </button>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Current Location -->
-    <mat-card *ngIf="currentLocation" class="location-card">
-      <mat-card-content>
-        <div class="location-item">
-          <mat-icon color="primary">location_on</mat-icon>
-          <div class="location-details">
-            <h4>Current Location</h4>
-            <p>Lat: {{ currentLocation.latitude | number:'1.6-6' }}</p>
-            <p>Lng: {{ currentLocation.longitude | number:'1.6-6' }}</p>
-            <p>Accuracy: {{ currentLocation.accuracy | number:'1.0-0' }}m</p>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Check-in Button -->
-    <div class="checkin-section">
-      <button 
-        mat-raised-button 
-        color="primary"
-        class="checkin-button"
-        (click)="markAttendance()"
-        [disabled]="isLoading || !!todayAttendance || !locationPermissionGranted">
-        <mat-icon>fingerprint</mat-icon>
-        <span *ngIf="!isLoading">Check-In Attendance</span>
-        <span *ngIf="isLoading">Marking Attendance...</span>
-      </button>
-      
-      <p class="checkin-note" *ngIf="!todayAttendance">
-        Make sure you are at the internship location before checking in.
-      </p>
-      
-      <p class="checkin-note success-text" *ngIf="todayAttendance">
-        Attendance already marked for today.
-      </p>
+    
+    <!-- Group -->
+    <div class="group">
+      <h2>{{ currentGroup.groupName }}</h2>
+      <p>{{ currentGroup.company?.name }}</p>
+      <p-tag value="Active" severity="success"></p-tag>
     </div>
 
-    <!-- Refresh Location Button -->
-    <button 
-      *ngIf="locationPermissionGranted && !todayAttendance"
-      mat-stroked-button 
-      color="primary"
-      class="refresh-button"
-      (click)="getCurrentLocation()"
-      [disabled]="isLoading">
-      <mat-icon>refresh</mat-icon>
-      Refresh Location
-    </button>
+    <!-- Attendance Status -->
+    <div *ngIf="todayAttendance" class="marked">
+      <div class="check">
+        <i class="pi pi-check"></i>
+      </div>
+      <h3>Attendance Marked</h3>
+      <div class="status">
+        <p-tag [value]="getStatusText(todayAttendance.status)" [severity]="getStatusSeverity(todayAttendance.status)"></p-tag>
+      </div>
+      <div class="info">
+        <span>{{ todayAttendance.checkInTime | date:'short' }}</span>
+        <span *ngIf="todayAttendance.distanceMeters">{{ todayAttendance.distanceMeters | number:'1.0-0' }}m away</span>
+      </div>
+    </div>
+
+    <!-- Location Warning -->
+    <div *ngIf="!locationPermissionGranted" class="warning">
+      <i class="pi pi-exclamation-triangle"></i>
+      <h4>Location Required</h4>
+      <p>Enable location to mark attendance</p>
+      <p-button label="Enable" icon="pi pi-map-marker" severity="warn" (onClick)="getCurrentLocation()" [loading]="isLoading"></p-button>
+    </div>
+
+    <!-- Location -->
+    <div *ngIf="currentLocation" class="location">
+      <h4>Current Location</h4>
+      <div class="coords">
+        <div><span>Lat:</span> <code>{{ currentLocation.latitude | number:'1.6-6' }}</code></div>
+        <div><span>Lng:</span> <code>{{ currentLocation.longitude | number:'1.6-6' }}</code></div>
+        <div><span>Accuracy:</span> <code>{{ currentLocation.accuracy | number:'1.0-0' }}m</code></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <p-button 
+        [label]="isLoading ? 'Marking...' : 'Check-In'"
+        icon="pi pi-user-check"
+        (onClick)="markAttendance()"
+        [disabled]="isLoading || !!todayAttendance || !locationPermissionGranted"
+        [loading]="isLoading">
+      </p-button>
+      
+      <p-button 
+        *ngIf="locationPermissionGranted && !todayAttendance"
+        label="Refresh Location" 
+        icon="pi pi-refresh" 
+        severity="secondary"
+        (onClick)="getCurrentLocation()"
+        [disabled]="isLoading">
+      </p-button>
+    </div>
+
+    <!-- Messages -->
+    <p-message *ngIf="!todayAttendance" severity="info" text="Be at the correct location"></p-message>
+    <p-message *ngIf="todayAttendance" severity="success" text="Done for today"></p-message>
   </div>
 
-  <!-- Loading Spinner -->
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Processing...</p>
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    <p-progressSpinner></p-progressSpinner>
   </div>
 </div>

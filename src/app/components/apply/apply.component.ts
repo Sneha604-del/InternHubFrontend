@@ -21,12 +21,51 @@ import { environment } from '../../../environment';
   template: `
     <div class="apply-container">
       <div class="apply-header">
-        <i class="pi pi-users"></i>
-        <h1>Group Application</h1>
+        <i class="pi" [class.pi-users]="groupInfo" [class.pi-user]="!groupInfo"></i>
+        <h1>{{groupInfo ? 'Group Application' : 'Internship Application'}}</h1>
         <p *ngIf="groupInfo">Applying as: <strong>{{groupInfo.groupName}}</strong></p>
+        <p *ngIf="!groupInfo">Individual Application</p>
       </div>
 
       <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="apply-form">
+        <p-panel *ngIf="!groupInfo" header="Personal Information" [toggleable]="false">
+          <div class="p-fluid">
+            <div class="field">
+              <label for="fullName">Full Name *</label>
+              <input pInputText id="fullName" [(ngModel)]="individualData.fullName" name="fullName" 
+                     required class="w-full" placeholder="Enter your full name" />
+            </div>
+
+            <div class="field">
+              <label for="email">Email Address *</label>
+              <input pInputText id="email" type="email" [(ngModel)]="individualData.email" name="email" 
+                     required class="w-full" placeholder="Enter your email address" />
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone Number *</label>
+              <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
+                     required class="w-full" placeholder="Enter your phone number" />
+            </div>
+
+            <div class="field">
+              <label for="individualSkills">Skills & Expertise</label>
+              <textarea id="individualSkills" [(ngModel)]="individualData.skills" name="individualSkills" 
+                        class="w-full p-inputtext p-component" rows="3"
+                        placeholder="List your key skills and expertise (e.g., Java, React, Python, UI/UX Design)"></textarea>
+            </div>
+
+            <div class="field">
+              <label for="individualMotivation">Why This Internship? *</label>
+              <textarea id="individualMotivation" [(ngModel)]="individualData.motivation" name="individualMotivation" 
+                        required class="w-full p-inputtext p-component" rows="4"
+                        placeholder="Explain why you are interested in this internship and what you hope to achieve"></textarea>
+            </div>
+          </div>
+        </p-panel>
+
+        <hr *ngIf="!groupInfo" style="margin: 32px 0; border: none; border-top: 1px solid #dee2e6;">
+
         <p-panel *ngIf="groupInfo" header="Group Information" [toggleable]="false">
           <div class="info-grid">
             <div class="info-item">
@@ -198,30 +237,128 @@ import { environment } from '../../../environment';
     </div>
   `,
   styles: [`
-    .apply-container { max-width: 800px; margin: 0 auto; padding: 24px; min-height: 100vh; }
-    .apply-header { margin-bottom: 32px; text-align: center; }
-    .apply-header i { font-size: 32px; color: #667eea; }
-    .apply-header h1 { margin: 8px 0 4px 0; font-size: 28px; font-weight: 600; color: #333; }
+    .apply-container { 
+      max-width: 900px; 
+      margin: 0 auto; 
+      padding: 16px 16px 100px 16px; 
+      min-height: 100vh;
+      background: #f8fafc;
+      overflow-x: hidden;
+    }
+    .apply-header { 
+      padding: 20px; 
+      margin-bottom: 24px; 
+      text-align: center;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .apply-header i { font-size: 28px; color: #667eea; margin-bottom: 10px; }
+    .apply-header h1 { margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #333; }
     .apply-header p { margin: 0; color: #666; font-size: 14px; }
-    .apply-form { }
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-    .info-item { display: flex; flex-direction: column; }
-    .info-item label { font-weight: 600; color: #555; font-size: 12px; margin-bottom: 4px; }
-    .info-item span { color: #333; font-size: 14px; }
     .field { margin-bottom: 20px; }
-    .field label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .field label { 
+      display: block; 
+      margin-bottom: 8px; 
+      font-weight: 600; 
+      color: #333; 
+      font-size: 14px; 
+    }
     .w-full { width: 100%; }
-    .form-actions { margin-top: 24px; }
+    .form-actions { 
+      margin-top: 30px; 
+      padding: 20px 0; 
+    }
     .submit-btn { height: 48px; font-size: 16px; font-weight: 600; }
-    .file-hint { display: block; margin-top: 8px; font-size: 12px; color: #666; }
-    ::ng-deep .p-panel { margin-bottom: 24px; }
-    ::ng-deep .p-panel .p-panel-header { background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
-    ::ng-deep .p-panel .p-panel-content { padding: 24px; }
-    ::ng-deep .team-panel .p-panel-header { background: #e3f2fd; }
-    ::ng-deep .p-divider { margin: 32px 0; }
+    .file-hint { 
+      display: block; 
+      margin-top: 6px; 
+      font-size: 12px; 
+      color: #666; 
+      font-style: italic;
+      word-break: break-all;
+      overflow-wrap: break-word;
+    }
+    ::ng-deep .p-panel { 
+      margin-bottom: 24px; 
+      border-radius: 12px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
+      border: 1px solid #e2e8f0; 
+      background: white;
+    }
+    ::ng-deep .p-panel .p-panel-header { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      color: white; 
+      font-weight: 600; 
+      font-size: 16px; 
+      padding: 16px 20px; 
+      border-radius: 12px 12px 0 0; 
+    }
+    ::ng-deep .p-panel .p-panel-content { 
+      padding: 20px; 
+      border-radius: 0 0 12px 12px; 
+      background: white;
+    }
+    ::ng-deep .p-inputtext, ::ng-deep .p-component, select { 
+      width: 100% !important; 
+      padding: 12px 14px !important; 
+      border: 1px solid #e2e8f0 !important; 
+      border-radius: 8px !important; 
+      font-size: 15px !important; 
+      transition: all 0.2s ease !important; 
+      background: white !important;
+      color: #1f2937 !important;
+    }
+    ::ng-deep .p-inputtext:focus, ::ng-deep .p-component:focus, select:focus { 
+      border-color: #667eea !important; 
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important; 
+      outline: none !important; 
+    }
+    ::ng-deep .p-button { 
+      width: 100%; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 15px; 
+      transition: all 0.2s ease;
+      word-break: break-word;
+      white-space: normal;
+      height: auto;
+      min-height: 44px;
+    }
+    ::ng-deep .p-button-outlined { 
+      border: 2px solid #667eea; 
+      color: #667eea; 
+      background: white; 
+    }
+    ::ng-deep .p-button-outlined:hover { 
+      background: #667eea; 
+      color: white; 
+    }
+    ::ng-deep .submit-btn { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      border: none; 
+      color: white; 
+    }
+    textarea.p-inputtext { 
+      min-height: 80px !important; 
+      resize: vertical; 
+      font-family: inherit; 
+    }
     @media (max-width: 768px) { 
-      .info-grid { grid-template-columns: 1fr; }
-      .apply-container { padding: 16px; }
+      .apply-container { padding: 16px 16px 100px 16px; }
+      .apply-header { padding: 16px 0; margin-bottom: 20px; }
+      .apply-header h1 { font-size: 20px; }
+      .field { margin-bottom: 16px; }
+      .field label { font-size: 13px; }
+      ::ng-deep .p-panel .p-panel-header { font-size: 15px; padding: 14px 16px; }
+      ::ng-deep .p-panel .p-panel-content { padding: 16px; }
+      ::ng-deep .p-inputtext, ::ng-deep .p-component, select { 
+        padding: 10px 12px !important; 
+        font-size: 14px !important; 
+      }
+      textarea.p-inputtext { min-height: 70px !important; }
+      .submit-btn { height: 44px; font-size: 15px; }
     }
   `]
 })
@@ -240,6 +377,14 @@ export class ApplyComponent implements OnInit {
     yearOfStudy: '',
     studentId: null as File | null,
     resume: null as File | null
+  };
+
+  individualData = {
+    fullName: '',
+    email: '',
+    phone: '',
+    skills: '',
+    motivation: ''
   };
 
   teamData = {
@@ -302,6 +447,13 @@ export class ApplyComponent implements OnInit {
       
       if (this.groupId) {
         this.loadGroupInfo();
+      } else {
+        // For individual applications, pre-fill user data
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          this.individualData.fullName = currentUser.fullName || '';
+          this.individualData.email = currentUser.email || '';
+        }
       }
     });
   }
@@ -361,6 +513,13 @@ export class ApplyComponent implements OnInit {
                        this.teamData.semester !== '' &&
                        this.teamData.motivation.trim() !== '';
       return basicValid && teamValid;
+    } else if (!this.groupId) {
+      // Individual application validation
+      const individualValid = this.individualData.fullName.trim() !== '' &&
+                             this.individualData.email.trim() !== '' &&
+                             this.individualData.phone.trim() !== '' &&
+                             this.individualData.motivation.trim() !== '';
+      return basicValid && individualValid;
     }
     
     return basicValid;
@@ -398,6 +557,13 @@ export class ApplyComponent implements OnInit {
       formData.append('motivation', this.teamData.motivation);
     } else {
       formData.append('applicationType', 'INDIVIDUAL');
+      
+      // Add individual data
+      formData.append('fullName', this.individualData.fullName);
+      formData.append('email', this.individualData.email);
+      formData.append('phone', this.individualData.phone);
+      formData.append('skills', this.individualData.skills);
+      formData.append('motivation', this.individualData.motivation);
     }
 
     if (this.applicationData.studentId) {
@@ -421,9 +587,7 @@ export class ApplyComponent implements OnInit {
           this.toastService.showSuccess('Application submitted successfully!', 'Success');
         }
         setTimeout(() => {
-          this.router.navigate(['/internships'], {
-            queryParams: { companyId: this.companyId, companyName: this.companyName }
-          });
+          this.router.navigate(['/home']);
         }, 2000);
       },
       error: (error) => {

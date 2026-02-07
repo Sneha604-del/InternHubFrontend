@@ -7,6 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 import { ProfileService, PasswordChangeRequest } from '../../services/profile.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
@@ -16,7 +19,7 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-security',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatSlideToggleModule, DialogModule, ButtonModule, InputTextModule],
   template: `
     <div class="security-container">
       <div class="security-section">
@@ -53,114 +56,118 @@ import { environment } from '../../../environment';
       </div>
 
       <!-- 2FA Modal -->
-      <div *ngIf="show2FAModal" class="modal-overlay" (click)="show2FAModal = false">
-        <div class="modal-content large-modal" (click)="$event.stopPropagation()">
-          <h2>Two-Factor Authentication</h2>
+      <p-dialog [(visible)]="show2FAModal" [modal]="true" [closable]="true"
+                [style]="{width: '90vw', maxWidth: '500px'}" header="Two-Factor Authentication">
+        <div *ngIf="!twoFactorEnabled && !qrCodeUrl" class="setup-2fa">
+          <p style="margin-bottom: 1.5rem; color: #666;">Secure your account with two-factor authentication</p>
+          <p-button label="Setup 2FA" icon="pi pi-shield" (onClick)="setup2FA()" styleClass="w-full"></p-button>
+        </div>
+        
+        <div *ngIf="qrCodeUrl" class="qr-setup">
+          <p style="margin-bottom: 1rem; color: #666;">Scan this QR code with your authenticator app:</p>
+          <img [src]="qrCodeUrl" alt="QR Code" class="qr-code">
+          <div class="secret-key">Secret Key: {{ secretKey }}</div>
           
-          <div *ngIf="!twoFactorEnabled && !qrCodeUrl" class="setup-2fa">
-            <p>Secure your account with two-factor authentication</p>
-            <button mat-raised-button color="primary" (click)="setup2FA()">Setup 2FA</button>
-          </div>
-          
-          <div *ngIf="qrCodeUrl" class="qr-setup">
-            <p>Scan this QR code with your authenticator app:</p>
-            <img [src]="qrCodeUrl" alt="QR Code" class="qr-code">
-            <p class="secret-key">Secret Key: {{ secretKey }}</p>
-            
-            <div class="backup-codes" *ngIf="backupCodes.length > 0">
-              <h4>Backup Codes (Save these safely):</h4>
-              <div class="codes-grid">
-                <span *ngFor="let code of backupCodes" class="backup-code">{{ code }}</span>
-              </div>
-            </div>
-            
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Enter verification code</mat-label>
-              <input matInput [(ngModel)]="verificationCode" placeholder="000000">
-            </mat-form-field>
-            
-            <div class="modal-actions">
-              <button mat-button (click)="cancel2FASetup()">Cancel</button>
-              <button mat-raised-button color="primary" (click)="verify2FA()">Verify & Enable</button>
+          <div class="backup-codes" *ngIf="backupCodes.length > 0">
+            <h4 style="margin-bottom: 0.75rem; font-size: 14px; font-weight: 600;">Backup Codes (Save these safely):</h4>
+            <div class="codes-grid">
+              <span *ngFor="let code of backupCodes" class="backup-code">{{ code }}</span>
             </div>
           </div>
           
-          <div *ngIf="twoFactorEnabled && !qrCodeUrl" class="manage-2fa">
-            <p>Two-factor authentication is enabled</p>
-            <div class="modal-actions">
-              <button mat-raised-button color="warn" (click)="disable2FA()">Disable 2FA</button>
-              <button mat-button (click)="show2FAModal = false">Close</button>
-            </div>
+          <div class="field">
+            <label for="verificationCode">Enter verification code</label>
+            <input pInputText id="verificationCode" [(ngModel)]="verificationCode" 
+                   placeholder="000000" class="w-full" />
           </div>
         </div>
-      </div>
+        
+        <div *ngIf="twoFactorEnabled && !qrCodeUrl" class="manage-2fa">
+          <p style="margin-bottom: 1.5rem; color: #666;">Two-factor authentication is enabled</p>
+        </div>
+        
+        <ng-template pTemplate="footer">
+          <div style="display: flex; gap: 0.75rem; width: 100%;">
+            <p-button *ngIf="qrCodeUrl" label="Cancel" icon="pi pi-times" (onClick)="cancel2FASetup()" 
+                      [style]="{flex: '1'}" styleClass="p-button-secondary"></p-button>
+            <p-button *ngIf="qrCodeUrl" label="Verify & Enable" icon="pi pi-check" (onClick)="verify2FA()" 
+                      [style]="{flex: '1'}"></p-button>
+            <p-button *ngIf="twoFactorEnabled && !qrCodeUrl" label="Disable 2FA" icon="pi pi-ban" 
+                      (onClick)="disable2FA()" [style]="{flex: '1'}" styleClass="p-button-danger"></p-button>
+            <p-button *ngIf="twoFactorEnabled && !qrCodeUrl" label="Close" icon="pi pi-times" 
+                      (onClick)="show2FAModal = false" [style]="{flex: '1'}" styleClass="p-button-secondary"></p-button>
+          </div>
+        </ng-template>
+      </p-dialog>
 
       <!-- Login Activity Modal -->
-      <div *ngIf="showLoginActivityModal" class="modal-overlay" (click)="showLoginActivityModal = false">
-        <div class="modal-content large-modal" (click)="$event.stopPropagation()">
-          <h2>Login Activity</h2>
+      <p-dialog [(visible)]="showLoginActivityModal" [modal]="true" [closable]="true"
+                [style]="{width: '90vw', maxWidth: '600px'}" header="Login Activity">
+        <div class="activity-list">
+          <div *ngIf="loginActivities.length === 0" class="no-activity">
+            <i class="pi pi-history" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <p style="margin: 0 0 0.5rem 0; font-size: 16px; font-weight: 500;">No login activity found</p>
+            <small style="font-size: 13px; color: #999;">Login activity will appear here after you log in</small>
+          </div>
           
-          <div class="activity-list">
-            <div *ngIf="loginActivities.length === 0" class="no-activity">
-              <mat-icon>history</mat-icon>
-              <p>No login activity found</p>
-              <small>Login activity will appear here after you log in</small>
-            </div>
-            
-            <div *ngFor="let activity of loginActivities" class="activity-item">
-              <div class="activity-info">
-                <div class="activity-header">
-                  <span class="device">{{ activity.deviceInfo || 'Unknown Device' }}</span>
-                  <span class="status" [class.active]="activity.isActive">{{ activity.isActive ? 'Active' : 'Ended' }}</span>
-                </div>
-                <div class="activity-details">
-                  <span>{{ activity.ipAddress }}</span> • 
-                  <span>{{ activity.location || 'Unknown Location' }}</span>
-                </div>
-                <div class="activity-time">
-                  {{ formatDate(activity.loginTime) }}
-                  <span *ngIf="activity.logoutTime"> - {{ formatDate(activity.logoutTime) }}</span>
-                </div>
+          <div *ngFor="let activity of loginActivities" class="activity-item">
+            <div class="activity-info">
+              <div class="activity-header">
+                <span class="device">{{ activity.deviceInfo || 'Unknown Device' }}</span>
+                <span class="status" [class.active]="activity.isActive">{{ activity.isActive ? 'Active' : 'Ended' }}</span>
               </div>
-              <button *ngIf="activity.isActive" mat-button color="warn" (click)="terminateSession(activity.id)">End Session</button>
+              <div class="activity-details">
+                <span>{{ activity.ipAddress }}</span> • 
+                <span>{{ activity.location || 'Unknown Location' }}</span>
+              </div>
+              <div class="activity-time">
+                {{ formatDate(activity.loginTime) }}
+                <span *ngIf="activity.logoutTime"> - {{ formatDate(activity.logoutTime) }}</span>
+              </div>
             </div>
-          </div>
-          
-          <div class="modal-actions">
-            <button mat-button (click)="showLoginActivityModal = false">Close</button>
+            <p-button *ngIf="activity.isActive" label="End Session" icon="pi pi-sign-out" 
+                      (onClick)="terminateSession(activity.id)" styleClass="p-button-danger p-button-sm"></p-button>
           </div>
         </div>
-      </div>
+        
+        <ng-template pTemplate="footer">
+          <p-button label="Close" icon="pi pi-times" (onClick)="showLoginActivityModal = false" 
+                    styleClass="p-button-secondary"></p-button>
+        </ng-template>
+      </p-dialog>
 
-      <div *ngIf="showPasswordModal" class="modal-overlay" (click)="showPasswordModal = false">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-          <h2>Change Password</h2>
-          <form (ngSubmit)="submitPasswordChange()" #passwordForm="ngForm">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Current Password</mat-label>
-              <input matInput type="password" [(ngModel)]="passwordData.currentPassword" name="currentPassword" required>
-            </mat-form-field>
+      <p-dialog [(visible)]="showPasswordModal" [modal]="true" [closable]="true"
+                [style]="{width: '90vw', maxWidth: '400px'}" header="Change Password">
+        <form (ngSubmit)="submitPasswordChange()" #passwordForm="ngForm">
+          <div class="field">
+            <label for="currentPassword">Current Password</label>
+            <input pInputText id="currentPassword" type="password" [(ngModel)]="passwordData.currentPassword" 
+                   name="currentPassword" required class="w-full" />
+          </div>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>New Password</mat-label>
-              <input matInput type="password" [(ngModel)]="passwordData.newPassword" name="newPassword" required minlength="6">
-            </mat-form-field>
+          <div class="field">
+            <label for="newPassword">New Password</label>
+            <input pInputText id="newPassword" type="password" [(ngModel)]="passwordData.newPassword" 
+                   name="newPassword" required minlength="6" class="w-full" />
+          </div>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Confirm New Password</mat-label>
-              <input matInput type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required>
-            </mat-form-field>
-
-            <div class="modal-actions">
-              <button mat-button type="button" (click)="cancelPasswordChange()">Cancel</button>
-              <button mat-raised-button color="primary" type="submit" [disabled]="changingPassword || !passwordForm.valid">
-                <mat-icon *ngIf="changingPassword">hourglass_empty</mat-icon>
-                {{ changingPassword ? 'Changing...' : 'Change Password' }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+          <div class="field">
+            <label for="confirmPassword">Confirm New Password</label>
+            <input pInputText id="confirmPassword" type="password" [(ngModel)]="confirmPassword" 
+                   name="confirmPassword" required class="w-full" />
+          </div>
+        </form>
+        
+        <ng-template pTemplate="footer">
+          <div style="display: flex; gap: 0.75rem; width: 100%;">
+            <p-button label="Cancel" icon="pi pi-times" (onClick)="cancelPasswordChange()" 
+                      [style]="{flex: '1'}" styleClass="p-button-secondary" type="button"></p-button>
+            <p-button label="Change Password" icon="pi pi-check" (onClick)="submitPasswordChange()" 
+                      [disabled]="changingPassword || !passwordForm.valid" [loading]="changingPassword"
+                      [style]="{flex: '1'}" type="button"></p-button>
+          </div>
+        </ng-template>
+      </p-dialog>
     </div>
   `,
   styles: [`
@@ -246,21 +253,23 @@ import { environment } from '../../../environment';
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 10000;
+      padding: 16px;
     }
     
     .modal-content {
       background: white;
       padding: 24px;
-      border-radius: 8px;
+      border-radius: 12px;
       max-width: 400px;
-      width: 90%;
-      margin: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     }
     
     .large-modal {
@@ -272,47 +281,68 @@ import { environment } from '../../../environment';
       height: 200px;
       margin: 16px auto;
       display: block;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 8px;
+      background: white;
     }
     
     .secret-key {
       font-family: monospace;
-      background: #f5f5f5;
-      padding: 8px;
-      border-radius: 4px;
+      background: #f0f3ff;
+      padding: 12px;
+      border-radius: 8px;
       text-align: center;
+      margin: 16px 0;
+      font-size: 13px;
+      color: #333;
+      border: 1px solid #d0d7ff;
     }
     
     .backup-codes {
-      margin: 16px 0;
+      margin: 20px 0;
+      padding: 16px;
+      background: #fff9e6;
+      border-radius: 8px;
+      border: 1px solid #ffe0a3;
     }
     
     .codes-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 8px;
+      gap: 10px;
+      margin-top: 12px;
     }
     
     .backup-code {
       font-family: monospace;
-      background: #f5f5f5;
-      padding: 4px 8px;
-      border-radius: 4px;
+      background: white;
+      padding: 8px 12px;
+      border-radius: 6px;
       text-align: center;
-      font-size: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      border: 1px solid #e0e0e0;
     }
     
     .activity-list {
-      max-height: 400px;
+      max-height: 450px;
       overflow-y: auto;
+      margin: -0.5rem 0;
     }
     
     .activity-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px;
+      padding: 16px;
       border-bottom: 1px solid #f0f0f0;
+      gap: 12px;
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
     }
     
     .activity-info {
@@ -357,25 +387,34 @@ import { environment } from '../../../environment';
     
     .no-activity {
       text-align: center;
-      padding: 40px 20px;
+      padding: 48px 20px;
       color: #666;
     }
     
-    .no-activity mat-icon {
-      font-size: 48px !important;
-      color: #ccc;
-      margin-bottom: 16px;
+    .setup-2fa,
+    .manage-2fa {
+      text-align: center;
+      padding: 8px 0;
     }
     
-    .no-activity p {
-      margin: 0 0 8px 0;
-      font-size: 16px;
-      font-weight: 500;
+    .qr-setup {
+      padding: 8px 0;
     }
     
-    .no-activity small {
-      font-size: 13px;
-      color: #999;
+    .field { 
+      margin-bottom: 1.25rem; 
+    }
+    
+    .field label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .w-full {
+      width: 100%;
     }
     
     .modal-content h2 {
@@ -414,6 +453,87 @@ import { environment } from '../../../environment';
         padding: 20px;
         margin: 16px;
       }
+    }
+    
+    /* PrimeNG Button Enhancements */
+    ::ng-deep .p-button {
+      padding: 0.75rem 1.5rem !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      border-radius: 8px !important;
+      transition: all 0.2s !important;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    ::ng-deep .p-button:hover:not(:disabled) {
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    }
+    
+    ::ng-deep .p-button-secondary {
+      background: #6c757d !important;
+      border-color: #6c757d !important;
+      color: white !important;
+    }
+    
+    ::ng-deep .p-button-secondary:hover:not(:disabled) {
+      background: #5a6268 !important;
+      border-color: #545b62 !important;
+    }
+    
+    ::ng-deep .p-button-danger {
+      background: #dc3545 !important;
+      border-color: #dc3545 !important;
+    }
+    
+    ::ng-deep .p-button-danger:hover:not(:disabled) {
+      background: #c82333 !important;
+      border-color: #bd2130 !important;
+    }
+    
+    ::ng-deep .p-button-sm {
+      padding: 0.5rem 1rem !important;
+      font-size: 13px !important;
+    }
+    
+    ::ng-deep .p-dialog .p-dialog-footer {
+      padding: 1.25rem !important;
+      background: #f8f9fa !important;
+      border-top: 1px solid #dee2e6 !important;
+    }
+    
+    /* Enhanced Dialog Styling */
+    ::ng-deep .p-dialog {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
+      border-radius: 12px !important;
+      overflow: hidden !important;
+    }
+    
+    ::ng-deep .p-dialog .p-dialog-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      color: white !important;
+      padding: 1.5rem !important;
+      border-bottom: none !important;
+    }
+    
+    ::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+      color: white !important;
+      font-weight: 600 !important;
+      font-size: 18px !important;
+    }
+    
+    ::ng-deep .p-dialog .p-dialog-header .p-dialog-header-icon {
+      color: white !important;
+    }
+    
+    ::ng-deep .p-dialog .p-dialog-content {
+      background: white !important;
+      padding: 1.5rem !important;
+    }
+    
+    ::ng-deep .p-dialog-mask {
+      background: rgba(0, 0, 0, 0.6) !important;
+      backdrop-filter: blur(4px) !important;
     }
   `]
 })

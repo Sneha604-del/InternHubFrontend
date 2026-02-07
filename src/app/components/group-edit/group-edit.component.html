@@ -144,12 +144,12 @@
     
     <div class="form-actions">
       <p-button label="Cancel" severity="secondary" (onClick)="cancel()" 
-                [outlined]="true" type="button">
+                [outlined]="true" type="button" styleClass="p-button-lg">
       </p-button>
       <p-button [label]="loading ? 'Updating...' : 'Update Group'" 
                 type="submit" 
                 [disabled]="!groupForm.form.valid || loading"
-                [loading]="loading">
+                [loading]="loading" styleClass="p-button-lg">
       </p-button>
     </div>
   </form>

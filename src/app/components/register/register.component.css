@@ -3,26 +3,32 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  height: auto;
+  overflow-y: auto;
+  background: #667eea;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  padding: 12px;
+  -webkit-font-smoothing: antialiased;
 }
 
 .register-card {
   width: 100%;
-  max-width: 500px;
+  max-width: 420px;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: white !important;
+  margin: 12px 0;
 }
 
 .logo-container {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  margin: 8px 0;
 }
 
 .logo {
-  width: 200px;
+  width: 70px;
   height: auto;
   background: none !important;
   background-color: transparent !important;
@@ -36,25 +42,49 @@ mat-card-title {
   text-align: center;
   color: #333;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  font-size: 1.15rem !important;
+}
+
+.register-card mat-form-field {
+  width: 100%;
+  margin-bottom: 10px !important;
+}
+
+.register-card .mat-mdc-text-field-wrapper {
+  background: white !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+}
+
+.register-card input.mat-mdc-input-element {
+  background: white !important;
+  color: #1f2937 !important;
+  padding: 9px 12px !important;
+  font-size: 14px !important;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .register-btn {
-  height: 48px;
-  font-size: 16px;
+  height: 44px !important;
+  font-size: 15px !important;
   font-weight: 500;
-  margin-top: 20px;
+  margin-top: 10px !important;
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  border: none !important;
 }
 
 .login-link {
   text-align: center;
-  margin: 0;
+  margin: 10px 0 0 0;
   color: #666;
+  font-size: 14px;
 }
 
 .login-link a {
@@ -71,8 +101,12 @@ mat-card-header {
   padding-bottom: 0;
 }
 
+mat-card-content {
+  padding: 10px 0 !important;
+}
+
 mat-card-actions {
-  padding: 16px 0 0 0;
+  padding: 8px 0 0 0 !important;
   justify-content: center;
 }
 
@@ -81,11 +115,11 @@ mat-card-actions {
   .register-card {
     max-width: 100%;
     margin: 10px;
-    padding: 16px;
+    padding: 18px;
   }
   
   .logo {
-    width: 120px;
+    width: 65px;
     height: auto;
   }
 }
@@ -122,15 +156,15 @@ mat-card-actions {
   }
   
   .register-card {
-    padding: 12px;
+    padding: 16px;
   }
   
   .logo {
-    width: 100px;
+    width: 60px;
   }
   
   mat-card-title {
-    font-size: 18px;
+    font-size: 1.1rem !important;
   }
   
   .requirements-title {
@@ -178,9 +212,10 @@ mat-card-actions {
 
 .requirements-list li mat-icon {
   margin-right: 8px;
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
 }
 
 .requirements-list li.valid {

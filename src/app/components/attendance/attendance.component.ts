@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { MessageModule } from 'primeng/message';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AttendanceService } from '../../services/attendance.service';
 import { GeolocationService, LocationCoordinates } from '../../services/geolocation.service';
 import { GroupService } from '../../services/group.service';
@@ -18,7 +18,14 @@ import { Group } from '../../models/group.model';
   templateUrl: './attendance.component.html',
   styleUrls: ['./attendance.component.css'],
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule, RouterModule]
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    ButtonModule, 
+    TagModule, 
+    MessageModule, 
+    ProgressSpinnerModule
+  ]
 })
 export class AttendanceComponent implements OnInit {
   isLoading = false;
@@ -49,7 +56,7 @@ export class AttendanceComponent implements OnInit {
       this.groupService.getUserGroup(currentUser.id!).subscribe({
         next: (group: Group | null) => {
           console.log('User group:', group);
-          if (group && (group.status === 'SELECTED' || group.status === 'APPROVED' || group.company)) {
+          if (group && group.company) {
             this.hasJoinedGroup = true;
             this.currentGroup = group;
             this.checkTodayAttendance();
@@ -94,6 +101,16 @@ export class AttendanceComponent implements OnInit {
   async markAttendance() {
     if (!this.hasJoinedGroup || !this.currentGroup) {
       this.toastService.showError('You are not enrolled in any internship group');
+      return;
+    }
+
+    if (!this.currentGroup.company) {
+      this.toastService.showError('Your group must be assigned to a company');
+      return;
+    }
+
+    if (this.todayAttendance) {
+      this.toastService.showError('You have already checked in today');
       return;
     }
 
@@ -174,6 +191,24 @@ export class AttendanceComponent implements OnInit {
       case 'LOCATION_MISMATCH': return 'Location Mismatch';
       case 'ABSENT': return 'Absent';
       default: return 'Unknown';
+    }
+  }
+
+  getStatusSeverity(status?: string): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' | undefined {
+    switch (status) {
+      case 'PRESENT': return 'success';
+      case 'LOCATION_MISMATCH': return 'warn';
+      case 'ABSENT': return 'danger';
+      default: return 'info';
+    }
+  }
+
+  getStatusIcon(status?: string): string {
+    switch (status) {
+      case 'PRESENT': return 'pi pi-check';
+      case 'LOCATION_MISMATCH': return 'pi pi-exclamation-triangle';
+      case 'ABSENT': return 'pi pi-times';
+      default: return 'pi pi-question';
     }
   }
 }

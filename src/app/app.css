@@ -99,13 +99,17 @@
 .content {
   flex: 1;
   overflow-y: auto;
-  margin-bottom: 50px;
+  margin-bottom: 0;
   width: 100%;
+  padding-top: 60px;
+  padding-bottom: 80px;
 }
 
 .content.no-nav {
   margin-top: 0;
   margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 ::ng-deep .custom-logout-dialog {

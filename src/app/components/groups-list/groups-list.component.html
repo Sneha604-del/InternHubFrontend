@@ -364,13 +364,22 @@
         </div>
       </div>
 
-      <div class="detail-section" *ngIf="groupInvitations && groupInvitations.length > 0">
-        <h4><i class="pi pi-envelope"></i> Invited Members</h4>
-        <div class="members-list">
+      <div class="detail-section">
+        <h4><i class="pi pi-envelope"></i> Invited Members ({{groupInvitations.length || 0}})</h4>
+        <div *ngIf="groupInvitations && groupInvitations.length > 0" class="members-list">
           <div *ngFor="let invitation of groupInvitations" class="member-item">
-            <span>{{invitation.inviteeEmail}}</span>
+            <div class="member-info">
+              <span class="member-name">{{invitation.inviteeEmail}}</span>
+              <span class="member-email" *ngIf="invitation.message">{{invitation.message}}</span>
+            </div>
             <p-tag [value]="invitation.status" [severity]="getStatusSeverity(invitation.status)"></p-tag>
           </div>
+        </div>
+        <div *ngIf="!groupInvitations || groupInvitations.length === 0" class="empty-members">
+          <p style="color: #64748b; font-size: 14px; text-align: center; padding: 16px;">
+            <i class="pi pi-inbox" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+            No invitations sent yet
+          </p>
         </div>
       </div>
     </div>
