@@ -5,61 +5,112 @@
   </div>
 
   <div *ngIf="loadingData" class="loading-container">
-    <p-progressSpinner [style]="{width: '50px', height: '50px'}"></p-progressSpinner>
+    <p-progressSpinner [style]="{'width': '50px', 'height': '50px'}"></p-progressSpinner>
     <p>Loading companies...</p>
   </div>
 
   <div *ngIf="!loadingData" class="companies-grid">
-    <p-card *ngFor="let company of companies" class="company-card">
-      <ng-template pTemplate="header">
-        <div class="company-header">
-          <h3>{{ company.name }}</h3>
-          <span class="company-category" *ngIf="company.category">{{ company.category.name }}</span>
+    <div *ngFor="let company of companies" class="company-card-wrapper">
+      <div class="company-card">
+        <!-- Card Header with Company Name and Category -->
+        <div class="card-header">
+          <div class="header-top">
+            <h2 class="company-name">{{ company.name }}</h2>
+            <span class="category-badge" *ngIf="company.category">{{ company.category.name }}</span>
+          </div>
+          <p class="company-tagline" *ngIf="company.industry">{{ company.industry }}</p>
         </div>
-      </ng-template>
-      
-      <div class="company-details">
-        <div class="detail-item" *ngIf="company.industry">
-          <strong>Industry:</strong> {{ company.industry }}
-        </div>
-        <div class="detail-item" *ngIf="company.description">
-          <strong>Description:</strong> {{ company.description }}
-        </div>
-        <div class="detail-item" *ngIf="company.contactPerson">
-          <strong>Contact Person:</strong> {{ company.contactPerson }}
-        </div>
-        <div class="detail-item" *ngIf="company.contactPhone">
-          <strong>Phone:</strong> {{ company.contactPhone }}
-        </div>
-        <div class="detail-item" *ngIf="company.email">
-          <strong>Email:</strong> {{ company.email }}
-        </div>
-        <div class="detail-item" *ngIf="company.website">
-          <strong>Website:</strong> 
-          <a [href]="company.website" target="_blank">{{ company.website }}</a>
-        </div>
-        <div class="detail-item" *ngIf="company.address">
-          <strong>Address:</strong> {{ company.address }}
-        </div>
-      </div>
 
-      <ng-template pTemplate="footer">
-        <div class="card-actions">
+        <!-- Card Body with Company Details -->
+        <div class="card-body">
+          <!-- Description Section -->
+          <div class="description-section" *ngIf="company.description">
+            <p class="description-text">{{ company.description }}</p>
+          </div>
+
+          <!-- Details Grid -->
+          <div class="details-grid">
+            <!-- Contact Person -->
+            <div class="detail-box" *ngIf="company.contactPerson">
+              <div class="detail-icon">👤</div>
+              <div class="detail-content">
+                <span class="detail-label">Contact Person</span>
+                <span class="detail-value">{{ company.contactPerson }}</span>
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="detail-box" *ngIf="company.contactPhone">
+              <div class="detail-icon">📞</div>
+              <div class="detail-content">
+                <span class="detail-label">Phone</span>
+                <a [href]="'tel:' + company.contactPhone" class="detail-value">{{ company.contactPhone }}</a>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="detail-box" *ngIf="company.email">
+              <div class="detail-icon">✉️</div>
+              <div class="detail-content">
+                <span class="detail-label">Email</span>
+                <a [href]="'mailto:' + company.email" class="detail-value">{{ company.email }}</a>
+              </div>
+            </div>
+
+            <!-- Website -->
+            <div class="detail-box" *ngIf="company.website">
+              <div class="detail-icon">🌐</div>
+              <div class="detail-content">
+                <span class="detail-label">Website</span>
+                <a [href]="company.website" target="_blank" class="detail-value">Visit Website</a>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="detail-box" *ngIf="company.address || company.cityName || company.stateName">
+              <div class="detail-icon">📍</div>
+              <div class="detail-content">
+                <span class="detail-label">Location</span>
+                <span class="detail-value">
+                  <span *ngIf="company.address">{{ company.address }}</span>
+                  <span *ngIf="company.cityName && company.address">, </span>
+                  <span *ngIf="company.cityName">{{ company.cityName }}</span>
+                  <span *ngIf="company.stateName && (company.cityName || company.address)">, </span>
+                  <span *ngIf="company.stateName">{{ company.stateName }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer with Action Button -->
+        <div class="card-footer">
           <p-button 
             label="Select Company" 
+            icon="pi pi-check"
             (onClick)="selectCompany(company.id)"
             [loading]="loading"
-            [disabled]="loading">
+            [disabled]="loading"
+            class="select-btn">
           </p-button>
         </div>
-      </ng-template>
-    </p-card>
+      </div>
+    </div>
   </div>
 
+  <!-- Empty State -->
+  <div *ngIf="!loadingData && companies.length === 0" class="empty-state">
+    <div class="empty-icon">🏢</div>
+    <h3>No Companies Available</h3>
+    <p>There are currently no companies available for internship selection.</p>
+  </div>
+
+  <!-- Back Button -->
   <div class="page-actions" *ngIf="!loadingData">
     <p-button 
       label="Back to Groups" 
       severity="secondary" 
+      icon="pi pi-arrow-left"
       (onClick)="goBack()"
       [outlined]="true">
     </p-button>

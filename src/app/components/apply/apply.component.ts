@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { PanelModule } from 'primeng/panel';
 import { ToastService } from '../../services/toast.service';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
@@ -17,131 +15,126 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-apply',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, CardModule, FileUploadModule, InputNumberModule, PanelModule],
+  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, FileUploadModule, InputNumberModule],
   template: `
-    <div class="apply-container">
-      <div class="apply-header">
-        <i class="pi" [class.pi-users]="groupInfo" [class.pi-user]="!groupInfo"></i>
-        <h1>{{groupInfo ? 'Group Application' : 'Internship Application'}}</h1>
-        <p *ngIf="groupInfo">Applying as: <strong>{{groupInfo.groupName}}</strong></p>
-        <p *ngIf="!groupInfo">Individual Application</p>
+    <div class="group-details-container">
+      <div class="header">
+        <h2>{{groupInfo ? 'Group Application' : 'Individual Application'}}</h2>
       </div>
 
-      <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="apply-form">
-        <p-panel *ngIf="!groupInfo" header="Personal Information" [toggleable]="false">
-          <div class="p-fluid">
+      <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="content">
+        <div *ngIf="!groupInfo">
+          <h3 class="section-highlight">Personal Information</h3>
+          <div class="info-grid">
             <div class="field">
               <label for="fullName">Full Name *</label>
               <input pInputText id="fullName" [(ngModel)]="individualData.fullName" name="fullName" 
-                     required class="w-full" placeholder="Enter your full name" />
+                     required [class.error-field]="isFieldInvalid('fullName')" />
             </div>
-
             <div class="field">
               <label for="email">Email Address *</label>
               <input pInputText id="email" type="email" [(ngModel)]="individualData.email" name="email" 
-                     required class="w-full" placeholder="Enter your email address" />
+                     required [class.error-field]="isFieldInvalid('email')" />
             </div>
-
             <div class="field">
               <label for="phone">Phone Number *</label>
               <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
-                     required class="w-full" placeholder="Enter your phone number" />
+                     required [class.error-field]="isFieldInvalid('phone')" />
             </div>
-
             <div class="field">
-              <label for="individualSkills">Skills & Expertise</label>
-              <textarea id="individualSkills" [(ngModel)]="individualData.skills" name="individualSkills" 
-                        class="w-full p-inputtext p-component" rows="3"
-                        placeholder="List your key skills and expertise (e.g., Java, React, Python, UI/UX Design)"></textarea>
-            </div>
-
-            <div class="field">
-              <label for="individualMotivation">Why This Internship? *</label>
-              <textarea id="individualMotivation" [(ngModel)]="individualData.motivation" name="individualMotivation" 
-                        required class="w-full p-inputtext p-component" rows="4"
-                        placeholder="Explain why you are interested in this internship and what you hope to achieve"></textarea>
+              <label for="duration">Preferred Duration (Months) *</label>
+              <select id="duration" [(ngModel)]="individualData.duration" name="duration" 
+                      required [class.error-field]="isFieldInvalid('duration')">
+                <option value="">Select duration</option>
+                <option value="1">1 Month</option>
+                <option value="2">2 Months</option>
+                <option value="3">3 Months</option>
+                <option value="4">4 Months</option>
+                <option value="5">5 Months</option>
+                <option value="6">6 Months</option>
+              </select>
             </div>
           </div>
-        </p-panel>
 
-        <hr *ngIf="!groupInfo" style="margin: 32px 0; border: none; border-top: 1px solid #dee2e6;">
+          <h3>Skills & Expertise</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="individualData.skills" name="individualSkills" rows="3"></textarea>
+          </div>
 
-        <p-panel *ngIf="groupInfo" header="Group Information" [toggleable]="false">
+          <h3>Why This Internship? *</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="individualData.motivation" name="individualMotivation" 
+                      required rows="4" [class.error-field]="isFieldInvalid('individualMotivation')"></textarea>
+          </div>
+        </div>
+
+        <div *ngIf="groupInfo">
+          <h3 class="section-title">Group Information</h3>
           <div class="info-grid">
             <div class="info-item">
-              <label>Group Name:</label>
-              <span>{{groupInfo.groupName}}</span>
+              <strong>Group Name:</strong> {{groupInfo.groupName}}
             </div>
             <div class="info-item">
-              <label>College:</label>
-              <span>{{groupInfo.collegeName}}</span>
+              <strong>College:</strong> {{groupInfo.collegeName}}
             </div>
             <div class="info-item">
-              <label>Department:</label>
-              <span>{{groupInfo.department}}</span>
+              <strong>Department:</strong> {{groupInfo.department}}
             </div>
             <div class="info-item">
-              <label>Total Students:</label>
-              <span>{{groupInfo.totalStudents}}</span>
+              <strong>Total Students:</strong> {{groupInfo.totalStudents}}
             </div>
           </div>
-        </p-panel>
 
-        <p-panel *ngIf="groupInfo" header="Team Details" [toggleable]="false" styleClass="team-panel">
-          <div class="p-fluid">
+          <h3>Team Details</h3>
+          <div class="info-grid">
             <div class="field">
               <label for="teamSize">Actual Team Size *</label>
               <p-inputNumber id="teamSize" [(ngModel)]="teamData.teamSize" name="teamSize" 
-                             [required]="true" styleClass="w-full"></p-inputNumber>
+                             [required]="true" [class.error-field]="isFieldInvalid('teamSize')"></p-inputNumber>
             </div>
-
             <div class="field">
               <label for="teamLeader">Team Leader Name *</label>
               <input pInputText id="teamLeader" [(ngModel)]="teamData.teamLeader" name="teamLeader" 
-                     required class="w-full" placeholder="Enter team leader name" />
+                     required [class.error-field]="isFieldInvalid('teamLeader')" />
             </div>
-
             <div class="field">
               <label for="leaderContact">Team Leader Contact *</label>
               <input pInputText id="leaderContact" [(ngModel)]="teamData.leaderContact" name="leaderContact" 
-                     required class="w-full" placeholder="Enter contact number" />
+                     required [class.error-field]="isFieldInvalid('leaderContact')" />
             </div>
-
             <div class="field">
               <label for="leaderEmail">Team Leader Email *</label>
               <input pInputText id="leaderEmail" type="email" [(ngModel)]="teamData.leaderEmail" name="leaderEmail" 
-                     required class="w-full" placeholder="Enter email address" />
+                     required [class.error-field]="isFieldInvalid('leaderEmail')" />
             </div>
+          </div>
 
-            <div class="field">
-              <label for="teamMembers">Team Members (Names) *</label>
-              <textarea id="teamMembers" [(ngModel)]="teamData.teamMembers" name="teamMembers" 
-                        required class="w-full p-inputtext p-component" rows="4" 
-                        placeholder="Enter all team member names (one per line)&#10;Example:&#10;John Smith&#10;Jane Doe&#10;Mike Johnson"></textarea>
-            </div>
+          <h3>Team Members (Names) *</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="teamData.teamMembers" name="teamMembers" 
+                      required rows="4" [class.error-field]="isFieldInvalid('teamMembers')"></textarea>
+          </div>
 
-            <div class="field">
-              <label for="memberEmails">Team Member Emails</label>
-              <textarea id="memberEmails" [(ngModel)]="teamData.memberEmails" name="memberEmails" 
-                        class="w-full p-inputtext p-component" rows="3" 
-                        placeholder="Enter team member emails (one per line)&#10;john@example.com&#10;jane@example.com"></textarea>
-            </div>
+          <h3>Team Member Emails</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="teamData.memberEmails" name="memberEmails" rows="3"></textarea>
+          </div>
 
+          <h3>Academic Year *</h3>
+          <div class="info-grid">
             <div class="field">
-              <label for="academicYear">Academic Year *</label>
-              <select id="academicYear" [(ngModel)]="teamData.academicYear" name="academicYear" 
-                      required class="w-full p-inputtext p-component">
+              <select [(ngModel)]="teamData.academicYear" name="academicYear" 
+                      required [class.error-field]="isFieldInvalid('academicYear')">
                 <option value="">Select academic year</option>
                 <option value="2023-24">2023-24</option>
                 <option value="2024-25">2024-25</option>
                 <option value="2025-26">2025-26</option>
               </select>
             </div>
-
             <div class="field">
-              <label for="semester">Current Semester *</label>
-              <select id="semester" [(ngModel)]="teamData.semester" name="semester" 
-                      required class="w-full p-inputtext p-component">
+              <label>Current Semester *</label>
+              <select [(ngModel)]="teamData.semester" name="semester" 
+                      required [class.error-field]="isFieldInvalid('semester')">
                 <option value="">Select semester</option>
                 <option value="1st Semester">1st Semester</option>
                 <option value="2nd Semester">2nd Semester</option>
@@ -153,223 +146,343 @@ import { environment } from '../../../environment';
                 <option value="8th Semester">8th Semester</option>
               </select>
             </div>
-
-            <div class="field">
-              <label for="skills">Team Skills & Expertise</label>
-              <textarea id="skills" [(ngModel)]="teamData.skills" name="skills" 
-                        class="w-full p-inputtext p-component" rows="3" 
-                        placeholder="List key skills and expertise of your team&#10;Example: Java, React, Python, UI/UX Design, Database Management"></textarea>
-            </div>
-
-            <div class="field">
-              <label for="experience">Previous Project Experience</label>
-              <textarea id="experience" [(ngModel)]="teamData.experience" name="experience" 
-                        class="w-full p-inputtext p-component" rows="3" 
-                        placeholder="Describe any relevant projects or experience your team has worked on together"></textarea>
-            </div>
-
-            <div class="field">
-              <label for="motivation">Why This Internship? *</label>
-              <textarea id="motivation" [(ngModel)]="teamData.motivation" name="motivation" 
-                        required class="w-full p-inputtext p-component" rows="4" 
-                        placeholder="Explain why your team is interested in this internship and what you hope to achieve"></textarea>
-            </div>
           </div>
-        </p-panel>
 
-        <hr style="margin: 32px 0; border: none; border-top: 1px solid #dee2e6;">
-
-        <p-panel header="Educational Information" [toggleable]="false">
-          <div class="p-fluid">
-            <div class="field">
-              <label for="college">Name of your college *</label>
-              <input pInputText id="college" [(ngModel)]="applicationData.college" name="college" required class="w-full" />
-            </div>
-
-            <div class="field">
-              <label for="degree">Degree you are studying *</label>
-              <input pInputText id="degree" [(ngModel)]="applicationData.degree" name="degree" required class="w-full" />
-            </div>
-
-            <div class="field">
-              <label for="yearOfStudy">Year of study *</label>
-              <select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
-                      required class="w-full p-inputtext p-component">
-                <option value="">Select year</option>
-                <option value="1st year">1st year</option>
-                <option value="2nd year">2nd year</option>
-                <option value="3rd year">3rd year</option>
-                <option value="4th year">4th year</option>
-                <option value="5th year">5th year</option>
-              </select>
-            </div>
+          <h3>Team Skills & Expertise</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="teamData.skills" name="skills" rows="3"></textarea>
           </div>
-        </p-panel>
 
-        <p-panel header="Documents for Verification" [toggleable]="false">
-          <div class="p-fluid">
-            <div class="field">
-              <label>{{groupInfo ? 'Group Leader\'s Student ID card' : 'Student ID card'}} *</label>
-              <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
-                     accept=".pdf,.jpg,.jpeg,.png" required style="display: none;">
-              <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
-                        icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-              <small class="file-hint">Upload PDF, JPG, or PNG (Max 5MB)</small>
-            </div>
-
-            <div class="field">
-              <label>{{groupInfo ? 'Group Resume/Portfolio' : 'Resume/CV'}} *</label>
-              <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
-                     accept=".pdf" required style="display: none;">
-              <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
-                        icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-              <small class="file-hint">Upload PDF only (Max 5MB)</small>
-            </div>
+          <h3>Previous Project Experience</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="teamData.experience" name="experience" rows="3"></textarea>
           </div>
-        </p-panel>
 
-        <div class="form-actions">
-          <p-button type="submit" [label]="loading ? 'Submitting...' : (groupInfo ? 'Submit Group Application' : 'Submit Application')" 
-                    [disabled]="!isFormValid() || loading" [loading]="loading" 
-                    icon="pi pi-check" styleClass="w-full submit-btn"></p-button>
+          <h3>Why This Internship? *</h3>
+          <div class="faculty-info">
+            <textarea [(ngModel)]="teamData.motivation" name="motivation" 
+                      required rows="4" [class.error-field]="isFieldInvalid('motivation')"></textarea>
+          </div>
+        </div>
+
+        <h3 class="section-highlight">Educational Information</h3>
+        <div class="info-grid">
+          <div class="field">
+            <label for="college">Name of your college *</label>
+            <input pInputText id="college" [(ngModel)]="applicationData.college" name="college" 
+                   required [class.error-field]="isFieldInvalid('college')" />
+          </div>
+          <div class="field">
+            <label for="degree">Degree you are studying *</label>
+            <input pInputText id="degree" [(ngModel)]="applicationData.degree" name="degree" 
+                   required [class.error-field]="isFieldInvalid('degree')" />
+          </div>
+          <div class="field">
+            <label for="yearOfStudy">Year of study *</label>
+            <select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
+                    required [class.error-field]="isFieldInvalid('yearOfStudy')">
+              <option value="">Select year</option>
+              <option value="1st year">1st year</option>
+              <option value="2nd year">2nd year</option>
+              <option value="3rd year">3rd year</option>
+              <option value="4th year">4th year</option>
+              <option value="5th year">5th year</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 class="section-highlight">Documents for Verification</h3>
+        <div class="info-grid">
+          <div class="field">
+            <label>{{groupInfo ? 'Group Leader\'s Student ID card' : 'Student ID card'}}</label>
+            <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
+                   accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+            <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
+                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+            <small class="file-hint">Upload PDF, JPG, or PNG (Max 5MB)</small>
+            <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
+          </div>
+          <div class="field">
+            <label>{{groupInfo ? 'Group Resume/Portfolio' : 'Resume/CV'}}</label>
+            <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
+                   accept=".pdf" style="display: none;">
+            <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
+                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+            <small class="file-hint">Upload PDF only (Max 5MB)</small>
+            <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <button type="submit" class="submit-btn" [class.btn-success]="applyForm.valid && !loading" 
+                  [disabled]="loading || !applyForm.valid">
+            <i class="pi pi-check" style="margin-right: 8px;"></i>
+            {{loading ? 'Submitting...' : (groupInfo ? 'Submit Group Application' : 'Apply Now')}}
+          </button>
         </div>
       </form>
     </div>
   `,
   styles: [`
-    .apply-container { 
-      max-width: 900px; 
-      margin: 0 auto; 
-      padding: 16px 16px 100px 16px; 
-      min-height: 100vh;
-      background: #f8fafc;
-      overflow-x: hidden;
+    .group-details-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 20px;
     }
-    .apply-header { 
-      padding: 20px; 
-      margin-bottom: 24px; 
-      text-align: center;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+    .header {
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 16px;
+      border-radius: 8px;
     }
-    .apply-header i { font-size: 28px; color: #667eea; margin-bottom: 10px; }
-    .apply-header h1 { margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #333; }
-    .apply-header p { margin: 0; color: #666; font-size: 14px; }
-    .field { margin-bottom: 20px; }
-    .field label { 
-      display: block; 
-      margin-bottom: 8px; 
-      font-weight: 600; 
-      color: #333; 
-      font-size: 14px; 
+
+    .header h2 {
+      color: white;
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
     }
-    .w-full { width: 100%; }
-    .form-actions { 
-      margin-top: 30px; 
-      padding: 20px 0; 
+
+    .content {
+      padding: 32px;
     }
-    .submit-btn { height: 48px; font-size: 16px; font-weight: 600; }
-    .file-hint { 
-      display: block; 
-      margin-top: 6px; 
-      font-size: 12px; 
-      color: #666; 
-      font-style: italic;
-      word-break: break-all;
-      overflow-wrap: break-word;
+
+    .section-title {
+      color: #1a202c;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 20px 0 !important;
+      padding: 0 !important;
+      border: none !important;
     }
-    ::ng-deep .p-panel { 
-      margin-bottom: 24px; 
-      border-radius: 12px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
-      border: 1px solid #e2e8f0; 
-      background: white;
+
+    .content h3 {
+      margin: 2rem 0 1rem 0;
+      color: #1a202c;
+      font-size: 18px;
+      font-weight: 600;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
     }
-    ::ng-deep .p-panel .p-panel-header { 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-      color: white; 
-      font-weight: 600; 
-      font-size: 16px; 
-      padding: 16px 20px; 
-      border-radius: 12px 12px 0 0; 
+
+    .content h3:first-of-type {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
     }
-    ::ng-deep .p-panel .p-panel-content { 
-      padding: 20px; 
-      border-radius: 0 0 12px 12px; 
-      background: white;
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
     }
-    ::ng-deep .p-inputtext, ::ng-deep .p-component, select { 
-      width: 100% !important; 
-      padding: 12px 14px !important; 
-      border: 1px solid #e2e8f0 !important; 
-      border-radius: 8px !important; 
-      font-size: 15px !important; 
-      transition: all 0.2s ease !important; 
-      background: white !important;
-      color: #1f2937 !important;
+
+    .info-item {
+      font-size: 14px;
     }
-    ::ng-deep .p-inputtext:focus, ::ng-deep .p-component:focus, select:focus { 
-      border-color: #667eea !important; 
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important; 
-      outline: none !important; 
+
+    .field {
+      margin-bottom: 16px;
     }
-    ::ng-deep .p-button { 
-      width: 100%; 
-      padding: 12px; 
-      border-radius: 8px; 
-      font-weight: 600; 
-      font-size: 15px; 
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .faculty-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
       transition: all 0.2s ease;
-      word-break: break-word;
-      white-space: normal;
-      height: auto;
-      min-height: 44px;
+      background: white;
+      color: #1f2937;
+      font-family: inherit;
     }
-    ::ng-deep .p-button-outlined { 
-      border: 2px solid #667eea; 
-      color: #667eea; 
-      background: white; 
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      outline: none;
     }
-    ::ng-deep .p-button-outlined:hover { 
-      background: #667eea; 
-      color: white; 
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
     }
-    ::ng-deep .submit-btn { 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-      border: none; 
-      color: white; 
+
+    .error-field {
+      border: 2px solid #dc2626 !important;
+      background-color: #fee2e2 !important;
     }
-    textarea.p-inputtext { 
-      min-height: 80px !important; 
-      resize: vertical; 
-      font-family: inherit; 
+
+    .file-hint {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #666;
+      font-style: italic;
     }
-    @media (max-width: 768px) { 
-      .apply-container { padding: 16px 16px 100px 16px; }
-      .apply-header { padding: 16px 0; margin-bottom: 20px; }
-      .apply-header h1 { font-size: 20px; }
-      .field { margin-bottom: 16px; }
-      .field label { font-size: 13px; }
-      ::ng-deep .p-panel .p-panel-header { font-size: 15px; padding: 14px 16px; }
-      ::ng-deep .p-panel .p-panel-content { padding: 16px; }
-      ::ng-deep .p-inputtext, ::ng-deep .p-component, select { 
-        padding: 10px 12px !important; 
-        font-size: 14px !important; 
-      }
-      textarea.p-inputtext { min-height: 70px !important; }
-      .submit-btn { height: 44px; font-size: 15px; }
+
+    .error-msg {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #dc2626;
+      font-weight: 500;
+    }
+
+    .submit-btn {
+      width: 100%;
+      height: 48px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .submit-btn.btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .submit-btn.btn-success:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    ::ng-deep .p-inputtext {
+      border: 2px solid #cbd5e1 !important;
+    }
+
+    ::ng-deep .p-button-outlined {
+      border: 2px solid #667eea;
+      color: #667eea;
+      background: white;
+    }
+
+    ::ng-deep .p-button-outlined:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .group-details-container {
+      max-width: 100%;
+      margin: 0;
+      padding: 12px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .header h2 {
+      font-size: 18px;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      margin: 0 0 16px 0;
+    }
+
+    .content h3 {
+      margin: 1.5rem 0 0.8rem 0;
+      font-size: 15px;
+      padding-top: 1rem;
+    }
+
+    .section-highlight {
+      color: #667eea;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      padding: 0 0 8px 0;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 70px;
+    }
+
+    .submit-btn {
+      height: 44px;
+      font-size: 14px;
+    }
+
+    .file-hint {
+      font-size: 11px;
+    }
+
+    .error-msg {
+      font-size: 11px;
     }
   `]
 })
 export class ApplyComponent implements OnInit {
+  @ViewChild('applyForm') applyForm!: NgForm;
+
   internshipId: number = 0;
   companyId: number = 0;
   companyName: string = '';
   groupId: number = 0;
   groupInfo: any = null;
-  currentYear = new Date().getFullYear();
   loading = false;
+  submittedOnce = false;
+
+  fileErrors: { studentId: string; resume: string } = { studentId: '', resume: '' };
 
   applicationData = {
     college: '',
@@ -383,6 +496,7 @@ export class ApplyComponent implements OnInit {
     fullName: '',
     email: '',
     phone: '',
+    duration: '',
     skills: '',
     motivation: ''
   };
@@ -404,31 +518,6 @@ export class ApplyComponent implements OnInit {
   studentIdFileName = '';
   resumeFileName = '';
 
-  yearOptions = [
-    { label: '1st year', value: '1st year' },
-    { label: '2nd year', value: '2nd year' },
-    { label: '3rd year', value: '3rd year' },
-    { label: '4th year', value: '4th year' },
-    { label: '5th year', value: '5th year' }
-  ];
-
-  academicYearOptions = [
-    { label: '2023-24', value: '2023-24' },
-    { label: '2024-25', value: '2024-25' },
-    { label: '2025-26', value: '2025-26' }
-  ];
-
-  semesterOptions = [
-    { label: '1st Semester', value: '1st Semester' },
-    { label: '2nd Semester', value: '2nd Semester' },
-    { label: '3rd Semester', value: '3rd Semester' },
-    { label: '4th Semester', value: '4th Semester' },
-    { label: '5th Semester', value: '5th Semester' },
-    { label: '6th Semester', value: '6th Semester' },
-    { label: '7th Semester', value: '7th Semester' },
-    { label: '8th Semester', value: '8th Semester' }
-  ];
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -448,7 +537,6 @@ export class ApplyComponent implements OnInit {
       if (this.groupId) {
         this.loadGroupInfo();
       } else {
-        // For individual applications, pre-fill user data
         const currentUser = this.authService.getCurrentUser();
         if (currentUser) {
           this.individualData.fullName = currentUser.fullName || '';
@@ -479,11 +567,19 @@ export class ApplyComponent implements OnInit {
     }
   }
 
+  isFieldInvalid(fieldName: string): boolean {
+    if (!this.submittedOnce) return false;
+    const field = this.applyForm?.form?.get(fieldName);
+    return field ? (field.invalid && field.touched) : false;
+  }
+
   onFileSelect(event: any, field: string) {
     const file = event.target.files[0];
+    this.fileErrors[field as keyof typeof this.fileErrors] = '';
+    
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        this.toastService.showError('File size must be less than 5MB', 'File Error');
+        this.fileErrors[field as keyof typeof this.fileErrors] = 'File size is too big. Maximum 5MB allowed';
         event.target.value = '';
         return;
       }
@@ -496,38 +592,18 @@ export class ApplyComponent implements OnInit {
     }
   }
 
-  isFormValid(): boolean {
-    const basicValid = this.applicationData.college.trim() !== '' &&
-                      this.applicationData.degree.trim() !== '' &&
-                      this.applicationData.yearOfStudy !== '' &&
-                      this.applicationData.studentId !== null &&
-                      this.applicationData.resume !== null;
-    
-    if (this.groupId && this.groupInfo) {
-      const teamValid = this.teamData.teamSize > 0 &&
-                       this.teamData.teamLeader.trim() !== '' &&
-                       this.teamData.leaderContact.trim() !== '' &&
-                       this.teamData.leaderEmail.trim() !== '' &&
-                       this.teamData.teamMembers.trim() !== '' &&
-                       this.teamData.academicYear !== '' &&
-                       this.teamData.semester !== '' &&
-                       this.teamData.motivation.trim() !== '';
-      return basicValid && teamValid;
-    } else if (!this.groupId) {
-      // Individual application validation
-      const individualValid = this.individualData.fullName.trim() !== '' &&
-                             this.individualData.email.trim() !== '' &&
-                             this.individualData.phone.trim() !== '' &&
-                             this.individualData.motivation.trim() !== '';
-      return basicValid && individualValid;
-    }
-    
-    return basicValid;
-  }
-
   onSubmit() {
-    if (!this.isFormValid()) {
-      this.toastService.showError('Please fill all fields and upload required documents', 'Validation Error');
+    this.submittedOnce = true;
+
+    if (!this.applyForm.valid) {
+      this.toastService.showError('Please fill all required fields', 'Validation Error');
+      
+      setTimeout(() => {
+        const invalidField = document.querySelector('.error-field');
+        if (invalidField) {
+          invalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
       return;
     }
 
@@ -543,7 +619,6 @@ export class ApplyComponent implements OnInit {
       formData.append('groupId', this.groupId.toString());
       formData.append('applicationType', 'GROUP');
       
-      // Add team data
       formData.append('teamSize', this.teamData.teamSize.toString());
       formData.append('teamLeader', this.teamData.teamLeader);
       formData.append('leaderContact', this.teamData.leaderContact);
@@ -558,10 +633,10 @@ export class ApplyComponent implements OnInit {
     } else {
       formData.append('applicationType', 'INDIVIDUAL');
       
-      // Add individual data
       formData.append('fullName', this.individualData.fullName);
       formData.append('email', this.individualData.email);
       formData.append('phone', this.individualData.phone);
+      formData.append('duration', this.individualData.duration);
       formData.append('skills', this.individualData.skills);
       formData.append('motivation', this.individualData.motivation);
     }
@@ -577,21 +652,24 @@ export class ApplyComponent implements OnInit {
     const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
 
     this.http.post(`${environment.apiUrl}/api/applications`, formData, { headers }).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         this.loading = false;
         if (this.groupId) {
           this.toastService.showSuccess('Group application submitted successfully!', 'Success');
-          // Update group status to APPLIED
           this.groupService.joinCompany(this.groupId, this.companyId).subscribe();
+          setTimeout(() => {
+            this.router.navigate(['/home']);
+          }, 2000);
         } else {
           this.toastService.showSuccess('Application submitted successfully!', 'Success');
+          setTimeout(() => {
+            this.router.navigate(['/home'], { queryParams: { tab: 'docs' } });
+          }, 2000);
         }
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-        }, 2000);
       },
       error: (error) => {
         this.loading = false;
+        console.error('Submission error:', error);
         this.toastService.showError(error.error?.message || 'Failed to submit application', 'Application Error');
       }
     });

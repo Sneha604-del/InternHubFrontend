@@ -3,6 +3,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { HomeComponent } from './components/home/home.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
+import { ApplicationDetailComponent } from './components/application-detail/application-detail.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SecurityComponent } from './components/security/security.component';
 import { InternshipsComponent } from './components/internships/internships.component';
@@ -20,6 +21,7 @@ import { CompanySelectionComponent } from './components/company-selection/compan
 import { AttendanceComponent } from './components/attendance/attendance.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { CompanyInternshipsComponent } from './components/company-internships/company-internships.component';
+import { CompanyReviewsComponent } from './components/company-reviews/company-reviews.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -27,6 +29,7 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'home', component: HomeComponent },
   { path: 'documentation', component: DocumentationComponent },
+  { path: 'application-detail', component: ApplicationDetailComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'security', component: SecurityComponent },
   { path: 'internships', component: InternshipsComponent },
@@ -42,6 +45,7 @@ export const routes: Routes = [
   { path: 'company-join', component: CompanyJoinComponent },
   { path: 'company-selection/:groupId', component: CompanySelectionComponent },
   { path: 'company-internships', component: CompanyInternshipsComponent },
+  { path: 'company-reviews', component: CompanyReviewsComponent },
   { path: 'attendance', component: AttendanceComponent },
   { path: 'admin', component: AdminDashboardComponent }
 ];

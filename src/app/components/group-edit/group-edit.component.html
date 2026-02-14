@@ -19,20 +19,20 @@
         <div class="field">
           <label for="collegeName">College Name *</label>
           <input pInputText id="collegeName" [(ngModel)]="group.collegeName" name="collegeName" required 
-                 placeholder="Enter college name" />
+                 placeholder="Enter college name" disabled class="disabled-input" />
         </div>
         
         <div class="form-row">
           <div class="field">
             <label for="department">Department *</label>
             <input pInputText id="department" [(ngModel)]="group.department" name="department" required 
-                   placeholder="Enter department" />
+                   placeholder="Enter department" disabled class="disabled-input" />
           </div>
           
           <div class="field">
             <label for="academicYear">Academic Year *</label>
             <select id="academicYear" [(ngModel)]="group.academicYear" name="academicYear" 
-                    required class="p-inputtext p-component">
+                    required class="p-inputtext p-component disabled-input" disabled>
               <option value="">Select Academic Year</option>
               <option value="2nd Year">2nd Year</option>
               <option value="3rd Year">3rd Year</option>
@@ -45,14 +45,14 @@
           <div class="field">
             <label for="semester">Semester *</label>
             <input pInputText id="semester" [(ngModel)]="group.semester" name="semester" required 
-                   placeholder="Enter semester" />
+                   placeholder="Enter semester" disabled class="disabled-input" />
           </div>
           
           <div class="field">
             <label for="totalStudents">Total Students *</label>
             <p-inputNumber id="totalStudents" [(ngModel)]="group.totalStudents" name="totalStudents" 
                            [required]="true" [min]="1" [max]="100" 
-                           placeholder="Enter number of students">
+                           placeholder="Enter number of students" [disabled]="true" styleClass="disabled-input">
             </p-inputNumber>
           </div>
         </div>
@@ -68,7 +68,7 @@
           <div class="field">
             <label for="internshipType">Internship Type *</label>
             <select id="internshipType" [(ngModel)]="group.internshipType" name="internshipType" 
-                    required class="p-inputtext p-component">
+                    required class="p-inputtext p-component disabled-input" disabled>
               <option value="">Select Internship Type</option>
               <option value="TECHNICAL">Technical</option>
               <option value="NON_TECHNICAL">Non Technical</option>
@@ -78,7 +78,7 @@
           <div class="field">
             <label for="preferredMode">Preferred Mode *</label>
             <select id="preferredMode" [(ngModel)]="group.preferredMode" name="preferredMode" 
-                    required class="p-inputtext p-component">
+                    required class="p-inputtext p-component disabled-input" disabled>
               <option value="">Select Preferred Mode</option>
               <option value="ONLINE">Online</option>
               <option value="OFFLINE">Offline</option>
@@ -90,7 +90,7 @@
         <div class="field">
           <label for="durationMonths">Duration (Months) *</label>
           <select id="durationMonths" [(ngModel)]="group.durationMonths" name="durationMonths" 
-                  required class="p-inputtext p-component">
+                  required class="p-inputtext p-component disabled-input" disabled>
             <option value="">Select Duration</option>
             <option value="1">1 Month</option>
             <option value="2">2 Months</option>
@@ -103,13 +103,13 @@
           <div class="field">
             <label for="startDate">Start Date *</label>
             <input type="date" id="startDate" [(ngModel)]="group.startDate" name="startDate" 
-                   required class="p-inputtext p-component" />
+                   required class="p-inputtext p-component disabled-input" disabled />
           </div>
           
           <div class="field">
             <label for="endDate">End Date *</label>
             <input type="date" id="endDate" [(ngModel)]="group.endDate" name="endDate" 
-                   required class="p-inputtext p-component" />
+                   required class="p-inputtext p-component disabled-input" disabled />
           </div>
         </div>
       </div>

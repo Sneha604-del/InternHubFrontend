@@ -18,6 +18,10 @@ interface Company {
   contactPerson?: string;
   contactPhone?: string;
   address?: string;
+  stateName?: string;
+  cityName?: string;
+  latitude?: number;
+  longitude?: number;
   category?: {
     id: number;
     name: string;

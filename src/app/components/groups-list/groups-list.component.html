@@ -161,15 +161,6 @@
               size="small"
               (onClick)="inviteMembers(group.id!)">
             </p-button>
-            <p-button 
-              *ngIf="group.status === 'PENDING'"
-              label="Edit" 
-              icon="pi pi-pencil" 
-              severity="info"
-              [outlined]="true"
-              size="small"
-              (onClick)="editGroup(group.id!)">
-            </p-button>
           </div>
         </ng-template>
       </p-card>
@@ -383,5 +374,13 @@
         </div>
       </div>
     </div>
+    <ng-template pTemplate="footer">
+      <p-button 
+        label="Edit Group" 
+        icon="pi pi-pencil" 
+        severity="info"
+        (onClick)="editGroup(selectedGroup!.id!); closeDetailsDialog()">
+      </p-button>
+    </ng-template>
   </p-dialog>
 </div>

@@ -1,0 +1,205 @@
+<div class="group-details-container">
+  <div class="header">
+    <h2>{{groupInfo ? 'Group Application' : 'Individual Application'}}</h2>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="content">
+    <div *ngIf="!groupInfo">
+      <h3 class="section-title">Personal Information</h3>
+      <div class="info-grid">
+        <div class="field">
+          <label for="fullName">Full Name *</label>
+          <input pInputText id="fullName" [(ngModel)]="individualData.fullName" name="fullName" 
+                 required [class.error-field]="isFieldInvalid('fullName')" />
+        </div>
+        <div class="field">
+          <label for="email">Email Address *</label>
+          <input pInputText id="email" type="email" [(ngModel)]="individualData.email" name="email" 
+                 required [class.error-field]="isFieldInvalid('email')" />
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number *</label>
+          <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
+                 required [class.error-field]="isFieldInvalid('phone')" />
+        </div>
+        <div class="field">
+          <label for="duration">Preferred Duration (Months) *</label>
+          <select id="duration" [(ngModel)]="individualData.duration" name="duration" 
+                  required [class.error-field]="isFieldInvalid('duration')">
+            <option value="">Select duration</option>
+            <option value="1">1 Month</option>
+            <option value="2">2 Months</option>
+            <option value="3">3 Months</option>
+            <option value="4">4 Months</option>
+            <option value="5">5 Months</option>
+            <option value="6">6 Months</option>
+          </select>
+        </div>
+      </div>
+
+      <h3>Skills & Expertise</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="individualData.skills" name="individualSkills" rows="3"></textarea>
+      </div>
+
+      <h3>Why This Internship? *</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="individualData.motivation" name="individualMotivation" 
+                  required rows="4" [class.error-field]="isFieldInvalid('individualMotivation')"></textarea>
+      </div>
+    </div>
+
+    <div *ngIf="groupInfo">
+      <h3 class="section-title">Group Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <strong>Group Name:</strong> {{groupInfo.groupName}}
+        </div>
+        <div class="info-item">
+          <strong>College:</strong> {{groupInfo.collegeName}}
+        </div>
+        <div class="info-item">
+          <strong>Department:</strong> {{groupInfo.department}}
+        </div>
+        <div class="info-item">
+          <strong>Total Students:</strong> {{groupInfo.totalStudents}}
+        </div>
+      </div>
+
+      <h3>Team Details</h3>
+      <div class="info-grid">
+        <div class="field">
+          <label for="teamSize">Actual Team Size *</label>
+          <p-inputNumber id="teamSize" [(ngModel)]="teamData.teamSize" name="teamSize" 
+                         [required]="true" [class.error-field]="isFieldInvalid('teamSize')"></p-inputNumber>
+        </div>
+        <div class="field">
+          <label for="teamLeader">Team Leader Name *</label>
+          <input pInputText id="teamLeader" [(ngModel)]="teamData.teamLeader" name="teamLeader" 
+                 required [class.error-field]="isFieldInvalid('teamLeader')" />
+        </div>
+        <div class="field">
+          <label for="leaderContact">Team Leader Contact *</label>
+          <input pInputText id="leaderContact" [(ngModel)]="teamData.leaderContact" name="leaderContact" 
+                 required [class.error-field]="isFieldInvalid('leaderContact')" />
+        </div>
+        <div class="field">
+          <label for="leaderEmail">Team Leader Email *</label>
+          <input pInputText id="leaderEmail" type="email" [(ngModel)]="teamData.leaderEmail" name="leaderEmail" 
+                 required [class.error-field]="isFieldInvalid('leaderEmail')" />
+        </div>
+      </div>
+
+      <h3>Team Members (Names) *</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="teamData.teamMembers" name="teamMembers" 
+                  required rows="4" [class.error-field]="isFieldInvalid('teamMembers')"></textarea>
+      </div>
+
+      <h3>Team Member Emails</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="teamData.memberEmails" name="memberEmails" rows="3"></textarea>
+      </div>
+
+      <h3>Academic Year *</h3>
+      <div class="info-grid">
+        <div class="field">
+          <select [(ngModel)]="teamData.academicYear" name="academicYear" 
+                  required [class.error-field]="isFieldInvalid('academicYear')">
+            <option value="">Select academic year</option>
+            <option value="2023-24">2023-24</option>
+            <option value="2024-25">2024-25</option>
+            <option value="2025-26">2025-26</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Current Semester *</label>
+          <select [(ngModel)]="teamData.semester" name="semester" 
+                  required [class.error-field]="isFieldInvalid('semester')">
+            <option value="">Select semester</option>
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+            <option value="3rd Semester">3rd Semester</option>
+            <option value="4th Semester">4th Semester</option>
+            <option value="5th Semester">5th Semester</option>
+            <option value="6th Semester">6th Semester</option>
+            <option value="7th Semester">7th Semester</option>
+            <option value="8th Semester">8th Semester</option>
+          </select>
+        </div>
+      </div>
+
+      <h3>Team Skills & Expertise</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="teamData.skills" name="skills" rows="3"></textarea>
+      </div>
+
+      <h3>Previous Project Experience</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="teamData.experience" name="experience" rows="3"></textarea>
+      </div>
+
+      <h3>Why This Internship? *</h3>
+      <div class="faculty-info">
+        <textarea [(ngModel)]="teamData.motivation" name="motivation" 
+                  required rows="4" [class.error-field]="isFieldInvalid('motivation')"></textarea>
+      </div>
+    </div>
+
+    <h3>Educational Information</h3>
+    <div class="info-grid">
+      <div class="field">
+        <label for="college">Name of your college *</label>
+        <input pInputText id="college" [(ngModel)]="applicationData.college" name="college" 
+               required [class.error-field]="isFieldInvalid('college')" />
+      </div>
+      <div class="field">
+        <label for="degree">Degree you are studying *</label>
+        <input pInputText id="degree" [(ngModel)]="applicationData.degree" name="degree" 
+               required [class.error-field]="isFieldInvalid('degree')" />
+      </div>
+      <div class="field">
+        <label for="yearOfStudy">Year of study *</label>
+        <select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
+                required [class.error-field]="isFieldInvalid('yearOfStudy')">
+          <option value="">Select year</option>
+          <option value="1st year">1st year</option>
+          <option value="2nd year">2nd year</option>
+          <option value="3rd year">3rd year</option>
+          <option value="4th year">4th year</option>
+          <option value="5th year">5th year</option>
+        </select>
+      </div>
+    </div>
+
+    <h3>Documents for Verification</h3>
+    <div class="info-grid">
+      <div class="field">
+        <label>{{groupInfo ? 'Group Leader\'s Student ID card' : 'Student ID card'}}</label>
+        <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
+               accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+        <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
+                  icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+        <small class="file-hint">Upload PDF, JPG, or PNG (Max 5MB)</small>
+        <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
+      </div>
+      <div class="field">
+        <label>{{groupInfo ? 'Group Resume/Portfolio' : 'Resume/CV'}}</label>
+        <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
+               accept=".pdf" style="display: none;">
+        <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
+                  icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+        <small class="file-hint">Upload PDF only (Max 5MB)</small>
+        <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <button type="submit" class="submit-btn" [class.btn-success]="applyForm.valid && !loading" 
+              [disabled]="loading || !applyForm.valid">
+        <i class="pi pi-check" style="margin-right: 8px;"></i>
+        {{loading ? 'Submitting...' : (groupInfo ? 'Submit Group Application' : 'Apply Now')}}
+      </button>
+    </div>
+  </form>
+</div>

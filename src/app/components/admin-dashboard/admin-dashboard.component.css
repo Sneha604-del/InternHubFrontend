@@ -83,8 +83,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .groups-section,
@@ -94,14 +98,209 @@
   color: #666;
 }
 
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .admin-dashboard {
+    padding: 16px;
+  }
+  
+  .filters {
+    gap: 12px;
+  }
+  
+  .filters mat-form-field {
+    min-width: 160px;
+  }
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 12px;
+  }
+  
+  .attendance-section {
+    padding: 16px 0;
+  }
+  
   .filters {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+    margin-bottom: 16px;
   }
   
   .filters mat-form-field {
     min-width: auto;
     width: 100%;
   }
+  
+  .attendance-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mat-table {
+    font-size: 13px;
+  }
+  
+  .mat-header-cell {
+    padding: 8px 4px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
+  
+  .mat-cell {
+    padding: 8px 4px !important;
+    font-size: 12px !important;
+  }
+  
+  .status-badge {
+    padding: 3px 6px;
+    font-size: 10px;
+  }
+  
+  .loading-spinner {
+    padding: 30px 20px;
+  }
+  
+  .loading-spinner mat-icon {
+    margin-right: 6px;
+    font-size: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .no-data {
+    padding: 30px 20px;
+  }
+  
+  .no-data mat-icon {
+    margin-right: 6px;
+    font-size: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .groups-section,
+  .reports-section {
+    padding: 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard {
+    padding: 8px;
+  }
+  
+  .attendance-section {
+    padding: 12px 0;
+  }
+  
+  .filters {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .mat-table {
+    font-size: 11px;
+  }
+  
+  .mat-header-cell {
+    padding: 6px 3px !important;
+    font-size: 10px !important;
+  }
+  
+  .mat-cell {
+    padding: 6px 3px !important;
+    font-size: 11px !important;
+  }
+  
+  .status-badge {
+    padding: 2px 4px;
+    font-size: 9px;
+  }
+  
+  .loading-spinner {
+    padding: 20px 10px;
+  }
+  
+  .no-data {
+    padding: 20px 10px;
+  }
+  
+  .groups-section,
+  .reports-section {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+.reviews-section {
+  padding: 20px 0;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.review-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.review-info strong {
+  color: #1a202c;
+  font-size: 14px;
+}
+
+.company-name {
+  color: #667eea;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.date {
+  color: #718096;
+  font-size: 12px;
+}
+
+.review-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rating-stars {
+  font-size: 16px;
+  color: #ddd;
+}
+
+.rating-stars span.filled {
+  color: #ffc107;
+}
+
+.review-description {
+  margin: 0;
+  color: #4a5568;
+  font-size: 14px;
+  line-height: 1.5;
 }

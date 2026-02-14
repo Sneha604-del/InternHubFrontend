@@ -1,0 +1,63 @@
+<div class="group-details-container" *ngIf="!loading">
+  <div class="header">
+    <p-button icon="pi pi-arrow-left" [rounded]="true" [text]="true" (onClick)="goBack()"></p-button>
+    <h2>{{application?.fullName}}</h2>
+  </div>
+
+  <div class="content" *ngIf="application">
+    <h3 class="section-title">Personal Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>Full Name:</strong> {{application.fullName}}
+      </div>
+      <div class="info-item">
+        <strong>Email:</strong> {{application.email}}
+      </div>
+      <div class="info-item">
+        <strong>Phone:</strong> {{application.phone}}
+      </div>
+      <div class="info-item">
+        <strong>Duration:</strong> {{application.duration}} months
+      </div>
+    </div>
+
+    <h3>Educational Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>College:</strong> {{application.college}}
+      </div>
+      <div class="info-item">
+        <strong>Degree:</strong> {{application.degree}}
+      </div>
+      <div class="info-item">
+        <strong>Year of Study:</strong> {{application.yearOfStudy}}
+      </div>
+    </div>
+
+    <h3>Application Details</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <strong>Company:</strong> {{application.companyName}}
+      </div>
+      <div class="info-item">
+        <strong>Internship Title:</strong> {{application.internshipTitle}}
+      </div>
+      <div class="info-item">
+        <strong>Status:</strong> {{application.status}}
+      </div>
+      <div class="info-item">
+        <strong>Applied Date:</strong> {{application.appliedDate | date:'mediumDate'}}
+      </div>
+    </div>
+
+    <h3>Additional Information</h3>
+    <div class="faculty-info">
+      <div><strong>Skills:</strong> {{application.skills || 'N/A'}}</div>
+      <div><strong>Motivation:</strong> {{application.motivation || 'N/A'}}</div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading">
+  <p>Loading application details...</p>
+</div>

@@ -109,6 +109,21 @@ form {
   border-radius: 6px !important;
 }
 
+::ng-deep .p-inputtext:disabled,
+::ng-deep .disabled-input {
+  background-color: #f3f4f6 !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.7 !important;
+}
+
+select.disabled-input {
+  background-color: #f3f4f6 !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.7 !important;
+}
+
 ::ng-deep .p-inputnumber {
   width: 100% !important;
 }
@@ -173,6 +188,7 @@ form {
 .form-actions {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 16px;
   margin-top: 32px;
   padding-top: 24px;
@@ -202,24 +218,128 @@ form {
     padding: 16px;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  form {
-    padding: 20px;
+  .page-header {
+    margin-bottom: 24px;
   }
   
   .page-header h1 {
     font-size: 24px;
+    margin-bottom: 6px;
+  }
+  
+  .page-header p {
+    font-size: 14px;
+  }
+  
+  .form-section {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+  }
+  
+  .form-section h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .field {
+    margin-bottom: 16px;
+  }
+  
+  .field label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  
+  ::ng-deep .p-inputtext {
+    min-height: 48px !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+  }
+  
+  ::ng-deep .p-dropdown {
+    min-height: 48px !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+  }
+  
+  ::ng-deep .p-inputnumber-input {
+    min-height: 48px !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+  }
+  
+  ::ng-deep .p-calendar .p-inputtext {
+    min-height: 48px !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
+  }
+  
+  select.disabled-input {
+    min-height: 48px !important;
+    padding: 14px 16px !important;
+    font-size: 16px !important;
   }
   
   .form-actions {
     flex-direction: column;
+    gap: 8px;
   }
   
   ::ng-deep .p-button {
     width: 100% !important;
+    min-height: 48px !important;
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+  }
+  
+  .loading-container {
+    padding: 40px 20px;
+  }
+  
+  .loading-container p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .group-edit-container {
+    padding: 12px;
+  }
+  
+  .page-header {
+    margin-bottom: 20px;
+  }
+  
+  .page-header h1 {
+    font-size: 20px;
+  }
+  
+  .page-header p {
+    font-size: 13px;
+  }
+  
+  .form-section {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+  }
+  
+  .form-section h3 {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  
+  .field label {
+    font-size: 12px;
+  }
+  
+  ::ng-deep .p-button {
+    font-size: 15px !important;
+    padding: 12px 14px !important;
   }
 }

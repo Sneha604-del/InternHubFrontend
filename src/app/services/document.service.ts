@@ -20,6 +20,10 @@ export class DocumentService {
     return this.http.get<any[]>(`${this.apiUrl}/applications`, { headers: this.getHeaders() });
   }
 
+  getApplicationDetail(applicationId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/applications/${applicationId}`, { headers: this.getHeaders() });
+  }
+
   getCertificates(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/certificates`, { headers: this.getHeaders() });
   }

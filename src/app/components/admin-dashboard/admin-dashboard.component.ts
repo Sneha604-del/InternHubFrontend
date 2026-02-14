@@ -10,10 +10,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { AttendanceService } from '../../services/attendance.service';
 import { GroupService } from '../../services/group.service';
 import { AttendanceResponse } from '../../models/attendance.model';
 import { Group } from '../../models/group.model';
+import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -41,17 +43,24 @@ export class AdminDashboardComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
   isLoading = false;
+  
+  allReviews: any[] = [];
+  companies: any[] = [];
+  selectedCompanyId: number | null = null;
 
   displayedColumns: string[] = ['studentName', 'attendanceDate', 'checkInTime', 'status', 'location'];
 
   constructor(
     private attendanceService: AttendanceService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
     this.setTodayDate();
     this.loadGroups();
+    this.loadCompanies();
+    this.loadAllReviews();
   }
 
   setTodayDate() {
@@ -146,6 +155,40 @@ export class AdminDashboardComponent implements OnInit {
     if (attendance.latitude && attendance.longitude) {
       const url = `https://www.google.com/maps?q=${attendance.latitude},${attendance.longitude}`;
       window.open(url, '_blank');
+    }
+  }
+
+  loadCompanies() {
+    this.http.get<any[]>(`${environment.apiUrl}/api/companies`).subscribe({
+      next: (data) => this.companies = data,
+      error: (err) => console.error('Error loading companies:', err)
+    });
+  }
+
+  loadAllReviews() {
+    this.http.get<any[]>(`${environment.apiUrl}/api/reviews/all`).subscribe({
+      next: (data) => this.allReviews = data,
+      error: (err) => console.error('Error loading reviews:', err)
+    });
+  }
+
+  loadCompanyReviews() {
+    if (this.selectedCompanyId) {
+      this.http.get<any[]>(`${environment.apiUrl}/api/reviews/company/${this.selectedCompanyId}`).subscribe({
+        next: (data) => this.allReviews = data,
+        error: (err) => console.error('Error loading reviews:', err)
+      });
+    } else {
+      this.loadAllReviews();
+    }
+  }
+
+  deleteReview(reviewId: number) {
+    if (confirm('Are you sure you want to delete this review?')) {
+      this.http.delete(`${environment.apiUrl}/api/reviews/${reviewId}`).subscribe({
+        next: () => this.loadCompanyReviews(),
+        error: (err) => console.error('Error deleting review:', err)
+      });
     }
   }
 }

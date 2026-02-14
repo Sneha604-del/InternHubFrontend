@@ -93,6 +93,48 @@
         </mat-tab>
 
         <!-- Other Admin Tabs -->
+        <mat-tab label="Reviews Management">
+          <div class="reviews-section">
+            <div class="filters">
+              <mat-form-field appearance="outline">
+                <mat-label>Filter by Company</mat-label>
+                <mat-select [(value)]="selectedCompanyId" (selectionChange)="loadCompanyReviews()">
+                  <mat-option [value]="null">All Companies</mat-option>
+                  <mat-option *ngFor="let company of companies" [value]="company.id">
+                    {{company.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="reviews-list">
+              <div *ngFor="let review of allReviews" class="review-card">
+                <div class="review-header">
+                  <div class="review-info">
+                    <strong>{{review.student?.fullName || 'Unknown Student'}}</strong>
+                    <span class="company-name">@ {{review.company?.name || 'Unknown Company'}}</span>
+                    <span class="date">{{review.createdAt | date:'medium'}}</span>
+                  </div>
+                  <div class="review-actions">
+                    <div class="rating-stars">
+                      <span *ngFor="let i of [1,2,3,4,5]" [class.filled]="i <= review.rating">★</span>
+                    </div>
+                    <button mat-icon-button color="warn" (click)="deleteReview(review.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <p class="review-description">{{review.description}}</p>
+              </div>
+
+              <div *ngIf="allReviews.length === 0" class="no-data">
+                <mat-icon>rate_review</mat-icon>
+                No reviews found.
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
         <mat-tab label="Groups Management">
           <div class="groups-section">
             <p>Groups management functionality will be implemented here.</p>

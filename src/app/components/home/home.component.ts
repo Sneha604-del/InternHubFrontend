@@ -9,11 +9,12 @@ import { NotificationService } from '../../services/notification.service';
 import { AuthService } from '../../services/auth.service';
 import { HomeStateService } from '../../services/home-state.service';
 import { GroupService } from '../../services/group.service';
+import { CompanyResultsComponent } from '../company-results/company-results.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule],
+  imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule, CompanyResultsComponent],
   template: `
     <div class="home-container">
       <!-- Welcome Banner -->
@@ -52,24 +53,11 @@ import { GroupService } from '../../services/group.service';
         </div>
       </div>
 
-      <!-- Companies Grid -->
-      <div class="companies-section" *ngIf="companies.length > 0">
-        <h2>Available Companies</h2>
-        <div class="companies-grid">
-          <div *ngFor="let company of companies" class="company-card">
-            <div class="company-header">
-              <div class="company-logo">{{company.name.charAt(0)}}</div>
-              <div class="company-info">
-                <h3>{{company.name}}</h3>
-                <p class="company-skills">{{company.requiredSkills || 'Various Skills'}}</p>
-              </div>
-            </div>
-            <div class="company-actions">
-              <button class="view-btn" (click)="loadInternships(company)">View Internships</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!-- Companies Results Component -->
+      <app-company-results 
+        [companies]="companies"
+        (viewInternships)="loadInternships($event)">
+      </app-company-results>
 
       <!-- Internships Section -->
       <div class="internships-section" *ngIf="internships.length > 0">
@@ -187,8 +175,8 @@ import { GroupService } from '../../services/group.service';
     /* Search Card */
     .search-card { 
       background: white; 
-      padding: 24px; 
-      margin: 20px 16px; 
+      padding: 20px; 
+      margin: 16px 16px; 
       border-radius: 16px; 
       box-shadow: 0 4px 16px rgba(0,0,0,0.06); 
       transition: all 0.3s ease;
@@ -204,51 +192,27 @@ import { GroupService } from '../../services/group.service';
       0%, 100% { box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25); } 
       50% { box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35); }
     }
-    .search-card h2 { margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #1a1a1a; }
-    .search-form { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .search-card h2 { margin: 0 0 14px 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+    .search-form { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .search-field { width: 100%; }
     
-    /* Companies Section */
-    .companies-section { margin: 0 16px 24px; }
-    .companies-section h2 { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
-    .companies-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    .company-card { 
-      background: white; 
-      padding: 24px; 
-      border-radius: 16px; 
-      transition: all 0.3s; 
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    ::ng-deep .search-field .mat-mdc-form-field {
+      height: auto;
     }
-    .company-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-    .company-header { display: flex; align-items: center; margin-bottom: 16px; }
-    .company-logo { 
-      width: 60px; 
-      height: 60px; 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-      color: white; 
-      border-radius: 16px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      font-size: 26px; 
-      font-weight: 700; 
-      margin-right: 16px;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    
+    ::ng-deep .search-field .mat-mdc-text-field-wrapper {
+      padding: 0 !important;
     }
-    .company-info h3 { margin: 0 0 6px 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
-    .company-skills { margin: 0; font-size: 14px; color: #666; }
-    .view-btn { 
-      background: #667eea; 
-      color: white; 
-      border: none; 
-      padding: 10px 20px; 
-      border-radius: 8px; 
-      font-size: 14px; 
-      font-weight: 600; 
-      cursor: pointer; 
-      transition: all 0.3s;
+    
+    ::ng-deep .search-field .mat-mdc-form-field-infix {
+      padding: 6px 0 !important;
     }
-    .view-btn:hover { background: #5a67d8; transform: translateY(-1px); }
+    
+    ::ng-deep .search-field .mat-mdc-select {
+      min-height: 38px !important;
+      padding: 8px 12px !important;
+      font-size: 14px !important;
+    }
     
     /* Internships Section */
     .internships-section { margin: 0 16px 24px; }
@@ -339,7 +303,6 @@ import { GroupService } from '../../services/group.service';
     
     @media (min-width: 640px) {
       .search-form { grid-template-columns: 1fr 1fr; }
-      .companies-grid { grid-template-columns: repeat(2, 1fr); }
       .internships-grid { grid-template-columns: repeat(2, 1fr); }
       .categories-grid { grid-template-columns: repeat(4, 1fr); }
       .banner-image { display: block; margin-left: 32px; }
@@ -351,7 +314,7 @@ import { GroupService } from '../../services/group.service';
       .welcome-banner { padding: 48px 32px; }
       .banner-content h1 { font-size: 36px; }
       .banner-content p { font-size: 18px; }
-      .search-card, .companies-section, .internships-section, .categories-section, .getting-started { 
+      .search-card, .internships-section, .categories-section, .getting-started { 
         margin-left: auto; 
         margin-right: auto; 
         max-width: 1200px; 
@@ -448,8 +411,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-
-
   loadCourses() {
     this.apiService.getCourses().subscribe({
       next: (data) => {
@@ -472,7 +433,7 @@ export class HomeComponent implements OnInit {
   onCourseChange() {
     this.selectedCategory = '';
     this.companies = [];
-    this.internships = []; // Clear internships when course changes
+    this.internships = [];
 
     if (this.selectedCourse) {
       this.apiService.getCategoriesByCourse(+this.selectedCourse).subscribe({
@@ -490,7 +451,7 @@ export class HomeComponent implements OnInit {
   }
 
   onCategoryChange() {
-    this.internships = []; // Clear internships when category changes
+    this.internships = [];
     if (this.selectedCategory) {
       this.apiService.getCompaniesByCategory(+this.selectedCategory).subscribe({
         next: (response) => {
@@ -522,7 +483,6 @@ export class HomeComponent implements OnInit {
   }
 
   loadInternships(company: any) {
-    // Navigate to company internships page
     this.router.navigate(['/company-internships'], {
       queryParams: {
         companyId: company.id,
@@ -544,14 +504,10 @@ export class HomeComponent implements OnInit {
       companyName: this.selectedCompanyName
     };
     
-    // Don't pass groupId for individual applications from home page
-    // Only pass groupId when applying from group details page
-    
     this.router.navigate(['/apply'], { queryParams });
   }
 
   selectPopularCategory(categoryName: string) {
-    // Navigate to internships page with category filter
     this.router.navigate(['/internships'], {
       queryParams: { category: categoryName }
     });

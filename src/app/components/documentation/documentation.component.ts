@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
 import { DocumentService } from '../../services/document.service';
 
 @Component({
@@ -62,25 +63,27 @@ import { DocumentService } from '../../services/document.service';
             
             <div *ngIf="!loading && applications.length > 0" class="items-grid">
               <div *ngFor="let app of applications" class="item-card">
-                <div class="card-header">
-                  <div class="card-title-section">
-                    <mat-icon class="card-icon">work</mat-icon>
-                    <div>
-                      <h3 class="card-title">{{app.internshipTitle}}</h3>
-                      <p class="card-company">{{app.companyName}}</p>
+                <div (click)="toggleApplicationDetail(app.id)" style="cursor: pointer;">
+                  <div class="card-header">
+                    <div class="card-title-section">
+                      <mat-icon class="card-icon">work</mat-icon>
+                      <div>
+                        <h3 class="card-title">{{app.internshipTitle}}</h3>
+                        <p class="card-company">{{app.companyName}}</p>
+                      </div>
                     </div>
+                    <span class="status-badge" [class]="'status-' + app.status.toLowerCase()">{{app.status}}</span>
                   </div>
-                  <span class="status-badge" [class]="'status-' + app.status.toLowerCase()">{{app.status}}</span>
-                </div>
-                
-                <div class="card-details">
-                  <div class="detail-item">
-                    <mat-icon class="detail-icon">calendar_today</mat-icon>
-                    <span>Applied: {{app.appliedDate | date:'mediumDate'}}</span>
-                  </div>
-                  <div class="detail-item">
-                    <mat-icon class="detail-icon">school</mat-icon>
-                    <span>{{app.degree}} ({{app.yearOfStudy}})</span>
+                  
+                  <div class="card-details">
+                    <div class="detail-item">
+                      <mat-icon class="detail-icon">calendar_today</mat-icon>
+                      <span>Applied: {{app.appliedDate | date:'mediumDate'}}</span>
+                    </div>
+                    <div class="detail-item">
+                      <mat-icon class="detail-icon">school</mat-icon>
+                      <span>{{app.degree}} ({{app.yearOfStudy}})</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -93,6 +96,41 @@ import { DocumentService } from '../../services/document.service';
                     <mat-icon>badge</mat-icon>
                     <span>Student ID</span>
                   </a>
+                </div>
+
+                <div *ngIf="expandedApplicationId === app.id" class="expanded-details">
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" [style.width]="getProgressPercentage(app.status) + '%'"></div>
+                  </div>
+                  <p class="progress-text">{{getProgressText(app.status)}}</p>
+                  
+                  <div class="detail-section">
+                    <h4>Application Details</h4>
+                    <div *ngIf="app.fullName" class="detail-item-expanded">
+                      <span class="label">Name:</span>
+                      <span class="value">{{app.fullName}}</span>
+                    </div>
+                    <div *ngIf="app.email" class="detail-item-expanded">
+                      <span class="label">Email:</span>
+                      <span class="value">{{app.email}}</span>
+                    </div>
+                    <div *ngIf="app.phone" class="detail-item-expanded">
+                      <span class="label">Phone:</span>
+                      <span class="value">{{app.phone}}</span>
+                    </div>
+                    <div *ngIf="app.college" class="detail-item-expanded">
+                      <span class="label">College:</span>
+                      <span class="value">{{app.college}}</span>
+                    </div>
+                    <div *ngIf="app.skills" class="detail-item-expanded">
+                      <span class="label">Skills:</span>
+                      <span class="value">{{app.skills}}</span>
+                    </div>
+                    <div *ngIf="app.motivation" class="detail-item-expanded">
+                      <span class="label">Motivation:</span>
+                      <span class="value">{{app.motivation}}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -472,6 +510,79 @@ import { DocumentService } from '../../services/document.service';
       font-weight: 500;
       justify-content: center;
     }
+
+    .expanded-details {
+      padding: 16px 0;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 12px;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        max-height: 500px;
+      }
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .detail-section {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .detail-section h4 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .detail-item-expanded {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 12px;
+    }
+
+    .detail-item-expanded .label {
+      font-weight: 600;
+      color: #666;
+    }
+
+    .detail-item-expanded .value {
+      color: #333;
+      text-align: right;
+      flex: 1;
+      margin-left: 8px;
+      word-break: break-word;
+    }
     
 
     
@@ -533,13 +644,48 @@ export class DocumentationComponent implements OnInit {
   applications: any[] = [];
   certificates: any[] = [];
   loading = false;
+  expandedApplicationId: number | null = null;
   private touchStartX = 0;
   private touchEndX = 0;
   private mouseStartX = 0;
   private mouseEndX = 0;
   private isDragging = false;
 
-  constructor(private documentService: DocumentService) {}
+  constructor(private documentService: DocumentService, private router: Router) {}
+
+  toggleApplicationDetail(applicationId: number) {
+    this.expandedApplicationId = this.expandedApplicationId === applicationId ? null : applicationId;
+  }
+
+  getProgressPercentage(status: string): number {
+    const stages: Record<string, number> = {
+      'pending': 20,
+      'reviewed': 40,
+      'shortlisted': 60,
+      'interview': 80,
+      'accepted': 100,
+      'rejected': 0,
+      'completed': 100
+    };
+    return stages[status.toLowerCase()] || 0;
+  }
+
+  getProgressText(status: string): string {
+    const texts: Record<string, string> = {
+      'pending': '20% - Application Submitted',
+      'reviewed': '40% - Under Review',
+      'shortlisted': '60% - Shortlisted',
+      'interview': '80% - Interview Stage',
+      'accepted': '100% - Accepted',
+      'rejected': 'Application Rejected',
+      'completed': '100% - Internship Completed'
+    };
+    return texts[status.toLowerCase()] || 'Pending';
+  }
+
+  viewApplicationDetail(applicationId: number) {
+    this.router.navigate(['/application-detail'], { queryParams: { id: applicationId } });
+  }
 
   ngOnInit() {
     this.loadApplications();
