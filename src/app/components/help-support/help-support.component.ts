@@ -70,7 +70,7 @@ import { Router } from '@angular/router';
     .content { animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .faq-section { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .faq-section { background: transparent; border-radius: 0; overflow: hidden; box-shadow: none; margin-bottom: 20px; }
     .faq-item { border-bottom: 1px solid #ecf0f1; }
     .faq-item:last-child { border-bottom: none; }
     .faq-question { width: 100%; padding: 16px; border: none; background: none; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 15px; font-weight: 600; color: #2c3e50; }
@@ -81,12 +81,12 @@ import { Router } from '@angular/router';
     .faq-answer.open { max-height: 300px; }
     .faq-answer p { padding: 0 16px 16px; margin: 0; color: #7f8c8d; font-size: 14px; line-height: 1.6; }
 
-    .support-links { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .support-links { background: transparent; border-radius: 0; padding: 16px 0; box-shadow: none; }
     .support-links h3 { font-size: 16px; font-weight: 700; color: #2c3e50; margin: 0 0 12px 0; }
     .link-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; text-decoration: none; color: #2c3e50; font-size: 14px; font-weight: 500; margin-bottom: 8px; background: #f8f9fa; }
     .link-item:active { background: #e9ecef; }
 
-    .contact-form { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .contact-form { background: transparent; border-radius: 0; padding: 20px 0; box-shadow: none; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 14px; font-weight: 600; color: #2c3e50; margin-bottom: 8px; }
     .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; box-sizing: border-box; background: #f8f9fa; font-family: inherit; }

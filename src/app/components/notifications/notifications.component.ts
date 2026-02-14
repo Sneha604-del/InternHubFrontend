@@ -48,9 +48,7 @@ import { GroupService } from '../../services/group.service';
           </div>
           
           <!-- Mark as done icon -->
-          <button *ngIf="!notification.read" class="mark-done-btn" (click)="markAsRead(notification)" title="Mark as done">
-            <i class="pi pi-check-circle"></i>
-          </button>
+          <button *ngIf="!notification.read" class="mark-done-btn" (click)="markAsRead(notification)" title="Mark as done">✓</button>
           
           <div *ngIf="!notification.read" class="unread-dot"></div>
         </div>
@@ -78,8 +76,8 @@ import { GroupService } from '../../services/group.service';
     .notification-content h3 { font-size: 16px; font-weight: 600; color: #2c3e50; margin: 0 0 8px 0; }
     .notification-content p { font-size: 14px; color: #7f8c8d; margin: 0 0 8px 0; line-height: 1.4; }
     .time { font-size: 12px; color: #95a5a6; }
-    .mark-done-btn { position: absolute; bottom: 12px; right: 12px; width: 24px; height: 24px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.2s; }
-    .mark-done-btn:hover { background: #c82333; transform: scale(1.05); }
+    .mark-done-btn { position: absolute; bottom: 12px; right: 12px; width: 28px; height: 16px; background: #28a745; color: white; border: none; border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; transition: all 0.2s; }
+    .mark-done-btn:hover { background: #218838; }
     .unread-dot { position: absolute; top: 16px; right: 16px; width: 8px; height: 8px; background: #007bff; border-radius: 50%; }
     .notification-actions { margin-top: 12px; display: flex; gap: 8px; }
     .accept-btn { padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; }

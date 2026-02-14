@@ -418,8 +418,8 @@ html, body {
 /* Touch-friendly spacing */
 @media (max-width: 768px) {
   button, a, input, select, textarea {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 30px;
+    min-width: 38px;
   }
   
   /* Spacing utilities */

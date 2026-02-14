@@ -93,27 +93,23 @@ import { ToastService } from '../../services/toast.service';
         <div *ngIf="editMode" class="edit-section">
           <h2>Edit Profile</h2>
           <form (ngSubmit)="updateProfile()" #editForm="ngForm">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Full Name</mat-label>
-              <input matInput [(ngModel)]="editData.fullName" name="fullName" required>
-              <mat-icon matSuffix>person</mat-icon>
-            </mat-form-field>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" [(ngModel)]="editData.fullName" name="fullName" required>
+            </div>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>College</mat-label>
-              <input matInput [(ngModel)]="editData.college" name="college" required>
-              <mat-icon matSuffix>school</mat-icon>
-            </mat-form-field>
+            <div class="form-group">
+              <label>College</label>
+              <input type="text" [(ngModel)]="editData.college" name="college" required>
+            </div>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Course</mat-label>
-              <input matInput [(ngModel)]="editData.course" name="course" required>
-              <mat-icon matSuffix>book</mat-icon>
-            </mat-form-field>
+            <div class="form-group">
+              <label>Course</label>
+              <input type="text" [(ngModel)]="editData.course" name="course" required>
+            </div>
 
             <div class="form-actions">
-              <button mat-raised-button color="primary" type="submit" [disabled]="saving || !editForm.valid">
-                <mat-icon *ngIf="saving">hourglass_empty</mat-icon>
+              <button type="submit" [disabled]="saving || !editForm.valid">
                 {{ saving ? 'Saving...' : 'Save Changes' }}
               </button>
             </div>
@@ -339,11 +335,11 @@ import { ToastService } from '../../services/toast.service';
     }
     
     .edit-section {
-      background: white;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e0e0e0;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
     }
     
     .edit-section h2 {
@@ -353,9 +349,33 @@ import { ToastService } from '../../services/toast.service';
       color: #212121;
     }
     
-    .full-width {
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #212121;
+    }
+    
+    .form-group input {
       width: 100%;
-      margin-bottom: 16px;
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      background: transparent;
+      color: #212121;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
     
     .form-actions {
@@ -371,6 +391,10 @@ import { ToastService } from '../../services/toast.service';
       font-size: 16px;
       font-weight: 600;
       border-radius: 8px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       transition: all 0.2s;
     }
@@ -378,6 +402,11 @@ import { ToastService } from '../../services/toast.service';
     .form-actions button:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .form-actions button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     
     .modal-overlay {
@@ -474,17 +503,13 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.loadProfile();
     
-    // Listen for edit mode changes from navbar
     this.profileService.editMode$.subscribe(isEditMode => {
       if (this.editMode && !isEditMode) {
-        // Edit mode was turned off externally (from navbar back button)
         this.editMode = false;
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
   }
-
-
 
   loadProfile() {
     const user = this.authService.getCurrentUser();

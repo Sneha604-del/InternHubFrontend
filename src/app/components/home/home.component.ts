@@ -362,6 +362,26 @@ import { GroupService } from '../../services/group.service';
       .step { flex-direction: column; text-align: center; flex: 1; }
       .step-number { margin: 0 0 12px 0; }
     }
+    
+    /* Fix dropdown transparency */
+    ::ng-deep .mat-mdc-select-panel {
+      background-color: #f3f4f6 !important;
+      opacity: 1 !important;
+    }
+    
+    ::ng-deep .mat-mdc-option {
+      background-color: #f3f4f6 !important;
+      color: #1f2937 !important;
+    }
+    
+    ::ng-deep .mat-mdc-option:hover {
+      background-color: #e5e7eb !important;
+    }
+    
+    ::ng-deep .mat-mdc-option.mat-selected {
+      background-color: #d1d5db !important;
+      color: #1f2937 !important;
+    }
   `]
 })
 export class HomeComponent implements OnInit {
