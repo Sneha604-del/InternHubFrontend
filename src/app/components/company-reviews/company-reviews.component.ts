@@ -260,9 +260,25 @@ export class CompanyReviewsComponent implements OnInit {
       return;
     }
 
+    const userStr = localStorage.getItem('user');
+    let studentId = null;
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        studentId = user.id;
+      } catch (e) {
+        console.error('Error parsing user:', e);
+      }
+    }
+
+    if (!studentId) {
+      alert('Please login to submit a review');
+      return;
+    }
+
     const params = new URLSearchParams();
     params.append('companyId', this.companyId.toString());
-    params.append('studentId', localStorage.getItem('userId') || '');
+    params.append('studentId', studentId.toString());
     params.append('rating', this.rating.toString());
     params.append('description', this.reviewDescription);
 
