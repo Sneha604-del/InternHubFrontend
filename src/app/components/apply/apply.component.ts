@@ -10,6 +10,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastService } from '../../services/toast.service';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
+import { PaymentService } from '../../services/payment.service';
 import { environment } from '../../../environment';
 
 @Component({
@@ -217,10 +218,30 @@ import { environment } from '../../../environment';
           <button type="submit" class="submit-btn" [class.btn-success]="applyForm.valid && !loading" 
                   [disabled]="loading || !applyForm.valid">
             <i class="pi pi-check" style="margin-right: 8px;"></i>
-            {{loading ? 'Submitting...' : (groupInfo ? 'Submit Group Application' : 'Apply Now')}}
+            {{loading ? 'Processing...' : (groupInfo ? 'Submit Group Application' : 'Apply Now')}}
           </button>
         </div>
       </form>
+
+      <!-- UPI Payment Modal -->
+      <div *ngIf="showPaymentModal" class="payment-modal-overlay" (click)="closePaymentModal()">
+        <div class="payment-modal" (click)="$event.stopPropagation()">
+          <h3>Payment Required</h3>
+          <p class="payment-amount">Application Fee: ₹{{applicationFee}}</p>
+          <div class="upi-input-section">
+            <label for="upiId">Enter UPI ID</label>
+            <input type="text" id="upiId" [(ngModel)]="upiId" placeholder="yourname@upi" 
+                   [ngModelOptions]="{standalone: true}" />
+            <small class="hint">For testing, use: success@razorpay</small>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-cancel" (click)="closePaymentModal()">Cancel</button>
+            <button class="btn-proceed" (click)="proceedToPayment()" [disabled]="!upiId">
+              Proceed to Payment
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
@@ -469,6 +490,117 @@ import { environment } from '../../../environment';
     .error-msg {
       font-size: 11px;
     }
+
+    .payment-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .payment-modal {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .payment-modal h3 {
+      margin: 0 0 16px 0;
+      color: #1a202c;
+      font-size: 20px;
+      border: none;
+      padding: 0;
+    }
+
+    .payment-amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+      margin: 0 0 24px 0;
+      text-align: center;
+    }
+
+    .upi-input-section {
+      margin-bottom: 24px;
+    }
+
+    .upi-input-section label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .upi-input-section input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    .upi-input-section input:focus {
+      border-color: #667eea;
+      outline: none;
+    }
+
+    .hint {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #666;
+      font-style: italic;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-cancel, .btn-proceed {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    .btn-proceed {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-proceed:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-proceed:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   `]
 })
 export class ApplyComponent implements OnInit {
@@ -517,6 +649,10 @@ export class ApplyComponent implements OnInit {
 
   studentIdFileName = '';
   resumeFileName = '';
+  showPaymentModal = false;
+  upiId = '';
+  applicationFee = 0;
+  requiresPayment = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -524,7 +660,8 @@ export class ApplyComponent implements OnInit {
     private http: HttpClient,
     private toastService: ToastService,
     private groupService: GroupService,
-    private authService: AuthService
+    private authService: AuthService,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit() {
@@ -534,6 +671,14 @@ export class ApplyComponent implements OnInit {
       this.companyName = params['companyName'] || '';
       this.groupId = +params['groupId'];
       
+      console.log('🔵 Internship ID:', this.internshipId);
+      
+      if (this.internshipId) {
+        this.loadInternshipDetails();
+      } else {
+        console.error('❌ No internship ID found!');
+      }
+      
       if (this.groupId) {
         this.loadGroupInfo();
       } else {
@@ -542,6 +687,19 @@ export class ApplyComponent implements OnInit {
           this.individualData.fullName = currentUser.fullName || '';
           this.individualData.email = currentUser.email || '';
         }
+      }
+    });
+  }
+
+  loadInternshipDetails() {
+    this.http.get(`${environment.apiUrl}/api/internships/${this.internshipId}`).subscribe({
+      next: (internship: any) => {
+        this.applicationFee = internship.applicationFee || 0;
+        this.requiresPayment = internship.requiresPayment || false;
+        console.log('✅ Internship loaded:', { applicationFee: this.applicationFee, requiresPayment: this.requiresPayment });
+      },
+      error: (error) => {
+        console.error('❌ Error loading internship details:', error);
       }
     });
   }
@@ -607,13 +765,84 @@ export class ApplyComponent implements OnInit {
       return;
     }
 
+    console.log('🔍 Checking payment:', { requiresPayment: this.requiresPayment, applicationFee: this.applicationFee });
+    
+    if (this.requiresPayment && this.applicationFee > 0) {
+      console.log('💳 Showing payment modal');
+      this.showPaymentModal = true;
+    } else {
+      console.log('✅ Submitting without payment');
+      this.submitApplication();
+    }
+  }
+
+  closePaymentModal() {
+    this.showPaymentModal = false;
+    this.upiId = '';
+  }
+
+  proceedToPayment() {
+    this.showPaymentModal = false;
+    this.initiatePayment();
+  }
+
+  initiatePayment() {
+    console.log('🔵 Initiating payment...');
     this.loading = true;
+
+    this.paymentService.createOrder(this.applicationFee).subscribe({
+      next: (orderData) => {
+        console.log('✅ Order created:', orderData);
+        const currentUser = this.authService.getCurrentUser();
+        orderData.userName = this.groupId ? this.teamData.teamLeader : this.individualData.fullName;
+        orderData.userEmail = this.groupId ? this.teamData.leaderEmail : this.individualData.email;
+        orderData.userPhone = this.groupId ? this.teamData.leaderContact : this.individualData.phone;
+
+        console.log('🔵 Opening Razorpay window...');
+        this.paymentService.openRazorpay(
+          orderData,
+          (response) => this.handlePaymentSuccess(response),
+          (error) => this.handlePaymentFailure(error)
+        );
+      },
+      error: (error) => {
+        console.error('❌ Order creation failed:', error);
+        this.loading = false;
+        this.toastService.showError('Failed to initiate payment', 'Payment Error');
+      }
+    });
+  }
+
+  handlePaymentSuccess(response: any) {
+    console.log('✅ Payment completed, submitting application...');
+    console.log('Payment response:', response);
+    this.submitApplication(response.razorpay_payment_id);
+  }
+
+  handlePaymentFailure(error: any) {
+    this.loading = false;
+    this.toastService.showError(error.message || 'Payment failed', 'Payment Error');
+  }
+
+  submitApplication(paymentId?: string) {
 
     const formData = new FormData();
     formData.append('internshipId', this.internshipId.toString());
     formData.append('college', this.applicationData.college);
     formData.append('degree', this.applicationData.degree);
     formData.append('yearOfStudy', this.applicationData.yearOfStudy);
+    
+    // Add payment info
+    if (this.requiresPayment && this.applicationFee > 0) {
+      formData.append('paymentStatus', 'PAID');
+      formData.append('paymentAmount', this.applicationFee.toString());
+      if (paymentId) {
+        formData.append('paymentId', paymentId);
+      }
+    } else {
+      formData.append('paymentStatus', 'NOT_REQUIRED');
+      formData.append('paymentAmount', '0');
+    }
     
     if (this.groupId) {
       formData.append('groupId', this.groupId.toString());

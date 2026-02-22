@@ -28,6 +28,7 @@ import { AuthService } from '../../services/auth.service';
           <p><strong>Location:</strong> {{internship.location}}</p>
           <p><strong>Duration:</strong> {{internship.duration}}</p>
           <p><strong>Stipend:</strong> {{internship.stipend}}</p>
+          <p *ngIf="internship.requiresPayment" class="app-fee"><strong>Application Fee:</strong> ₹{{internship.applicationFee || 0}}</p>
           <div class="badge" [class.paid]="internship.isPaid" [class.free]="!internship.isPaid">
             {{internship.isPaid ? 'PAID' : 'FREE'}}
           </div>
@@ -60,6 +61,7 @@ import { AuthService } from '../../services/auth.service';
 
     .item p { margin: 10px 0; font-size: 16px; color: #555; line-height: 1.6; }
     .item strong { color: #222; font-weight: 600; }
+    .app-fee { color: #2196F3; font-weight: 600; background: #E3F2FD; padding: 8px 12px; border-radius: 6px; }
 
     .btn { background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 16px; width: 100%; font-weight: 500; transition: background 0.2s; }
     .btn:hover { background: #1976D2; }

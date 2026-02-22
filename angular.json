@@ -31,7 +31,8 @@
             ],
             "styles": [
               "node_modules/primeicons/primeicons.css",
-              "src/styles.css"
+              "src/styles.css",
+              "src/dark-theme.css"
             ]
           },
           "configurations": {
@@ -95,7 +96,8 @@
             ],
             "styles": [
               "node_modules/primeicons/primeicons.css",
-              "src/styles.css"
+              "src/styles.css",
+              "src/dark-theme.css"
             ]
           }
         }

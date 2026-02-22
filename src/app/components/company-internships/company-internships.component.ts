@@ -26,6 +26,7 @@ import { ApiService } from '../../services/api.service';
           <p><strong>Location:</strong> {{internship.location}}</p>
           <p><strong>Duration:</strong> {{internship.duration}}</p>
           <p><strong>Stipend:</strong> {{internship.stipend}}</p>
+          <p *ngIf="internship.requiresPayment" class="app-fee"><strong>Application Fee:</strong> ₹{{internship.applicationFee || 0}}</p>
           <span class="badge" [class.paid]="internship.isPaid">
             {{internship.isPaid ? 'PAID' : 'FREE'}}
           </span>
@@ -44,6 +45,7 @@ import { ApiService } from '../../services/api.service';
     .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .card h3 { margin: 0 0 12px; font-size: 18px; }
     .card p { margin: 8px 0; font-size: 14px; }
+    .app-fee { color: #667eea; font-weight: 600; background: #E8EAF6; padding: 8px 12px; border-radius: 6px; }
     .badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; margin: 12px 0; }
     .badge.paid { background: #4CAF50; color: white; }
     .badge:not(.paid) { background: #FF9800; color: white; }
