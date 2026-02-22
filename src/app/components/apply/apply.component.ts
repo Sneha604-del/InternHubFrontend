@@ -223,25 +223,7 @@ import { environment } from '../../../environment';
         </div>
       </form>
 
-      <!-- UPI Payment Modal -->
-      <div *ngIf="showPaymentModal" class="payment-modal-overlay" (click)="closePaymentModal()">
-        <div class="payment-modal" (click)="$event.stopPropagation()">
-          <h3>Payment Required</h3>
-          <p class="payment-amount">Application Fee: ₹{{applicationFee}}</p>
-          <div class="upi-input-section">
-            <label for="upiId">Enter UPI ID</label>
-            <input type="text" id="upiId" [(ngModel)]="upiId" placeholder="yourname@upi" 
-                   [ngModelOptions]="{standalone: true}" />
-            <small class="hint">For testing, use: success@razorpay</small>
-          </div>
-          <div class="modal-actions">
-            <button class="btn-cancel" (click)="closePaymentModal()">Cancel</button>
-            <button class="btn-proceed" (click)="proceedToPayment()" [disabled]="!upiId">
-              Proceed to Payment
-            </button>
-          </div>
-        </div>
-      </div>
+
     </div>
   `,
   styles: [`
@@ -490,117 +472,6 @@ import { environment } from '../../../environment';
     .error-msg {
       font-size: 11px;
     }
-
-    .payment-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .payment-modal {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    }
-
-    .payment-modal h3 {
-      margin: 0 0 16px 0;
-      color: #1a202c;
-      font-size: 20px;
-      border: none;
-      padding: 0;
-    }
-
-    .payment-amount {
-      font-size: 24px;
-      font-weight: 700;
-      color: #667eea;
-      margin: 0 0 24px 0;
-      text-align: center;
-    }
-
-    .upi-input-section {
-      margin-bottom: 24px;
-    }
-
-    .upi-input-section label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
-      font-size: 14px;
-    }
-
-    .upi-input-section input {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 15px;
-    }
-
-    .upi-input-section input:focus {
-      border-color: #667eea;
-      outline: none;
-    }
-
-    .hint {
-      display: block;
-      margin-top: 6px;
-      font-size: 12px;
-      color: #666;
-      font-style: italic;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .btn-cancel, .btn-proceed {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-cancel {
-      background: #e5e7eb;
-      color: #374151;
-    }
-
-    .btn-cancel:hover {
-      background: #d1d5db;
-    }
-
-    .btn-proceed {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .btn-proceed:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-proceed:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
   `]
 })
 export class ApplyComponent implements OnInit {
@@ -649,8 +520,6 @@ export class ApplyComponent implements OnInit {
 
   studentIdFileName = '';
   resumeFileName = '';
-  showPaymentModal = false;
-  upiId = '';
   applicationFee = 0;
   requiresPayment = false;
 
@@ -768,22 +637,12 @@ export class ApplyComponent implements OnInit {
     console.log('🔍 Checking payment:', { requiresPayment: this.requiresPayment, applicationFee: this.applicationFee });
     
     if (this.requiresPayment && this.applicationFee > 0) {
-      console.log('💳 Showing payment modal');
-      this.showPaymentModal = true;
+      console.log('💳 Initiating payment directly');
+      this.initiatePayment();
     } else {
       console.log('✅ Submitting without payment');
       this.submitApplication();
     }
-  }
-
-  closePaymentModal() {
-    this.showPaymentModal = false;
-    this.upiId = '';
-  }
-
-  proceedToPayment() {
-    this.showPaymentModal = false;
-    this.initiatePayment();
   }
 
   initiatePayment() {
