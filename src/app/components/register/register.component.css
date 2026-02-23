@@ -21,6 +21,95 @@
   margin: 12px 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  .register-card {
+    background: #1e293b !important;
+  }
+  
+  mat-card-title {
+    color: #e2e8f0 !important;
+  }
+  
+  .register-card .mat-mdc-text-field-wrapper {
+    background: #0f172a !important;
+    border-color: #475569 !important;
+    border-width: 2px !important;
+  }
+  
+  .register-card input.mat-mdc-input-element,
+  .register-card input[matInput] {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    -webkit-text-fill-color: #e2e8f0 !important;
+  }
+  
+  .register-card input.mat-mdc-input-element::placeholder {
+    color: #64748b !important;
+    opacity: 1 !important;
+  }
+  
+  .register-card .mdc-text-field__input {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+  }
+  
+  .password-requirements {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+  }
+  
+  .requirements-title {
+    color: #e2e8f0 !important;
+  }
+  
+  .login-link {
+    color: #94a3b8 !important;
+  }
+  
+  .login-link a {
+    color: #60a5fa !important;
+  }
+  
+  .logo {
+    filter: brightness(0) invert(1) !important;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-label,
+  ::ng-deep .mat-mdc-floating-label,
+  ::ng-deep .mat-mdc-form-field-hint,
+  ::ng-deep .mat-mdc-form-field-error {
+    display: none !important;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-focus-overlay {
+    background-color: transparent !important;
+  }
+  
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background: #0f172a !important;
+  }
+  
+  ::ng-deep .mat-mdc-checkbox-label {
+    color: #e2e8f0 !important;
+  }
+  
+  ::ng-deep .p-dialog,
+  ::ng-deep .p-dialog .p-dialog-content {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+  }
+  
+  ::ng-deep .p-dialog .p-dialog-header,
+  ::ng-deep .p-dialog .p-dialog-footer {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+  }
+  
+  .dialog-content h3 {
+    color: #60a5fa !important;
+  }
+}
+
 .logo-container {
   display: flex;
   justify-content: center;
@@ -28,7 +117,7 @@
 }
 
 .logo {
-  width: 70px;
+  width: 60px;
   height: auto;
   background: none !important;
   background-color: transparent !important;
@@ -42,8 +131,8 @@ mat-card-title {
   text-align: center;
   color: #333;
   font-weight: 500;
-  margin-bottom: 10px;
-  font-size: 1.15rem !important;
+  margin-bottom: 8px;
+  font-size: 1.05rem !important;
 }
 
 .register-card mat-form-field {
@@ -64,16 +153,103 @@ mat-card-title {
   font-size: 14px !important;
 }
 
+@media (prefers-color-scheme: dark) {
+  .register-card .mat-mdc-text-field-wrapper,
+  .register-card .mat-mdc-form-field,
+  .register-card .mdc-text-field,
+  .register-card .mat-mdc-form-field-flex {
+    background: #0f172a !important;
+    background-color: #0f172a !important;
+  }
+  
+  .register-card input,
+  .register-card input[type="text"],
+  .register-card input[type="email"],
+  .register-card input[type="password"],
+  .register-card input[type="date"],
+  .register-card select {
+    background: #0f172a !important;
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .register-card .mat-mdc-select-value,
+  .register-card .mat-mdc-select-trigger {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+  }
+  
+  .register-card .mat-mdc-form-field-infix {
+    padding: 0 !important;
+    width: 100% !important;
+  }
+}
+
 .full-width {
   width: 100%;
-  margin-bottom: 10px;
+  height: 40px;
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.form-group {
+  margin-bottom: 8px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-group select {
+  width: 100%;
+  height: 40px;
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 45px;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  cursor: pointer;
+  user-select: none;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.eye-icon svg {
+  display: block;
 }
 
 .register-btn {
-  height: 44px !important;
-  font-size: 15px !important;
+  height: 40px !important;
+  font-size: 14px !important;
   font-weight: 500;
-  margin-top: 10px !important;
+  margin-top: 8px !important;
   border-radius: 8px !important;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white !important;
@@ -82,9 +258,9 @@ mat-card-title {
 
 .login-link {
   text-align: center;
-  margin: 10px 0 0 0;
+  margin: 8px 0 0 0;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .login-link a {
@@ -102,11 +278,11 @@ mat-card-header {
 }
 
 mat-card-content {
-  padding: 10px 0 !important;
+  padding: 8px 0 !important;
 }
 
 mat-card-actions {
-  padding: 8px 0 0 0 !important;
+  padding: 6px 0 0 0 !important;
   justify-content: center;
 }
 
@@ -182,16 +358,16 @@ mat-card-actions {
 
 /* Password Requirements Styles */
 .password-requirements {
-  margin: 10px 0 20px 0;
-  padding: 15px;
+  margin: 8px 0 12px 0;
+  padding: 10px;
   background-color: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
 }
 
 .requirements-title {
-  margin: 0 0 10px 0;
-  font-size: 14px;
+  margin: 0 0 6px 0;
+  font-size: 12px;
   font-weight: 500;
   color: #495057;
 }
@@ -205,8 +381,8 @@ mat-card-actions {
 .requirements-list li {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
-  font-size: 13px;
+  margin-bottom: 4px;
+  font-size: 11px;
   transition: color 0.3s ease;
 }
 
@@ -236,11 +412,11 @@ mat-card-actions {
 
 /* Terms and Conditions Styles */
 .terms-container {
-  margin: 20px 0;
+  margin: 12px 0;
 }
 
 .terms-container mat-checkbox {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .terms-container a {
