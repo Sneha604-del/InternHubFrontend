@@ -7,12 +7,13 @@ export class FavoritesService {
   private storageKey = 'favoriteInternships';
 
   getFavorites(): any[] {
-    const stored = localStorage.getItem(this.storageKey);
-    return stored ? JSON.parse(stored) : [];
+    const favorites = localStorage.getItem(this.storageKey);
+    return favorites ? JSON.parse(favorites) : [];
   }
 
   isFavorite(internshipId: number): boolean {
-    return this.getFavorites().some(fav => fav.id === internshipId);
+    const favorites = this.getFavorites();
+    return favorites.some(fav => fav.id === internshipId);
   }
 
   toggleFavorite(internship: any): boolean {

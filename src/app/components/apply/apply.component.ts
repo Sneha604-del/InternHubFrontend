@@ -7,6 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToastService } from '../../services/toast.service';
 import { GroupService } from '../../services/group.service';
 import { AuthService } from '../../services/auth.service';
@@ -16,7 +18,7 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-apply',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, FileUploadModule, InputNumberModule],
+  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, FileUploadModule, InputNumberModule, MatSelectModule, MatFormFieldModule],
   template: `
     <div class="group-details-container">
       <div class="header">
@@ -40,20 +42,24 @@ import { environment } from '../../../environment';
             <div class="field">
               <label for="phone">Phone Number *</label>
               <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
-                     required [class.error-field]="isFieldInvalid('phone')" />
+                     required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
+                     [class.error-field]="isFieldInvalid('phone')" />
+              <small class="error-msg" *ngIf="isFieldInvalid('phone')">Phone number must be exactly 10 digits</small>
             </div>
             <div class="field">
               <label for="duration">Preferred Duration (Months) *</label>
-              <select id="duration" [(ngModel)]="individualData.duration" name="duration" 
-                      required [class.error-field]="isFieldInvalid('duration')">
-                <option value="">Select duration</option>
-                <option value="1">1 Month</option>
-                <option value="2">2 Months</option>
-                <option value="3">3 Months</option>
-                <option value="4">4 Months</option>
-                <option value="5">5 Months</option>
-                <option value="6">6 Months</option>
-              </select>
+              <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-select id="duration" [(ngModel)]="individualData.duration" name="duration" 
+                            required [class.error-field]="isFieldInvalid('duration')">
+                  <mat-option value="">Select duration</mat-option>
+                  <mat-option value="1">1 Month</mat-option>
+                  <mat-option value="2">2 Months</mat-option>
+                  <mat-option value="3">3 Months</mat-option>
+                  <mat-option value="4">4 Months</mat-option>
+                  <mat-option value="5">5 Months</mat-option>
+                  <mat-option value="6">6 Months</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
           </div>
 
@@ -101,7 +107,9 @@ import { environment } from '../../../environment';
             <div class="field">
               <label for="leaderContact">Team Leader Contact *</label>
               <input pInputText id="leaderContact" [(ngModel)]="teamData.leaderContact" name="leaderContact" 
-                     required [class.error-field]="isFieldInvalid('leaderContact')" />
+                     required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
+                     [class.error-field]="isFieldInvalid('leaderContact')" />
+              <small class="error-msg" *ngIf="isFieldInvalid('leaderContact')">Phone number must be exactly 10 digits</small>
             </div>
             <div class="field">
               <label for="leaderEmail">Team Leader Email *</label>
@@ -180,15 +188,17 @@ import { environment } from '../../../environment';
           </div>
           <div class="field">
             <label for="yearOfStudy">Year of study *</label>
-            <select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
-                    required [class.error-field]="isFieldInvalid('yearOfStudy')">
-              <option value="">Select year</option>
-              <option value="1st year">1st year</option>
-              <option value="2nd year">2nd year</option>
-              <option value="3rd year">3rd year</option>
-              <option value="4th year">4th year</option>
-              <option value="5th year">5th year</option>
-            </select>
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
+                          required [class.error-field]="isFieldInvalid('yearOfStudy')">
+                <mat-option value="">Select year</mat-option>
+                <mat-option value="1st year">1st year</mat-option>
+                <mat-option value="2nd year">2nd year</mat-option>
+                <mat-option value="3rd year">3rd year</mat-option>
+                <mat-option value="4th year">4th year</mat-option>
+                <mat-option value="5th year">5th year</mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
         </div>
 
@@ -200,7 +210,7 @@ import { environment } from '../../../environment';
                    accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
             <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
                       icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF, JPG, or PNG (Max 5MB)</small>
+            <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB)</small>
             <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
           </div>
           <div class="field">
@@ -209,7 +219,7 @@ import { environment } from '../../../environment';
                    accept=".pdf" style="display: none;">
             <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
                       icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF only (Max 5MB)</small>
+            <small class="file-hint">Upload PDF only (Max 256KB)</small>
             <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
           </div>
         </div>
@@ -472,6 +482,45 @@ import { environment } from '../../../environment';
     .error-msg {
       font-size: 11px;
     }
+
+    ::ng-deep .mat-mdc-form-field {
+      background: white;
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: white !important;
+      padding: 0 !important;
+    }
+
+    ::ng-deep .mat-mdc-select {
+      background: white;
+      padding: 10px 12px !important;
+      font-size: 14px !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-flex {
+      background-color: white !important;
+      height: 44px !important;
+      align-items: center !important;
+    }
+
+    ::ng-deep .mat-mdc-select-trigger {
+      background-color: white !important;
+      height: 44px !important;
+    }
+
+    ::ng-deep .mat-mdc-select-value {
+      background-color: white !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-infix {
+      padding: 8px 0 !important;
+      min-height: auto !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none !important;
+    }
   `]
 })
 export class ApplyComponent implements OnInit {
@@ -605,8 +654,8 @@ export class ApplyComponent implements OnInit {
     this.fileErrors[field as keyof typeof this.fileErrors] = '';
     
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        this.fileErrors[field as keyof typeof this.fileErrors] = 'File size is too big. Maximum 5MB allowed';
+      if (file.size > 256 * 1024) {
+        this.fileErrors[field as keyof typeof this.fileErrors] = 'File size is too big. Maximum 256KB allowed';
         event.target.value = '';
         return;
       }
@@ -617,6 +666,10 @@ export class ApplyComponent implements OnInit {
         this.resumeFileName = file.name;
       }
     }
+  }
+
+  onlyNumbers(event: any) {
+    event.target.value = event.target.value.replace(/[^0-9]/g, '');
   }
 
   onSubmit() {

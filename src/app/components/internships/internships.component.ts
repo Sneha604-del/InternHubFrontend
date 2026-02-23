@@ -13,8 +13,16 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="page">
-      <h1>Internships at {{companyName}}</h1>
+    <div class="page" (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()">
+      <div class="pull-indicator" [class.visible]="pullDistance > 0">
+        <div class="pull-content">
+          <i class="pi pi-refresh" [class.spin]="loading"></i>
+          <span>{{pullDistance >= 80 ? 'Release to refresh' : 'Pull to refresh'}}</span>
+        </div>
+      </div>
+      <div class="header-row">
+        <h1>Internships at {{companyName}}</h1>
+      </div>
 
       <div *ngIf="internships.length > 0" class="list">
         <div *ngFor="let internship of internships" class="item">
@@ -45,8 +53,15 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
   styles: [`
-    .page { padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 100%; background: #f5f5f5; }
-    h1 { margin: 24px 0; font-size: 28px; font-weight: 600; color: #222; text-align: center; }
+    .page { padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 100%; background: #f5f5f5; padding-bottom: 100px; position: relative; }
+    .pull-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transition: opacity 0.2s; }
+    .pull-indicator.visible { opacity: 1; }
+    .pull-content { display: flex; align-items: center; gap: 8px; color: white; padding: 10px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .pull-content i { font-size: 16px; }
+    .pull-content i.spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .header-row { margin-bottom: 20px; margin-top: 0; }
+    h1 { margin: 0; font-size: 28px; font-weight: 600; color: #222; }
 
     .list { display: grid; gap: 20px; grid-template-columns: 1fr; }
     .item { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); position: relative; border-left: 5px solid #2196F3; transition: transform 0.2s, box-shadow 0.2s; }
@@ -87,6 +102,10 @@ export class InternshipsComponent implements OnInit {
   companyName: string = '';
   internships: any[] = [];
   userGroup: any = null;
+  loading = false;
+  pullDistance = 0;
+  startY = 0;
+  isPulling = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -123,13 +142,16 @@ export class InternshipsComponent implements OnInit {
   }
 
   loadInternships() {
+    this.loading = true;
     this.apiService.getInternshipsByCompany(this.companyId, this.companyName).subscribe({
       next: (response) => {
         this.internships = response.data || response;
+        this.loading = false;
       },
       error: (err) => {
         console.error('Error loading internships:', err);
         this.internships = [];
+        this.loading = false;
       }
     });
   }
@@ -156,5 +178,30 @@ export class InternshipsComponent implements OnInit {
     return this.favoritesService.isFavorite(internshipId);
   }
 
+  onTouchStart(event: TouchEvent) {
+    if (window.scrollY === 0) {
+      this.startY = event.touches[0].clientY;
+      this.isPulling = true;
+    }
+  }
 
+  onTouchMove(event: TouchEvent) {
+    if (!this.isPulling || this.loading) return;
+    const currentY = event.touches[0].clientY;
+    const distance = currentY - this.startY;
+    if (distance > 0 && window.scrollY === 0) {
+      this.pullDistance = Math.min(distance * 0.5, 100);
+      if (this.pullDistance > 10) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  onTouchEnd() {
+    if (this.pullDistance >= 80 && !this.loading) {
+      this.loadInternships();
+    }
+    this.isPulling = false;
+    this.pullDistance = 0;
+  }
 }

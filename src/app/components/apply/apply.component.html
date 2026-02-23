@@ -20,20 +20,24 @@
         <div class="field">
           <label for="phone">Phone Number *</label>
           <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
-                 required [class.error-field]="isFieldInvalid('phone')" />
+                 required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
+                 [class.error-field]="isFieldInvalid('phone')" />
+          <small class="error-msg" *ngIf="isFieldInvalid('phone')">Phone number must be exactly 10 digits</small>
         </div>
         <div class="field">
           <label for="duration">Preferred Duration (Months) *</label>
-          <select id="duration" [(ngModel)]="individualData.duration" name="duration" 
-                  required [class.error-field]="isFieldInvalid('duration')">
-            <option value="">Select duration</option>
-            <option value="1">1 Month</option>
-            <option value="2">2 Months</option>
-            <option value="3">3 Months</option>
-            <option value="4">4 Months</option>
-            <option value="5">5 Months</option>
-            <option value="6">6 Months</option>
-          </select>
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-select id="duration" [(ngModel)]="individualData.duration" name="duration" 
+                        required [class.error-field]="isFieldInvalid('duration')">
+              <mat-option value="">Select duration</mat-option>
+              <mat-option value="1">1 Month</mat-option>
+              <mat-option value="2">2 Months</mat-option>
+              <mat-option value="3">3 Months</mat-option>
+              <mat-option value="4">4 Months</mat-option>
+              <mat-option value="5">5 Months</mat-option>
+              <mat-option value="6">6 Months</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
       </div>
 
@@ -81,7 +85,9 @@
         <div class="field">
           <label for="leaderContact">Team Leader Contact *</label>
           <input pInputText id="leaderContact" [(ngModel)]="teamData.leaderContact" name="leaderContact" 
-                 required [class.error-field]="isFieldInvalid('leaderContact')" />
+                 required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
+                 [class.error-field]="isFieldInvalid('leaderContact')" />
+          <small class="error-msg" *ngIf="isFieldInvalid('leaderContact')">Phone number must be exactly 10 digits</small>
         </div>
         <div class="field">
           <label for="leaderEmail">Team Leader Email *</label>
@@ -160,15 +166,17 @@
       </div>
       <div class="field">
         <label for="yearOfStudy">Year of study *</label>
-        <select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
-                required [class.error-field]="isFieldInvalid('yearOfStudy')">
-          <option value="">Select year</option>
-          <option value="1st year">1st year</option>
-          <option value="2nd year">2nd year</option>
-          <option value="3rd year">3rd year</option>
-          <option value="4th year">4th year</option>
-          <option value="5th year">5th year</option>
-        </select>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
+                      required [class.error-field]="isFieldInvalid('yearOfStudy')">
+            <mat-option value="">Select year</mat-option>
+            <mat-option value="1st year">1st year</mat-option>
+            <mat-option value="2nd year">2nd year</mat-option>
+            <mat-option value="3rd year">3rd year</mat-option>
+            <mat-option value="4th year">4th year</mat-option>
+            <mat-option value="5th year">5th year</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
     </div>
 
@@ -180,7 +188,7 @@
                accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
         <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
                   icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-        <small class="file-hint">Upload PDF, JPG, or PNG (Max 5MB)</small>
+        <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB)</small>
         <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
       </div>
       <div class="field">
@@ -189,7 +197,7 @@
                accept=".pdf" style="display: none;">
         <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
                   icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-        <small class="file-hint">Upload PDF only (Max 5MB)</small>
+        <small class="file-hint">Upload PDF only (Max 256KB)</small>
         <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
       </div>
     </div>

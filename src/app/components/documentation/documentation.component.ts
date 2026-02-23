@@ -13,11 +13,19 @@ import { DocumentService } from '../../services/document.service';
   template: `
     <div class="doc-container" 
          (touchstart)="onTouchStart($event)" 
+         (touchmove)="onTouchMove($event)"
          (touchend)="onTouchEnd($event)"
          (mousedown)="onMouseDown($event)"
          (mousemove)="onMouseMove($event)"
          (mouseup)="onMouseUp($event)"
          (wheel)="onWheel($event)">
+
+      <div class="pull-indicator" [class.visible]="pullDistance > 0">
+        <div class="pull-content">
+          <mat-icon class="refresh-icon" [class.spin]="loading">refresh</mat-icon>
+          <span>{{pullDistance >= 80 ? 'Release to refresh' : 'Pull to refresh'}}</span>
+        </div>
+      </div>
 
       <!-- Tab Navigation -->
       <div class="tab-navigation">
@@ -50,9 +58,25 @@ import { DocumentService } from '../../services/document.service';
         <div class="content-slider" [style.transform]="'translateX(' + getSlideOffset() + '%)'">
           <!-- Documents Tab -->
           <div class="content-section slide">
-            <div *ngIf="loading && activeTab === 'documents'" class="loading-container">
-              <mat-spinner diameter="40"></mat-spinner>
-              <p class="loading-text">Loading applications...</p>
+            <div *ngIf="loading && activeTab === 'documents'" class="skeleton-container">
+              <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+                <div class="skeleton-header">
+                  <div class="skeleton-icon"></div>
+                  <div class="skeleton-info">
+                    <div class="skeleton-line skeleton-title"></div>
+                    <div class="skeleton-line skeleton-subtitle"></div>
+                  </div>
+                  <div class="skeleton-badge"></div>
+                </div>
+                <div class="skeleton-details">
+                  <div class="skeleton-line skeleton-detail"></div>
+                  <div class="skeleton-line skeleton-detail"></div>
+                </div>
+                <div class="skeleton-actions">
+                  <div class="skeleton-button"></div>
+                  <div class="skeleton-button"></div>
+                </div>
+              </div>
             </div>
             
             <div *ngIf="!loading && applications.length === 0" class="empty-state">
@@ -138,9 +162,20 @@ import { DocumentService } from '../../services/document.service';
           
           <!-- Certificates Tab -->
           <div class="content-section slide">
-            <div *ngIf="loading && activeTab === 'certificate'" class="loading-container">
-              <mat-spinner diameter="40"></mat-spinner>
-              <p class="loading-text">Loading certificates...</p>
+            <div *ngIf="loading && activeTab === 'certificate'" class="skeleton-container">
+              <div class="skeleton-card" *ngFor="let i of [1,2]">
+                <div class="skeleton-header">
+                  <div class="skeleton-icon"></div>
+                  <div class="skeleton-info">
+                    <div class="skeleton-line skeleton-title"></div>
+                    <div class="skeleton-line skeleton-subtitle"></div>
+                  </div>
+                  <div class="skeleton-badge"></div>
+                </div>
+                <div class="skeleton-actions">
+                  <div class="skeleton-button full"></div>
+                </div>
+              </div>
             </div>
             
             <div *ngIf="!loading && certificates.length === 0" class="empty-state">
@@ -189,7 +224,15 @@ import { DocumentService } from '../../services/document.service';
       -moz-user-select: none;
       -ms-user-select: none;
       overflow-x: hidden;
+      position: relative;
     }
+    
+    .pull-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transition: opacity 0.2s; }
+    .pull-indicator.visible { opacity: 1; }
+    .pull-content { display: flex; align-items: center; gap: 8px; color: white; padding: 10px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .refresh-icon { font-size: 16px !important; width: 16px !important; height: 16px !important; }
+    .refresh-icon.spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     
     .tab-navigation {
       background: white;
@@ -288,18 +331,101 @@ import { DocumentService } from '../../services/document.service';
       flex-shrink: 0;
     }
     
-    .loading-container {
+    .skeleton-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
       gap: 16px;
     }
     
-    .loading-text {
-      color: #666;
-      font-size: 14px;
+    .skeleton-card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .skeleton-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .skeleton-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    .skeleton-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .skeleton-line {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+    
+    .skeleton-title {
+      height: 16px;
+      width: 70%;
+    }
+    
+    .skeleton-subtitle {
+      height: 14px;
+      width: 50%;
+    }
+    
+    .skeleton-badge {
+      width: 60px;
+      height: 24px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    .skeleton-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .skeleton-detail {
+      height: 14px;
+      width: 80%;
+    }
+    
+    .skeleton-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .skeleton-button {
+      height: 32px;
+      width: 100px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    .skeleton-button.full {
+      width: 100%;
+      height: 40px;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
     
     .empty-state {
@@ -650,6 +776,9 @@ export class DocumentationComponent implements OnInit {
   private mouseStartX = 0;
   private mouseEndX = 0;
   private isDragging = false;
+  pullDistance = 0;
+  private startY = 0;
+  private isPulling = false;
 
   constructor(private documentService: DocumentService, private router: Router) {}
 
@@ -692,10 +821,33 @@ export class DocumentationComponent implements OnInit {
   }
 
   onTouchStart(event: TouchEvent) {
+    if (window.scrollY === 0) {
+      this.startY = event.touches[0].clientY;
+      this.isPulling = true;
+    }
     this.touchStartX = event.changedTouches[0].screenX;
   }
 
+  onTouchMove(event: TouchEvent) {
+    if (this.isPulling && !this.loading) {
+      const currentY = event.touches[0].clientY;
+      const distance = currentY - this.startY;
+      if (distance > 0 && window.scrollY === 0) {
+        this.pullDistance = Math.min(distance * 0.5, 100);
+      }
+    }
+  }
+
   onTouchEnd(event: TouchEvent) {
+    if (this.pullDistance >= 80 && !this.loading) {
+      if (this.activeTab === 'documents') {
+        this.loadApplications();
+      } else {
+        this.loadCertificates();
+      }
+    }
+    this.isPulling = false;
+    this.pullDistance = 0;
     this.touchEndX = event.changedTouches[0].screenX;
     this.handleSwipe();
   }
@@ -709,6 +861,13 @@ export class DocumentationComponent implements OnInit {
 
   onMouseMove(event: MouseEvent) {
     if (!this.isDragging) return;
+    if (this.isPulling && !this.loading) {
+      const currentY = event.clientY;
+      const distance = currentY - this.startY;
+      if (distance > 0 && window.scrollY === 0) {
+        this.pullDistance = Math.min(distance * 0.5, 100);
+      }
+    }
     event.preventDefault();
   }
 

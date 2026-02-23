@@ -18,9 +18,24 @@ import { ToastService } from '../../services/toast.service';
   imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatListModule, MatProgressSpinnerModule],
   template: `
     <div class="profile-container">
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p class="loading-text">Loading profile...</p>
+      <div *ngIf="loading" class="skeleton-container">
+        <div class="skeleton-header">
+          <div class="skeleton-avatar"></div>
+          <div class="skeleton-info">
+            <div class="skeleton-line skeleton-name"></div>
+            <div class="skeleton-line skeleton-role"></div>
+          </div>
+        </div>
+        <div class="skeleton-menu">
+          <div class="skeleton-menu-item" *ngFor="let item of [1,2,3,4,5]">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-content">
+              <div class="skeleton-line skeleton-title"></div>
+              <div class="skeleton-line skeleton-subtitle"></div>
+            </div>
+          </div>
+        </div>
+        <div class="skeleton-button"></div>
       </div>
 
       <div *ngIf="!loading && profile" class="content">
@@ -168,18 +183,107 @@ import { ToastService } from '../../services/toast.service';
       background: #f5f5f5;
     }
     
-    .loading-container {
+    .skeleton-container {
       display: flex;
       flex-direction: column;
+      gap: 12px;
+    }
+    
+    .skeleton-header {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      min-height: 300px;
       gap: 16px;
     }
     
-    .loading-text {
-      color: #666;
-      font-size: 14px;
+    .skeleton-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    .skeleton-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .skeleton-line {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+    
+    .skeleton-name {
+      height: 20px;
+      width: 60%;
+    }
+    
+    .skeleton-role {
+      height: 14px;
+      width: 40%;
+    }
+    
+    .skeleton-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .skeleton-menu-item {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .skeleton-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    
+    .skeleton-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .skeleton-title {
+      height: 16px;
+      width: 50%;
+    }
+    
+    .skeleton-subtitle {
+      height: 13px;
+      width: 70%;
+    }
+    
+    .skeleton-button {
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      margin-top: 12px;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
     
     .profile-section {

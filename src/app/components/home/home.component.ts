@@ -16,7 +16,13 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
   standalone: true,
   imports: [CommonModule, FormsModule, MatSelectModule, MatFormFieldModule, CompanyResultsComponent],
   template: `
-    <div class="home-container">
+    <div class="home-container" (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()">
+      <div class="pull-indicator" [class.visible]="pullDistance > 0">
+        <div class="pull-content">
+          <i class="pi pi-refresh" [class.spin]="refreshing"></i>
+          <span>{{pullDistance >= 80 ? 'Release to refresh' : 'Pull to refresh'}}</span>
+        </div>
+      </div>
       <!-- Welcome Banner -->
       <div class="welcome-banner">
         <div class="banner-content">
@@ -29,9 +35,26 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
         </div>
       </div>
 
+      <!-- Skeleton Loading -->
+      <div *ngIf="loading" class="skeleton-wrapper">
+        <div class="skeleton-search">
+          <div class="skeleton-line skeleton-title"></div>
+          <div class="skeleton-field"></div>
+          <div class="skeleton-field"></div>
+        </div>
+        <div class="skeleton-categories">
+          <div class="skeleton-line skeleton-title"></div>
+          <div class="skeleton-grid">
+            <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Search -->
-      <div class="search-card" #searchCard [class.highlight]="highlightSearch">
-        <h2>Find Internships</h2>
+      <div *ngIf="!loading" class="search-card" #searchCard [class.highlight]="highlightSearch">
+        <div class="search-header">
+          <h2>Find Internships</h2>
+        </div>
         <div class="search-form">
           <mat-form-field appearance="outline" class="search-field">
             <mat-label>Select Your Course</mat-label>
@@ -54,13 +77,34 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       </div>
 
       <!-- Companies Results Component -->
+      <div *ngIf="loadingCompanies" class="skeleton-companies">
+        <div class="skeleton-line skeleton-title" style="width: 40%; margin: 0 16px 12px;"></div>
+        <div class="skeleton-companies-grid">
+          <div class="skeleton-company-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+        </div>
+      </div>
+      
       <app-company-results 
+        *ngIf="!loadingCompanies"
         [companies]="companies"
         (viewInternships)="loadInternships($event)">
       </app-company-results>
 
       <!-- Internships Section -->
-      <div class="internships-section" *ngIf="internships.length > 0">
+      <div *ngIf="loadingInternships" class="skeleton-internships">
+        <div class="skeleton-line skeleton-title" style="width: 50%; margin: 0 16px 16px;"></div>
+        <div class="skeleton-internships-grid">
+          <div class="skeleton-internship-card" *ngFor="let i of [1,2,3]">
+            <div class="skeleton-line" style="height: 20px; width: 60%; margin-bottom: 16px;"></div>
+            <div class="skeleton-line" style="height: 14px; width: 80%; margin-bottom: 8px;"></div>
+            <div class="skeleton-line" style="height: 14px; width: 70%; margin-bottom: 8px;"></div>
+            <div class="skeleton-line" style="height: 14px; width: 75%; margin-bottom: 12px;"></div>
+            <div class="skeleton-line" style="height: 40px; width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="internships-section" *ngIf="!loadingInternships && internships.length > 0">
         <h2>Available Internships at {{selectedCompanyName}}</h2>
         <div class="internships-grid">
           <div *ngFor="let internship of internships" class="internship-card">
@@ -79,7 +123,7 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       </div>
 
       <!-- Popular Categories -->
-      <div class="categories-section">
+      <div *ngIf="!loading" class="categories-section">
         <h2>Popular Categories</h2>
         <div class="categories-grid">
           <div class="category-card" (click)="selectPopularCategory('Software Development')">
@@ -106,7 +150,7 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       </div>
 
       <!-- Getting Started -->
-      <div class="getting-started">
+      <div *ngIf="!loading" class="getting-started">
         <h2>Getting Started</h2>
         <div class="steps">
           <div class="step">
@@ -182,7 +226,14 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       transition: all 0.3s ease;
       position: relative;
       z-index: 10;
+      overflow: hidden;
     }
+    .pull-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transition: opacity 0.2s; }
+    .pull-indicator.visible { opacity: 1; }
+    .pull-content { display: flex; align-items: center; gap: 8px; color: white; padding: 10px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .pull-content i { font-size: 16px; }
+    .pull-content i.spin { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .search-card.highlight { 
       border: 2px solid #667eea; 
       box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25); 
@@ -192,7 +243,28 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       0%, 100% { box-shadow: 0 8px 32px rgba(102, 126, 234, 0.25); } 
       50% { box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35); }
     }
+    
+    /* Skeleton Loading */
+    .skeleton-wrapper { margin: 16px; }
+    .skeleton-search { background: white; padding: 20px; border-radius: 16px; margin-bottom: 16px; }
+    .skeleton-line { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+    .skeleton-title { height: 20px; width: 40%; margin-bottom: 14px; }
+    .skeleton-field { height: 56px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; margin-bottom: 10px; }
+    .skeleton-categories { background: white; padding: 20px; border-radius: 16px; }
+    .skeleton-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .skeleton-card { height: 120px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 16px; }
+    
+    .skeleton-companies { margin: 0 16px 20px; }
+    .skeleton-companies-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 0 16px; }
+    .skeleton-company-card { height: 200px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    
+    .skeleton-internships { margin: 0 16px 24px; }
+    .skeleton-internships-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 0 16px; }
+    .skeleton-internship-card { background: white; padding: 24px; border-radius: 16px; border-left: 4px solid #e0e0e0; }
+    
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .search-card h2 { margin: 0 0 14px 0; font-size: 20px; font-weight: 700; color: #1a1a1a; }
+    .search-header { margin-bottom: 14px; }
     .search-form { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .search-field { width: 100%; }
     
@@ -361,6 +433,13 @@ export class HomeComponent implements OnInit {
   selectedCompanyName: string = '';
   userGroup: any = null;
   highlightSearch = false;
+  refreshing = false;
+  pullDistance = 0;
+  startY = 0;
+  isPulling = false;
+  loading = true;
+  loadingCompanies = false;
+  loadingInternships = false;
 
   constructor(
     private apiService: ApiService,
@@ -415,8 +494,12 @@ export class HomeComponent implements OnInit {
     this.apiService.getCourses().subscribe({
       next: (data) => {
         this.courses = data;
+        this.loading = false;
       },
-      error: (err) => console.error('Error loading courses:', err)
+      error: (err) => {
+        console.error('Error loading courses:', err);
+        this.loading = false;
+      }
     });
   }
 
@@ -453,14 +536,17 @@ export class HomeComponent implements OnInit {
   onCategoryChange() {
     this.internships = [];
     if (this.selectedCategory) {
+      this.loadingCompanies = true;
       this.apiService.getCompaniesByCategory(+this.selectedCategory).subscribe({
         next: (response) => {
           this.companies = response.data || response;
           this.homeStateService.saveState(this.selectedCourse, this.selectedCategory, this.companies);
+          this.loadingCompanies = false;
         },
         error: (err) => {
           console.error('Error loading companies:', err);
           this.companies = [];
+          this.loadingCompanies = false;
         }
       });
     } else {
@@ -508,8 +594,52 @@ export class HomeComponent implements OnInit {
   }
 
   selectPopularCategory(categoryName: string) {
-    this.router.navigate(['/internships'], {
-      queryParams: { category: categoryName }
-    });
+    const category = this.categories.find(cat => 
+      cat.name.toLowerCase().includes(categoryName.toLowerCase())
+    );
+    
+    if (category) {
+      this.selectedCategory = category.id.toString();
+      this.onCategoryChange();
+      setTimeout(() => {
+        this.searchCard?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }
+
+  refreshData() {
+    this.refreshing = true;
+    this.loadCourses();
+    this.loadCategories();
+    setTimeout(() => {
+      this.refreshing = false;
+    }, 1000);
+  }
+
+  onTouchStart(event: TouchEvent) {
+    if (window.scrollY === 0) {
+      this.startY = event.touches[0].clientY;
+      this.isPulling = true;
+    }
+  }
+
+  onTouchMove(event: TouchEvent) {
+    if (!this.isPulling || this.refreshing) return;
+    const currentY = event.touches[0].clientY;
+    const distance = currentY - this.startY;
+    if (distance > 0 && window.scrollY === 0) {
+      this.pullDistance = Math.min(distance * 0.5, 100);
+      if (this.pullDistance > 10) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  onTouchEnd() {
+    if (this.pullDistance >= 80 && !this.refreshing) {
+      this.refreshData();
+    }
+    this.isPulling = false;
+    this.pullDistance = 0;
   }
 }
