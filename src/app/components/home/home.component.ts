@@ -127,24 +127,36 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
         <h2>Popular Categories</h2>
         <div class="categories-grid">
           <div class="category-card" (click)="selectPopularCategory('Software Development')">
-            <div class="category-icon">💻</div>
+            <div class="category-icon"><i class="pi pi-desktop"></i></div>
             <h3>Software Development</h3>
             <p>Web, Mobile & Backend</p>
           </div>
           <div class="category-card" (click)="selectPopularCategory('Data Science')">
-            <div class="category-icon">📊</div>
+            <div class="category-icon"><i class="pi pi-chart-bar"></i></div>
             <h3>Data Science</h3>
             <p>Analytics & Machine Learning</p>
           </div>
           <div class="category-card" (click)="selectPopularCategory('Marketing')">
-            <div class="category-icon">📈</div>
+            <div class="category-icon"><i class="pi pi-chart-line"></i></div>
             <h3>Digital Marketing</h3>
             <p>Social Media & Content</p>
           </div>
           <div class="category-card" (click)="selectPopularCategory('Design')">
-            <div class="category-icon">🎨</div>
+            <div class="category-icon"><i class="pi pi-palette"></i></div>
             <h3>UI/UX Design</h3>
             <p>Product & Graphic Design</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Latest News -->
+      <div *ngIf="!loading && newsList.length > 0" class="news-section">
+        <h2>Latest Internship Opportunities</h2>
+        <div class="news-carousel">
+          <div *ngFor="let news of newsList" class="news-item">
+            <h3>{{ news.title }}</h3>
+            <p>{{ news.content }}</p>
+            <button class="apply-news-btn" (click)="applyFromNews(news)">Apply Now</button>
           </div>
         </div>
       </div>
@@ -340,9 +352,47 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     }
     .category-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
-    .category-icon { font-size: 36px; margin-bottom: 12px; }
+    .category-icon { font-size: 36px; margin-bottom: 12px; color: #667eea; }
+    .category-icon i { font-size: 36px; }
     .category-card h3 { margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #1a1a1a; }
     .category-card p { margin: 0; font-size: 12px; color: #666; line-height: 1.4; }
+    
+    /* Latest News */
+    .news-section { margin: 0 16px 24px; }
+    .news-section h2 { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+    .news-carousel { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .news-carousel::-webkit-scrollbar { height: 6px; }
+    .news-carousel::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .news-carousel::-webkit-scrollbar-thumb { background: #007bff; border-radius: 10px; }
+    .news-item { 
+      min-width: 280px; 
+      background: white; 
+      padding: 20px; 
+      border-radius: 12px; 
+      border: 1px solid #e9ecef;
+      border-left: 4px solid #007bff;
+      scroll-snap-align: start; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .news-item:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-left-color: #0056b3; }
+    .news-item h3 { margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #2c3e50; }
+    .news-item p { margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #495057; flex: 1; }
+    .apply-news-btn { 
+      background: #007bff; 
+      color: white; 
+      border: none; 
+      padding: 12px 20px; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      width: 100%; 
+      transition: all 0.3s;
+    }
+    .apply-news-btn:hover { background: #0056b3; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
     
     /* Getting Started */
     .getting-started { 
@@ -440,6 +490,7 @@ export class HomeComponent implements OnInit {
   loading = true;
   loadingCompanies = false;
   loadingInternships = false;
+  newsList: any[] = [];
 
   constructor(
     private apiService: ApiService,
@@ -454,6 +505,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.loadCourses();
     this.loadCategories();
+    this.loadNews();
     this.restoreState();
     this.checkForGroupRedirect();
     this.loadUserGroup();
@@ -510,6 +562,15 @@ export class HomeComponent implements OnInit {
         this.filteredCategories = this.categories;
       },
       error: (err) => console.error('Error loading categories:', err)
+    });
+  }
+
+  loadNews() {
+    this.apiService.getNews().subscribe({
+      next: (data) => {
+        this.newsList = data.slice(0, 5);
+      },
+      error: (err) => console.error('Error loading news:', err)
     });
   }
 
@@ -611,6 +672,7 @@ export class HomeComponent implements OnInit {
     this.refreshing = true;
     this.loadCourses();
     this.loadCategories();
+    this.loadNews();
     setTimeout(() => {
       this.refreshing = false;
     }, 1000);
@@ -641,5 +703,30 @@ export class HomeComponent implements OnInit {
     }
     this.isPulling = false;
     this.pullDistance = 0;
+  }
+
+  formatNewsDate(dateString: string): string {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  applyFromNews(news: any) {
+    console.log('News data:', news);
+    this.router.navigate(['/apply'], {
+      queryParams: {
+        internshipId: news.internshipId || news.id,
+        companyId: news.companyId || 0,
+        companyName: news.companyName || news.title || 'Company'
+      }
+    });
   }
 }

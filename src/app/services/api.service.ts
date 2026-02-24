@@ -46,4 +46,8 @@ export class ApiService {
   getFavorites(): Observable<any> {
     return this.http.get(`${this.baseUrl}/favorites`);
   }
+
+  getNews(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/admin/news`);
+  }
 }

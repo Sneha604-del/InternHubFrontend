@@ -22,7 +22,7 @@ import { environment } from '../../../environment';
   template: `
     <div class="group-details-container">
       <div class="header">
-        <h2>{{groupInfo ? 'Group Application' : 'Individual Application'}}</h2>
+        <h2>{{groupInfo ? 'Group Application' : 'Applied Details'}}</h2>
       </div>
 
       <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="content">

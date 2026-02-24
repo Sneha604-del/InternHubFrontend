@@ -15,7 +15,7 @@ import { DocumentService } from '../../services/document.service';
         <button class="back-btn" (click)="goBack()">
           <mat-icon>arrow_back</mat-icon>
         </button>
-        <h1>Application Progress</h1>
+        <h1>Applied Details</h1>
       </div>
 
       <div *ngIf="application" class="content">

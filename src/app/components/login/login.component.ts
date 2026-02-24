@@ -34,17 +34,37 @@ export class LoginComponent {
   ) {}
 
   onSubmit(): void {
+    // Trim whitespace from inputs
+    this.loginData.email = this.loginData.email?.trim() || '';
+    this.loginData.password = this.loginData.password?.trim() || '';
+    
+    console.log('=== LOGIN DEBUG START ===');
+    console.log('After trim - Email:', this.loginData.email);
+    console.log('After trim - Password:', this.loginData.password);
+    console.log('JSON:', JSON.stringify(this.loginData));
+    console.log('=== LOGIN DEBUG END ===');
+    
+    if (!this.loginData.email || !this.loginData.password) {
+      this.toastService.showError('Please enter both email and password', 'Validation Error');
+      return;
+    }
+    
     this.loading = true;
     
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
+        console.log('Login successful:', response);
         this.loading = false;
         this.toastService.showSuccess('Login successful!', 'Welcome');
         this.router.navigate(['/home']);
       },
       error: (error) => {
+        console.error('Login error:', error);
+        console.error('Error status:', error.status);
+        console.error('Error message:', error.error);
         this.loading = false;
-        this.toastService.showError(error.error || 'Login failed', 'Login Error');
+        const errorMessage = typeof error.error === 'string' ? error.error : 'Login failed';
+        this.toastService.showError(errorMessage, 'Login Error');
       }
     });
   }

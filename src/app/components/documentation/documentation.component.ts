@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../services/document.service';
 
 @Component({
   selector: 'app-documentation',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule, FormsModule],
   template: `
     <div class="doc-container" 
          (touchstart)="onTouchStart($event)" 
@@ -24,6 +25,27 @@ import { DocumentService } from '../../services/document.service';
         <div class="pull-content">
           <mat-icon class="refresh-icon" [class.spin]="loading">refresh</mat-icon>
           <span>{{pullDistance >= 80 ? 'Release to refresh' : 'Pull to refresh'}}</span>
+        </div>
+      </div>
+
+      <!-- Filter Section -->
+      <div class="filter-section" *ngIf="activeTab === 'documents'">
+        <div class="status-filters">
+          <button class="filter-chip" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">
+            All
+          </button>
+          <button class="filter-chip" [class.active]="selectedStatus === 'pending'" (click)="filterByStatus('pending')">
+            Pending
+          </button>
+          <button class="filter-chip" [class.active]="selectedStatus === 'accepted'" (click)="filterByStatus('accepted')">
+            Accepted
+          </button>
+          <button class="filter-chip" [class.active]="selectedStatus === 'rejected'" (click)="filterByStatus('rejected')">
+            Rejected
+          </button>
+          <button class="filter-chip" [class.active]="selectedStatus === 'completed'" (click)="filterByStatus('completed')">
+            Completed
+          </button>
         </div>
       </div>
 
@@ -79,14 +101,14 @@ import { DocumentService } from '../../services/document.service';
               </div>
             </div>
             
-            <div *ngIf="!loading && applications.length === 0" class="empty-state">
+            <div *ngIf="!loading && filteredApplications.length === 0" class="empty-state">
               <mat-icon class="empty-icon">description</mat-icon>
               <h3>No Applications Found</h3>
               <p>You haven't submitted any internship applications yet.</p>
             </div>
             
-            <div *ngIf="!loading && applications.length > 0" class="items-grid">
-              <div *ngFor="let app of applications" class="item-card">
+            <div *ngIf="!loading && filteredApplications.length > 0" class="items-grid">
+              <div *ngFor="let app of filteredApplications" class="item-card">
                 <div (click)="toggleApplicationDetail(app.id)" style="cursor: pointer;">
                   <div class="card-header">
                     <div class="card-title-section">
@@ -226,7 +248,44 @@ import { DocumentService } from '../../services/document.service';
       overflow-x: hidden;
       position: relative;
     }
-    
+
+    .filter-section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 6px 14px;
+      border-radius: 16px;
+      border: 1px solid #e0e0e0;
+      background: white;
+      color: #616161;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip:hover {
+      background: #f5f5f5;
+      border-color: #bdbdbd;
+    }
+
+    .filter-chip.active {
+      background: #1976d2;
+      color: white;
+      border-color: #1976d2;
+    }
+
     .pull-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transition: opacity 0.2s; }
     .pull-indicator.visible { opacity: 1; }
     .pull-content { display: flex; align-items: center; gap: 8px; color: white; padding: 10px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
@@ -768,9 +827,11 @@ import { DocumentService } from '../../services/document.service';
 export class DocumentationComponent implements OnInit {
   activeTab: 'documents' | 'certificate' = 'documents';
   applications: any[] = [];
+  filteredApplications: any[] = [];
   certificates: any[] = [];
   loading = false;
   expandedApplicationId: number | null = null;
+  selectedStatus: string = 'all';
   private touchStartX = 0;
   private touchEndX = 0;
   private mouseStartX = 0;
@@ -930,11 +991,25 @@ export class DocumentationComponent implements OnInit {
     }
   }
 
+  filterByStatus(status: string) {
+    this.selectedStatus = status;
+    this.applyFilters();
+  }
+
+  applyFilters() {
+    if (this.selectedStatus === 'all') {
+      this.filteredApplications = [...this.applications];
+    } else {
+      this.filteredApplications = this.applications.filter(app => app.status.toLowerCase() === this.selectedStatus);
+    }
+  }
+
   loadApplications() {
     this.loading = true;
     this.documentService.getApplications().subscribe({
       next: (data) => {
         this.applications = data;
+        this.applyFilters();
         this.loading = false;
       },
       error: (err) => {
