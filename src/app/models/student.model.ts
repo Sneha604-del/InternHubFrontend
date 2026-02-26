@@ -7,6 +7,7 @@ export interface Student {
   gender: 'MALE' | 'FEMALE';
   college: string;
   course: string;
+  phone?: string;
   isVerified?: boolean;
 }
 

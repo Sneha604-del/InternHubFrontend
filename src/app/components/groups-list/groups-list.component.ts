@@ -34,6 +34,7 @@ export class GroupsListComponent implements OnInit {
   selectedGroup: Group | null = null;
   groupInvitations: any[] = [];
   groupMembers: any[] = [];
+  currentUserId: number | null = null;
 
   constructor(
     private groupService: GroupService,
@@ -45,6 +46,8 @@ export class GroupsListComponent implements OnInit {
 
   ngOnInit(): void {
     console.log('GroupsListComponent ngOnInit called');
+    const currentUser = this.authService.getCurrentUser();
+    this.currentUserId = currentUser?.id || null;
     this.loadGroups();
     this.loadInvitationCount();
   }
@@ -54,8 +57,8 @@ export class GroupsListComponent implements OnInit {
     const currentUser = this.authService.getCurrentUser();
     console.log('Current user:', currentUser);
     if (currentUser && currentUser.id) {
-      console.log('Loading groups for user ID:', currentUser.id);
-      this.groupService.getGroupsByLeader(currentUser.id).subscribe({
+      console.log('Loading all groups for user ID:', currentUser.id);
+      this.groupService.getAllUserGroups(currentUser.id).subscribe({
         next: (groups) => {
           console.log('Received groups:', groups);
           this.groups = groups;
@@ -243,5 +246,13 @@ export class GroupsListComponent implements OnInit {
       case 'PENDING': return 'pi-clock';
       default: return 'pi-question-circle';
     }
+  }
+
+  isGroupLeader(group: Group): boolean {
+    return group.leader?.id === this.currentUserId;
+  }
+
+  uploadDocuments(groupId: number): void {
+    this.router.navigate(['/member-document-upload', groupId]);
   }
 }

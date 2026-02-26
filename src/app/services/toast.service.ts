@@ -9,18 +9,35 @@ export class ToastService {
   constructor(private toastr: ToastrService) { }
 
   showSuccess(message: string, title?: string): void {
-    this.toastr.success(message, title || 'Success');
+    this.toastr.success(message, title || 'Success', {
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      closeButton: true
+    });
   }
 
   showError(message: string, title?: string): void {
-    this.toastr.error(message, title || 'Error');
+    this.toastr.error(message, title || 'Error', {
+      timeOut: 4000,
+      positionClass: 'toast-top-right',
+      closeButton: true,
+      enableHtml: true
+    });
   }
 
   showWarning(message: string, title?: string): void {
-    this.toastr.warning(message, title || 'Warning');
+    this.toastr.warning(message, title || 'Warning', {
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      closeButton: true
+    });
   }
 
   showInfo(message: string, title?: string): void {
-    this.toastr.info(message, title || 'Info');
+    this.toastr.info(message, title || 'Info', {
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      closeButton: true
+    });
   }
 }

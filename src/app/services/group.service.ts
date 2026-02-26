@@ -67,6 +67,10 @@ export class GroupService {
     return this.http.get<Group>(`${this.apiUrl}/api/groups/user/${userId}`);
   }
 
+  getAllUserGroups(userId: number): Observable<Group[]> {
+    return this.http.get<Group[]>(`${this.apiUrl}/api/groups/user/${userId}/all`);
+  }
+
   sendInvitation(invitationData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/api/group-invitations/send`, invitationData);
   }

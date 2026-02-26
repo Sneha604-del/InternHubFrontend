@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environment';
 
 @Component({
   selector: 'app-help-support',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, HttpClientModule],
   template: `
     <div class="container" 
          (touchstart)="onTouchStart($event)" 
@@ -104,10 +107,6 @@ import { MatIconModule } from '@angular/material/icon';
       padding: 20px;
       min-height: 100vh;
       background: #f8f9fa;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       overflow-x: hidden;
     }
 
@@ -320,20 +319,24 @@ import { MatIconModule } from '@angular/material/icon';
     .form-group textarea {
       width: 100%;
       padding: 12px;
-      border: 1px solid #ddd;
+      border: 2px solid #e0e0e0;
       border-radius: 8px;
       font-size: 15px;
       box-sizing: border-box;
-      background: #f8f9fa;
+      background: white;
       font-family: inherit;
       transition: all 0.2s;
+      user-select: text;
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
     }
 
     .form-group input:focus,
     .form-group textarea:focus {
       outline: none;
       border-color: #007bff;
-      background: white;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
     }
 
     .submit-btn {
@@ -446,7 +449,11 @@ export class HelpSupportComponent {
     }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
   onTouchStart(event: TouchEvent) {
     this.touchStartX = event.changedTouches[0].screenX;
@@ -458,6 +465,10 @@ export class HelpSupportComponent {
   }
 
   onMouseDown(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      return;
+    }
     this.mouseStartX = event.clientX;
     this.isDragging = true;
     document.body.style.userSelect = 'none';
@@ -466,6 +477,10 @@ export class HelpSupportComponent {
 
   onMouseMove(event: MouseEvent) {
     if (!this.isDragging) return;
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+      return;
+    }
     event.preventDefault();
   }
 
@@ -530,13 +545,33 @@ export class HelpSupportComponent {
   submitForm() {
     if (!this.contactForm.subject || !this.contactForm.message) return;
 
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      alert('Please login to submit a support request');
+      return;
+    }
+
     this.submitting = true;
-    setTimeout(() => {
-      this.submitting = false;
-      this.submitSuccess = true;
-      this.contactForm = { subject: '', message: '' };
-      setTimeout(() => this.submitSuccess = false, 3000);
-    }, 1500);
+    
+    const requestData = {
+      studentId: currentUser.id,
+      subject: this.contactForm.subject,
+      message: this.contactForm.message
+    };
+
+    this.http.post(`${environment.apiUrl}/api/help-support`, requestData).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.submitSuccess = true;
+        this.contactForm = { subject: '', message: '' };
+        setTimeout(() => this.submitSuccess = false, 3000);
+      },
+      error: (error) => {
+        console.error('Error submitting support request:', error);
+        this.submitting = false;
+        alert('Failed to submit request. Please try again.');
+      }
+    });
   }
 
   goBack() {

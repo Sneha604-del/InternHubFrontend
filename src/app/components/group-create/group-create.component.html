@@ -6,23 +6,26 @@
       
       <div class="p-fluid">
         <div class="field">
-          <label for="groupName">Group Name</label>
+          <label for="groupName">Group Name <span class="required">*</span></label>
           <input pInputText id="groupName" [(ngModel)]="group.groupName" name="groupName" required />
+          <small class="error-message" *ngIf="submitted && !group.groupName">This field is required</small>
         </div>
         
         <div class="field">
-          <label for="collegeName">College Name</label>
+          <label for="collegeName">College Name <span class="required">*</span></label>
           <input pInputText id="collegeName" [(ngModel)]="group.collegeName" name="collegeName" required />
+          <small class="error-message" *ngIf="submitted && !group.collegeName">This field is required</small>
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="department">Department</label>
+            <label for="department">Department <span class="required">*</span></label>
             <input pInputText id="department" [(ngModel)]="group.department" name="department" required />
+            <small class="error-message" *ngIf="submitted && !group.department">This field is required</small>
           </div>
           
           <div class="field">
-            <label for="academicYear">Academic Year</label>
+            <label for="academicYear">Academic Year <span class="required">*</span></label>
             <select id="academicYear" [(ngModel)]="group.academicYear" name="academicYear" 
                     required class="p-inputtext p-component">
               <option value="">Select Year</option>
@@ -30,18 +33,21 @@
               <option value="3rd Year">3rd Year</option>
               <option value="Final Year">Final Year</option>
             </select>
+            <small class="error-message" *ngIf="submitted && !group.academicYear">This field is required</small>
           </div>
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="semester">Semester</label>
+            <label for="semester">Semester <span class="required">*</span></label>
             <input pInputText id="semester" [(ngModel)]="group.semester" name="semester" required />
+            <small class="error-message" *ngIf="submitted && !group.semester">This field is required</small>
           </div>
           
           <div class="field">
-            <label for="totalStudents">Total Students</label>
+            <label for="totalStudents">Total Students <span class="required">*</span></label>
             <p-inputNumber id="totalStudents" [(ngModel)]="group.totalStudents" name="totalStudents" [required]="true"></p-inputNumber>
+            <small class="error-message" *ngIf="submitted && !group.totalStudents">This field is required</small>
           </div>
         </div>
       </div>
@@ -54,17 +60,18 @@
       <div class="p-fluid">
         <div class="form-row">
           <div class="field">
-            <label for="internshipType">Internship Type</label>
+            <label for="internshipType">Internship Type <span class="required">*</span></label>
             <select id="internshipType" [(ngModel)]="group.internshipType" name="internshipType" 
                     required class="p-inputtext p-component">
               <option value="">Select Type</option>
               <option value="TECHNICAL">Technical</option>
               <option value="NON_TECHNICAL">Non Technical</option>
             </select>
+            <small class="error-message" *ngIf="submitted && !group.internshipType">This field is required</small>
           </div>
           
           <div class="field">
-            <label for="preferredMode">Preferred Mode</label>
+            <label for="preferredMode">Preferred Mode <span class="required">*</span></label>
             <select id="preferredMode" [(ngModel)]="group.preferredMode" name="preferredMode" 
                     required class="p-inputtext p-component">
               <option value="">Select Mode</option>
@@ -72,11 +79,12 @@
               <option value="OFFLINE">Offline</option>
               <option value="HYBRID">Hybrid</option>
             </select>
+            <small class="error-message" *ngIf="submitted && !group.preferredMode">This field is required</small>
           </div>
         </div>
         
         <div class="field">
-          <label for="durationMonths">Duration (Months)</label>
+          <label for="durationMonths">Duration (Months) <span class="required">*</span></label>
           <select id="durationMonths" [(ngModel)]="group.durationMonths" name="durationMonths" 
                   required class="p-inputtext p-component">
             <option value="">Select Duration</option>
@@ -85,19 +93,22 @@
             <option value="3">3 Months</option>
             <option value="6">6 Months</option>
           </select>
+          <small class="error-message" *ngIf="submitted && !group.durationMonths">This field is required</small>
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="startDate">Start Date</label>
+            <label for="startDate">Start Date <span class="required">*</span></label>
             <input type="date" id="startDate" [(ngModel)]="group.startDate" name="startDate" 
                    required class="p-inputtext p-component" />
+            <small class="error-message" *ngIf="submitted && !group.startDate">This field is required</small>
           </div>
           
           <div class="field">
-            <label for="endDate">End Date</label>
+            <label for="endDate">End Date <span class="required">*</span></label>
             <input type="date" id="endDate" [(ngModel)]="group.endDate" name="endDate" 
                    required class="p-inputtext p-component" />
+            <small class="error-message" *ngIf="submitted && !group.endDate">This field is required</small>
           </div>
         </div>
       </div>
@@ -109,26 +120,38 @@
       
       <div class="p-fluid">
         <div class="field">
-          <label for="facultyName">Faculty Name</label>
+          <label for="facultyName">Faculty Name <span class="required">*</span></label>
           <input pInputText id="facultyName" [(ngModel)]="group.facultyName" name="facultyName" required />
+          <small class="error-message" *ngIf="submitted && !group.facultyName">This field is required</small>
         </div>
         
         <div class="form-row">
           <div class="field">
-            <label for="facultyEmail">Faculty Email</label>
+            <label for="facultyEmail">Faculty Email <span class="required">*</span></label>
             <input pInputText id="facultyEmail" type="email" [(ngModel)]="group.facultyEmail" name="facultyEmail" required />
+            <small class="error-message" *ngIf="submitted && !group.facultyEmail">This field is required</small>
           </div>
           
           <div class="field">
-            <label for="facultyPhone">Faculty Phone</label>
-            <input pInputText id="facultyPhone" [(ngModel)]="group.facultyPhone" name="facultyPhone" required />
+            <label for="facultyPhone">Faculty Phone <span class="required">*</span></label>
+            <input pInputText id="facultyPhone" [(ngModel)]="group.facultyPhone" name="facultyPhone" 
+                   required maxlength="10" pattern="[0-9]{10}" 
+                   (ngModelChange)="validatePhone()" 
+                   placeholder="Enter 10 digit phone number" />
+            <small class="error-message" *ngIf="submitted && !group.facultyPhone">This field is required</small>
+            <small class="error-message" *ngIf="phoneError">{{ phoneError }}</small>
           </div>
         </div>
       </div>
     </div>
     
     <div class="form-actions">
-      <p-button label="{{loading ? 'Creating...' : 'Create Group'}}" type="submit" [disabled]="!groupForm.form.valid || loading"></p-button>
+      <p-button 
+        label="{{loading ? 'Creating...' : 'Create Group'}}" 
+        type="submit" 
+        [disabled]="!isFormValid() || loading"
+        [styleClass]="isFormValid() && !loading ? 'p-button-success' : ''"
+      ></p-button>
     </div>
   </form>
 </div>

@@ -145,7 +145,7 @@
               (onClick)="viewGroup(group.id!)">
             </p-button>
             <p-button 
-              *ngIf="!group.company"
+              *ngIf="isGroupLeader(group) && !group.company"
               label="Select Company" 
               icon="pi pi-building" 
               severity="success"
@@ -154,12 +154,22 @@
               (onClick)="selectCompany(group.id!)">
             </p-button>
             <p-button 
+              *ngIf="isGroupLeader(group)"
               label="Invite Members" 
               icon="pi pi-user-plus" 
               severity="secondary"
               [outlined]="true"
               size="small"
               (onClick)="inviteMembers(group.id!)">
+            </p-button>
+            <p-button 
+              *ngIf="!isGroupLeader(group) && !group.company"
+              label="Upload Documents" 
+              icon="pi pi-upload" 
+              severity="info"
+              [outlined]="true"
+              size="small"
+              (onClick)="uploadDocuments(group.id!)">
             </p-button>
           </div>
         </ng-template>

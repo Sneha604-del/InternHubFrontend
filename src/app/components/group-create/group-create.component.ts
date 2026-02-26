@@ -55,6 +55,8 @@ export class GroupCreateComponent implements OnInit {
     {label: 'Final Year', value: 'Final Year'}
   ];
   loading = false;
+  phoneError = '';
+  submitted = false;
 
   constructor(
     private groupService: GroupService,
@@ -68,7 +70,67 @@ export class GroupCreateComponent implements OnInit {
     this.internshipModeOptions = this.internshipModes.map(m => ({label: m, value: m}));
   }
 
+  validatePhone(): void {
+    const phone = this.group.facultyPhone;
+    if (!phone) {
+      this.phoneError = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(phone)) {
+      this.phoneError = 'Phone number must be exactly 10 digits';
+    } else {
+      this.phoneError = '';
+    }
+  }
+
+  isFormValid(): boolean {
+    const isValid = !!(this.group.groupName && this.group.collegeName && this.group.department &&
+      this.group.academicYear && this.group.semester && this.group.totalStudents &&
+      this.group.internshipType && this.group.preferredMode && this.group.durationMonths &&
+      this.group.startDate && this.group.endDate && this.group.facultyName &&
+      this.group.facultyEmail && this.group.facultyPhone && !this.phoneError);
+    console.log('Form valid:', isValid, 'Submitted:', this.submitted);
+    return isValid;
+  }
+
   onSubmit(): void {
+    this.submitted = true;
+    console.log('Submit clicked, submitted flag:', this.submitted);
+    console.log('Group data:', this.group);
+    
+    // Check form validity first
+    if (!this.isFormValid()) {
+      console.log('Form is invalid, finding first empty field');
+      // Find first empty field and scroll to it
+      let firstEmptyFieldId = '';
+      if (!this.group.groupName) firstEmptyFieldId = 'groupName';
+      else if (!this.group.collegeName) firstEmptyFieldId = 'collegeName';
+      else if (!this.group.department) firstEmptyFieldId = 'department';
+      else if (!this.group.academicYear) firstEmptyFieldId = 'academicYear';
+      else if (!this.group.semester) firstEmptyFieldId = 'semester';
+      else if (!this.group.totalStudents) firstEmptyFieldId = 'totalStudents';
+      else if (!this.group.internshipType) firstEmptyFieldId = 'internshipType';
+      else if (!this.group.preferredMode) firstEmptyFieldId = 'preferredMode';
+      else if (!this.group.durationMonths) firstEmptyFieldId = 'durationMonths';
+      else if (!this.group.startDate) firstEmptyFieldId = 'startDate';
+      else if (!this.group.endDate) firstEmptyFieldId = 'endDate';
+      else if (!this.group.facultyName) firstEmptyFieldId = 'facultyName';
+      else if (!this.group.facultyEmail) firstEmptyFieldId = 'facultyEmail';
+      else if (!this.group.facultyPhone) firstEmptyFieldId = 'facultyPhone';
+      
+      console.log('First empty field:', firstEmptyFieldId);
+      
+      if (firstEmptyFieldId) {
+        setTimeout(() => {
+          const element = document.getElementById(firstEmptyFieldId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.focus();
+          }
+        }, 100);
+      }
+      return;
+    }
+    
+    console.log('Form is valid, proceeding with submission');
     this.loading = true;
     const currentUser = this.authService.getCurrentUser();
     
@@ -82,7 +144,6 @@ export class GroupCreateComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         this.toastService.showSuccess('Group created successfully!', 'Success');
-        // Navigate to groups page
         this.router.navigate(['/groups']);
       },
       error: (error) => {

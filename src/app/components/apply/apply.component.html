@@ -8,24 +8,25 @@
       <h3 class="section-title">Personal Information</h3>
       <div class="info-grid">
         <div class="field">
-          <label for="fullName">Full Name *</label>
+          <label for="fullName">Full Name <span class="required">*</span></label>
           <input pInputText id="fullName" [(ngModel)]="individualData.fullName" name="fullName" 
                  required [class.error-field]="isFieldInvalid('fullName')" />
         </div>
         <div class="field">
-          <label for="email">Email Address *</label>
+          <label for="email">Email Address <span class="required">*</span></label>
           <input pInputText id="email" type="email" [(ngModel)]="individualData.email" name="email" 
                  required [class.error-field]="isFieldInvalid('email')" />
         </div>
         <div class="field">
-          <label for="phone">Phone Number *</label>
+          <label for="phone">Phone Number <span class="required">*</span></label>
           <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
                  required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
+                 placeholder="Enter 10 digit phone number"
                  [class.error-field]="isFieldInvalid('phone')" />
           <small class="error-msg" *ngIf="isFieldInvalid('phone')">Phone number must be exactly 10 digits</small>
         </div>
         <div class="field">
-          <label for="duration">Preferred Duration (Months) *</label>
+          <label for="duration">Preferred Duration (Months) <span class="required">*</span></label>
           <mat-form-field appearance="outline" style="width: 100%;">
             <mat-select id="duration" [(ngModel)]="individualData.duration" name="duration" 
                         required [class.error-field]="isFieldInvalid('duration')">
@@ -73,24 +74,25 @@
       <h3>Team Details</h3>
       <div class="info-grid">
         <div class="field">
-          <label for="teamSize">Actual Team Size *</label>
+          <label for="teamSize">Actual Team Size <span class="required">*</span></label>
           <p-inputNumber id="teamSize" [(ngModel)]="teamData.teamSize" name="teamSize" 
                          [required]="true" [class.error-field]="isFieldInvalid('teamSize')"></p-inputNumber>
         </div>
         <div class="field">
-          <label for="teamLeader">Team Leader Name *</label>
+          <label for="teamLeader">Team Leader Name <span class="required">*</span></label>
           <input pInputText id="teamLeader" [(ngModel)]="teamData.teamLeader" name="teamLeader" 
                  required [class.error-field]="isFieldInvalid('teamLeader')" />
         </div>
         <div class="field">
-          <label for="leaderContact">Team Leader Contact *</label>
+          <label for="leaderContact">Team Leader Contact <span class="required">*</span></label>
           <input pInputText id="leaderContact" [(ngModel)]="teamData.leaderContact" name="leaderContact" 
                  required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
+                 placeholder="Enter 10 digit phone number"
                  [class.error-field]="isFieldInvalid('leaderContact')" />
           <small class="error-msg" *ngIf="isFieldInvalid('leaderContact')">Phone number must be exactly 10 digits</small>
         </div>
         <div class="field">
-          <label for="leaderEmail">Team Leader Email *</label>
+          <label for="leaderEmail">Team Leader Email <span class="required">*</span></label>
           <input pInputText id="leaderEmail" type="email" [(ngModel)]="teamData.leaderEmail" name="leaderEmail" 
                  required [class.error-field]="isFieldInvalid('leaderEmail')" />
         </div>

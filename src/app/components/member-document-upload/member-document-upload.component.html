@@ -1,0 +1,59 @@
+<div class="upload-container">
+  <div class="header">
+    <h2>Upload Your Documents</h2>
+    <p>Please upload your Student ID Card and Resume for the group application</p>
+  </div>
+
+  <div class="content" *ngIf="!loading">
+    <div class="status-card" *ngIf="documentStatus">
+      <h3>Upload Status</h3>
+      <div class="status-item">
+        <i class="pi" [class.pi-check-circle]="documentStatus.hasStudentId" 
+           [class.pi-times-circle]="!documentStatus.hasStudentId"></i>
+        <span>Student ID Card: {{documentStatus.hasStudentId ? 'Uploaded' : 'Pending'}}</span>
+      </div>
+      <div class="status-item">
+        <i class="pi" [class.pi-check-circle]="documentStatus.hasResume" 
+           [class.pi-times-circle]="!documentStatus.hasResume"></i>
+        <span>Resume: {{documentStatus.hasResume ? 'Uploaded' : 'Pending'}}</span>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="upload-form">
+      <div class="field">
+        <label>Student ID Card *</label>
+        <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
+               accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
+        <p-button (onClick)="studentIdInput.click()" 
+                  [label]="studentIdFileName || 'Choose File'" 
+                  icon="pi pi-upload" 
+                  styleClass="w-full p-button-outlined"></p-button>
+        <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB)</small>
+        <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
+      </div>
+
+      <div class="field">
+        <label>Resume/CV *</label>
+        <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
+               accept=".pdf" style="display: none;" required>
+        <p-button (onClick)="resumeInput.click()" 
+                  [label]="resumeFileName || 'Choose File'" 
+                  icon="pi pi-upload" 
+                  styleClass="w-full p-button-outlined"></p-button>
+        <small class="file-hint">Upload PDF only (Max 256KB)</small>
+        <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
+      </div>
+
+      <button type="submit" class="submit-btn" 
+              [disabled]="uploading || !canSubmit()">
+        <i class="pi pi-check"></i>
+        {{uploading ? 'Uploading...' : 'Upload Documents'}}
+      </button>
+    </form>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <i class="pi pi-spin pi-spinner"></i>
+    <p>Loading...</p>
+  </div>
+</div>

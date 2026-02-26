@@ -202,31 +202,43 @@ import { environment } from '../../../environment';
           </div>
         </div>
 
-        <h3 class="section-highlight">Documents for Verification</h3>
+        <h3 class="section-highlight">Documents for Verification *</h3>
         <div class="info-grid">
           <div class="field">
-            <label>{{groupInfo ? 'Group Leader\'s Student ID card' : 'Student ID card'}}</label>
+            <label>{{groupInfo ? 'Group Leader\'s Student ID card *' : 'Student ID card *'}}</label>
             <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
-                   accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+                   accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
             <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
                       icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB)</small>
+            <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB) - Required</small>
             <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
+            <small class="error-msg" *ngIf="submittedOnce && !applicationData.studentId">Student ID card is required</small>
           </div>
           <div class="field">
-            <label>{{groupInfo ? 'Group Resume/Portfolio' : 'Resume/CV'}}</label>
+            <label>{{groupInfo ? 'Group Resume/Portfolio *' : 'Resume/CV *'}}</label>
             <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
-                   accept=".pdf" style="display: none;">
+                   accept=".pdf" style="display: none;" required>
             <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
                       icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF only (Max 256KB)</small>
+            <small class="file-hint">Upload PDF only (Max 256KB) - Required</small>
             <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
+            <small class="error-msg" *ngIf="submittedOnce && !applicationData.resume">Resume is required</small>
+          </div>
+          <div class="field">
+            <label>College Invitation Letter *</label>
+            <input #invitationInput type="file" (change)="onFileSelect($event, 'invitationLetter')" 
+                   accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
+            <p-button (onClick)="invitationInput.click()" [label]="invitationFileName || 'Choose File'" 
+                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+            <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB) - Required</small>
+            <small class="error-msg" *ngIf="fileErrors.invitationLetter">{{fileErrors.invitationLetter}}</small>
+            <small class="error-msg" *ngIf="submittedOnce && !applicationData.invitationLetter">College invitation letter is required</small>
           </div>
         </div>
 
         <div style="margin-top: 2rem;">
-          <button type="submit" class="submit-btn" [class.btn-success]="applyForm.valid && !loading" 
-                  [disabled]="loading || !applyForm.valid">
+          <button type="submit" class="submit-btn" [class.btn-success]="isFormComplete() && !loading" 
+                  [disabled]="loading || !isFormComplete()">
             <i class="pi pi-check" style="margin-right: 8px;"></i>
             {{loading ? 'Processing...' : (groupInfo ? 'Submit Group Application' : 'Apply Now')}}
           </button>
@@ -534,14 +546,15 @@ export class ApplyComponent implements OnInit {
   loading = false;
   submittedOnce = false;
 
-  fileErrors: { studentId: string; resume: string } = { studentId: '', resume: '' };
+  fileErrors: { studentId: string; resume: string; invitationLetter: string } = { studentId: '', resume: '', invitationLetter: '' };
 
   applicationData = {
     college: '',
     degree: '',
     yearOfStudy: '',
     studentId: null as File | null,
-    resume: null as File | null
+    resume: null as File | null,
+    invitationLetter: null as File | null
   };
 
   individualData = {
@@ -569,6 +582,7 @@ export class ApplyComponent implements OnInit {
 
   studentIdFileName = '';
   resumeFileName = '';
+  invitationFileName = '';
   applicationFee = 0;
   requiresPayment = false;
 
@@ -590,6 +604,7 @@ export class ApplyComponent implements OnInit {
       this.groupId = +params['groupId'];
       
       console.log('🔵 Internship ID:', this.internshipId);
+      console.log('🔵 Group ID from params:', this.groupId);
       
       if (this.internshipId) {
         this.loadInternshipDetails();
@@ -597,11 +612,13 @@ export class ApplyComponent implements OnInit {
         console.error('❌ No internship ID found!');
       }
       
-      if (this.groupId) {
+      // Always check if user has a group
+      const currentUser = this.authService.getCurrentUser();
+      if (currentUser) {
         this.loadGroupInfo();
-      } else {
-        const currentUser = this.authService.getCurrentUser();
-        if (currentUser) {
+        
+        // For individual applications
+        if (!this.groupId) {
           this.individualData.fullName = currentUser.fullName || '';
           this.individualData.email = currentUser.email || '';
         }
@@ -627,13 +644,23 @@ export class ApplyComponent implements OnInit {
     if (currentUser?.id) {
       this.groupService.getUserGroup(currentUser.id).subscribe({
         next: (group) => {
+          console.log('Loaded group data:', group);
           this.groupInfo = group;
           if (group) {
+            // Pre-fill application form with group data
             this.applicationData.college = group.collegeName || '';
+            this.applicationData.degree = group.department || '';
+            this.applicationData.yearOfStudy = group.academicYear || '';
+            
             this.teamData.teamSize = group.totalStudents || 1;
             this.teamData.academicYear = group.academicYear || '';
-            this.teamData.teamLeader = currentUser.fullName || '';
-            this.teamData.leaderEmail = currentUser.email || '';
+            this.teamData.semester = group.semester || '';
+            this.teamData.teamLeader = group.leader?.fullName || currentUser.fullName || '';
+            this.teamData.leaderEmail = group.leader?.email || currentUser.email || '';
+            this.teamData.leaderContact = group.leader?.phone || '';
+            
+            console.log('Pre-filled application data:', this.applicationData);
+            console.log('Pre-filled team data:', this.teamData);
           }
         },
         error: (error) => {
@@ -664,7 +691,27 @@ export class ApplyComponent implements OnInit {
         this.studentIdFileName = file.name;
       } else if (field === 'resume') {
         this.resumeFileName = file.name;
+      } else if (field === 'invitationLetter') {
+        this.invitationFileName = file.name;
       }
+    }
+  }
+
+  isFormComplete(): boolean {
+    const hasAllDocuments = !!(this.applicationData.studentId && this.applicationData.resume && this.applicationData.invitationLetter);
+    const hasBasicInfo = !!(this.applicationData.college && this.applicationData.degree && this.applicationData.yearOfStudy);
+    
+    if (this.groupInfo) {
+      const hasTeamInfo = !!(this.teamData.teamSize && this.teamData.teamLeader && 
+                            this.teamData.leaderContact && this.teamData.leaderEmail && 
+                            this.teamData.teamMembers && this.teamData.academicYear && 
+                            this.teamData.semester && this.teamData.motivation);
+      return hasAllDocuments && hasBasicInfo && hasTeamInfo;
+    } else {
+      const hasIndividualInfo = !!(this.individualData.fullName && this.individualData.email && 
+                                   this.individualData.phone && this.individualData.duration && 
+                                   this.individualData.motivation);
+      return hasAllDocuments && hasBasicInfo && hasIndividualInfo;
     }
   }
 
@@ -675,8 +722,43 @@ export class ApplyComponent implements OnInit {
   onSubmit() {
     this.submittedOnce = true;
 
-    if (!this.applyForm.valid) {
-      this.toastService.showError('Please fill all required fields', 'Validation Error');
+    if (!this.isFormComplete()) {
+      let missingField = '';
+      
+      // Check documents first
+      if (!this.applicationData.studentId) missingField = 'Student ID Card';
+      else if (!this.applicationData.resume) missingField = 'Resume/CV';
+      else if (!this.applicationData.invitationLetter) missingField = 'College Invitation Letter';
+      
+      // Check other fields
+      if (!missingField) {
+        if (!this.groupId) {
+          if (!this.individualData.fullName) missingField = 'Full Name';
+          else if (!this.individualData.email) missingField = 'Email Address';
+          else if (!this.individualData.phone) missingField = 'Phone Number';
+          else if (this.individualData.phone && !/^\d{10}$/.test(this.individualData.phone)) missingField = 'Valid Phone Number (10 digits)';
+          else if (!this.individualData.duration) missingField = 'Preferred Duration';
+          else if (!this.individualData.motivation) missingField = 'Why This Internship';
+        } else {
+          if (!this.teamData.teamSize) missingField = 'Actual Team Size';
+          else if (!this.teamData.teamLeader) missingField = 'Team Leader Name';
+          else if (!this.teamData.leaderContact) missingField = 'Team Leader Contact';
+          else if (this.teamData.leaderContact && !/^\d{10}$/.test(this.teamData.leaderContact)) missingField = 'Valid Team Leader Contact (10 digits)';
+          else if (!this.teamData.leaderEmail) missingField = 'Team Leader Email';
+          else if (!this.teamData.teamMembers) missingField = 'Team Members Names';
+          else if (!this.teamData.academicYear) missingField = 'Academic Year';
+          else if (!this.teamData.semester) missingField = 'Current Semester';
+          else if (!this.teamData.motivation) missingField = 'Why This Internship';
+        }
+      }
+      
+      if (!missingField) {
+        if (!this.applicationData.college) missingField = 'College Name';
+        else if (!this.applicationData.degree) missingField = 'Degree';
+        else if (!this.applicationData.yearOfStudy) missingField = 'Year of Study';
+      }
+      
+      this.toastService.showError(`Please fill: ${missingField}`, 'Missing Field');
       
       setTimeout(() => {
         const invalidField = document.querySelector('.error-field');
@@ -788,6 +870,9 @@ export class ApplyComponent implements OnInit {
     if (this.applicationData.resume) {
       formData.append('resume', this.applicationData.resume);
     }
+    if (this.applicationData.invitationLetter) {
+      formData.append('invitationLetter', this.applicationData.invitationLetter);
+    }
 
     const token = localStorage.getItem('token');
     const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -797,10 +882,19 @@ export class ApplyComponent implements OnInit {
         this.loading = false;
         if (this.groupId) {
           this.toastService.showSuccess('Group application submitted successfully!', 'Success');
-          this.groupService.joinCompany(this.groupId, this.companyId).subscribe();
-          setTimeout(() => {
-            this.router.navigate(['/home']);
-          }, 2000);
+          this.groupService.joinCompany(this.groupId, this.companyId).subscribe({
+            next: () => {
+              setTimeout(() => {
+                this.router.navigate(['/groups']);
+              }, 1500);
+            },
+            error: (err) => {
+              console.error('Error updating group:', err);
+              setTimeout(() => {
+                this.router.navigate(['/groups']);
+              }, 1500);
+            }
+          });
         } else {
           this.toastService.showSuccess('Application submitted successfully!', 'Success');
           setTimeout(() => {

@@ -33,6 +33,19 @@
   font-size: 14px;
 }
 
+.required {
+  color: #e53e3e;
+  margin-left: 2px;
+}
+
+.error-message {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+}
+
 ::ng-deep .p-dropdown {
   min-height: 42px;
   width: 100% !important;
@@ -82,6 +95,27 @@ input[type="date"].p-inputtext {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid #e2e8f0;
+}
+
+::ng-deep .p-button-success {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+::ng-deep .p-button-success:hover:not(:disabled) {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+::ng-deep .p-button:not(.p-button-success) {
+  background-color: white !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #94a3b8 !important;
+}
+
+::ng-deep .p-button:not(.p-button-success):hover:not(:disabled) {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
 }
 
 @media (max-width: 768px) {

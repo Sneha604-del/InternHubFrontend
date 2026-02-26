@@ -155,8 +155,12 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
         <div class="news-carousel">
           <div *ngFor="let news of newsList" class="news-item">
             <h3>{{ news.title }}</h3>
+            <div class="news-company" *ngIf="news.companyName">
+              <span class="news-from">News from:</span>
+              <span class="company-name">{{ news.companyName }}</span>
+            </div>
             <p>{{ news.content }}</p>
-            <button class="apply-news-btn" (click)="applyFromNews(news)">Apply Now</button>
+            <button class="apply-news-btn" (click)="applyFromNews(news)">View Company</button>
           </div>
         </div>
       </div>
@@ -378,7 +382,10 @@ import { CompanyResultsComponent } from '../company-results/company-results.comp
       flex-direction: column;
     }
     .news-item:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-left-color: #0056b3; }
-    .news-item h3 { margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #2c3e50; }
+    .news-item h3 { margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #2c3e50; }
+    .news-company { margin: 0 0 12px 0; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    .news-from { color: #6c757d; font-weight: 500; }
+    .company-name { color: #667eea; font-weight: 700; }
     .news-item p { margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #495057; flex: 1; }
     .apply-news-btn { 
       background: #007bff; 
@@ -721,12 +728,16 @@ export class HomeComponent implements OnInit {
 
   applyFromNews(news: any) {
     console.log('News data:', news);
-    this.router.navigate(['/apply'], {
-      queryParams: {
-        internshipId: news.internshipId || news.id,
-        companyId: news.companyId || 0,
-        companyName: news.companyName || news.title || 'Company'
-      }
-    });
+    if (news.companyId) {
+      this.router.navigate(['/company-internships'], {
+        queryParams: {
+          companyId: news.companyId,
+          companyName: news.companyName || 'Company',
+          categoryId: this.selectedCategory || ''
+        }
+      });
+    } else {
+      console.error('No company ID found in news');
+    }
   }
 }
