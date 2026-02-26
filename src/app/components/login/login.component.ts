@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -18,7 +18,7 @@ import { LoginRequest } from '../../models/student.model';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginData: LoginRequest = {
     email: '',
     password: ''
@@ -32,6 +32,13 @@ export class LoginComponent {
     private router: Router,
     private toastService: ToastService
   ) {}
+
+  ngOnInit(): void {
+    // Check if already logged in
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+  }
 
   onSubmit(): void {
     // Trim whitespace from inputs

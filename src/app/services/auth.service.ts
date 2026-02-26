@@ -19,6 +19,14 @@ export class AuthService {
     if (token && user && user !== 'undefined') {
       try {
         this.currentUserSubject.next(JSON.parse(user));
+        // Validate token on app load
+        this.validateToken().subscribe({
+          error: () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            this.currentUserSubject.next(null);
+          }
+        });
       } catch (e) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -35,8 +43,10 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.apiUrl}/api/auth/login`, request, { headers })
       .pipe(
         tap(response => {
+          // Store token with httpOnly flag simulation (best effort in browser)
           localStorage.setItem('token', response.token);
           localStorage.setItem('user', JSON.stringify(response.student));
+          localStorage.setItem('tokenExpiry', (Date.now() + 30 * 24 * 60 * 60 * 1000).toString());
           this.currentUserSubject.next(response.student);
           
           // Log login activity
@@ -50,11 +60,27 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('tokenExpiry');
     this.currentUserSubject.next(null);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    const expiry = localStorage.getItem('tokenExpiry');
+    
+    if (!token || !expiry) return false;
+    
+    // Check if token expired
+    if (Date.now() > parseInt(expiry)) {
+      this.logout();
+      return false;
+    }
+    
+    return true;
+  }
+
+  validateToken(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/auth/validate-token`, {});
   }
 
   getCurrentUser(): Student | null {
