@@ -8,6 +8,8 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { SecurityComponent } from './components/security/security.component';
 import { InternshipsComponent } from './components/internships/internships.component';
 import { ApplyComponent } from './components/apply/apply.component';
+import { IndividualApplyComponent } from './components/individual-apply/individual-apply.component';
+import { GroupApplyComponent } from './components/group-apply/group-apply.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { HelpSupportComponent } from './components/help-support/help-support.component';
 import { FavoritesComponent } from './components/favorites/favorites.component';
@@ -34,6 +36,8 @@ export const routes: Routes = [
   { path: 'security', component: SecurityComponent },
   { path: 'internships', component: InternshipsComponent },
   { path: 'apply', component: ApplyComponent },
+  { path: 'individual-apply', component: IndividualApplyComponent },
+  { path: 'group-apply', component: GroupApplyComponent },
   { path: 'notifications', component: NotificationsComponent },
   { path: 'help-support', component: HelpSupportComponent },
   { path: 'favorites', component: FavoritesComponent },

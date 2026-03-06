@@ -4,13 +4,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Router } from '@angular/router';
 import { DocumentService } from '../../services/document.service';
+import { PaymentService } from '../../services/payment.service';
 
 @Component({
   selector: 'app-documentation',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule, FormsModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule, FormsModule, MatSelectModule, MatFormFieldModule],
   template: `
     <div class="doc-container" 
          (touchstart)="onTouchStart($event)" 
@@ -30,23 +33,16 @@ import { DocumentService } from '../../services/document.service';
 
       <!-- Filter Section -->
       <div class="filter-section" *ngIf="activeTab === 'documents'">
-        <div class="status-filters">
-          <button class="filter-chip" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">
-            All
-          </button>
-          <button class="filter-chip" [class.active]="selectedStatus === 'pending'" (click)="filterByStatus('pending')">
-            Pending
-          </button>
-          <button class="filter-chip" [class.active]="selectedStatus === 'accepted'" (click)="filterByStatus('accepted')">
-            Accepted
-          </button>
-          <button class="filter-chip" [class.active]="selectedStatus === 'rejected'" (click)="filterByStatus('rejected')">
-            Rejected
-          </button>
-          <button class="filter-chip" [class.active]="selectedStatus === 'completed'" (click)="filterByStatus('completed')">
-            Completed
-          </button>
-        </div>
+        <mat-form-field appearance="outline" class="filter-dropdown">
+          <mat-label>Filter by Status</mat-label>
+          <mat-select [(value)]="selectedStatus" (selectionChange)="filterByStatus($event.value)">
+            <mat-option value="all">All</mat-option>
+            <mat-option value="pending">Pending</mat-option>
+            <mat-option value="accepted">Accepted</mat-option>
+            <mat-option value="rejected">Rejected</mat-option>
+            <mat-option value="completed">Completed</mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
 
       <!-- Tab Navigation -->
@@ -142,6 +138,10 @@ import { DocumentService } from '../../services/document.service';
                     <mat-icon>badge</mat-icon>
                     <span>Student ID</span>
                   </a>
+                  <button *ngIf="app.paymentStatus === 'COMPLETED'" (click)="viewReceipt(app.id)" class="action-btn receipt-btn">
+                    <mat-icon>receipt</mat-icon>
+                    <span>Receipt</span>
+                  </button>
                 </div>
 
                 <div *ngIf="expandedApplicationId === app.id" class="expanded-details">
@@ -251,39 +251,41 @@ import { DocumentService } from '../../services/document.service';
 
     .filter-section {
       background: white;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 6px;
+      padding: 4px 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
     }
 
-    .status-filters {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    .filter-dropdown {
+      width: 100%;
     }
 
-    .filter-chip {
-      padding: 6px 14px;
-      border-radius: 16px;
-      border: 1px solid #e0e0e0;
-      background: white;
-      color: #616161;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
+    ::ng-deep .filter-dropdown .mat-mdc-form-field-subscript-wrapper {
+      display: none;
     }
 
-    .filter-chip:hover {
-      background: #f5f5f5;
-      border-color: #bdbdbd;
+    ::ng-deep .filter-dropdown .mat-mdc-text-field-wrapper {
+      padding-bottom: 0;
     }
 
-    .filter-chip.active {
-      background: #1976d2;
-      color: white;
-      border-color: #1976d2;
+    ::ng-deep .filter-dropdown .mat-mdc-form-field-infix {
+      padding: 2px 0;
+      min-height: 24px;
+    }
+
+    ::ng-deep .filter-dropdown .mdc-notched-outline__leading,
+    ::ng-deep .filter-dropdown .mdc-notched-outline__notch,
+    ::ng-deep .filter-dropdown .mdc-notched-outline__trailing {
+      border-width: 1px;
+    }
+
+    ::ng-deep .filter-dropdown .mat-mdc-select {
+      font-size: 12px;
+    }
+
+    ::ng-deep .filter-dropdown .mat-mdc-floating-label {
+      font-size: 11px;
     }
 
     .pull-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transition: opacity 0.2s; }
@@ -683,6 +685,17 @@ import { DocumentService } from '../../services/document.service';
       color: #424242;
     }
     
+    .action-btn.receipt-btn {
+      background: #4caf50;
+      color: white;
+      border-color: #4caf50;
+    }
+    
+    .action-btn.receipt-btn:hover {
+      background: #45a049;
+      transform: translateY(-1px);
+    }
+    
     .action-btn mat-icon {
       font-size: 16px;
       width: 16px;
@@ -832,6 +845,7 @@ export class DocumentationComponent implements OnInit {
   loading = false;
   expandedApplicationId: number | null = null;
   selectedStatus: string = 'all';
+  receipts: Map<number, any> = new Map();
   private touchStartX = 0;
   private touchEndX = 0;
   private mouseStartX = 0;
@@ -841,7 +855,7 @@ export class DocumentationComponent implements OnInit {
   private startY = 0;
   private isPulling = false;
 
-  constructor(private documentService: DocumentService, private router: Router) {}
+  constructor(private documentService: DocumentService, private router: Router, private paymentService: PaymentService) {}
 
   toggleApplicationDetail(applicationId: number) {
     this.expandedApplicationId = this.expandedApplicationId === applicationId ? null : applicationId;
@@ -1010,6 +1024,7 @@ export class DocumentationComponent implements OnInit {
       next: (data) => {
         this.applications = data;
         this.applyFilters();
+        this.loadReceipts();
         this.loading = false;
       },
       error: (err) => {
@@ -1017,6 +1032,75 @@ export class DocumentationComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+  
+  loadReceipts() {
+    this.applications.forEach(app => {
+      if (app.paymentStatus === 'COMPLETED' && app.paymentId) {
+        this.paymentService.getReceiptByApplicationId(app.id).subscribe({
+          next: (receipt) => {
+            this.receipts.set(app.id, receipt);
+          },
+          error: (err) => {
+            // Silently ignore - receipt doesn't exist yet
+          }
+        });
+      }
+    });
+  }
+  
+  viewReceipt(applicationId: number) {
+    const receipt = this.receipts.get(applicationId);
+    if (receipt) {
+      this.showReceiptDialog(receipt);
+    }
+  }
+  
+  showReceiptDialog(receipt: any) {
+    const receiptWindow = window.open('', '_blank', 'width=600,height=800');
+    if (receiptWindow) {
+      receiptWindow.document.write(`
+        <html>
+          <head>
+            <title>Payment Receipt - ${receipt.receiptNumber}</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 40px; background: #f5f5f5; }
+              .receipt { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+              .header { text-align: center; border-bottom: 2px solid #1976d2; padding-bottom: 20px; margin-bottom: 20px; }
+              .header h1 { color: #1976d2; margin: 0; }
+              .receipt-number { font-size: 14px; color: #666; margin-top: 5px; }
+              .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+              .label { font-weight: 600; color: #333; }
+              .value { color: #666; }
+              .amount { font-size: 24px; color: #4caf50; font-weight: bold; text-align: center; margin: 20px 0; }
+              .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee; color: #999; font-size: 12px; }
+              @media print { body { background: white; } .no-print { display: none; } }
+            </style>
+          </head>
+          <body>
+            <div class="receipt">
+              <div class="header">
+                <h1>Payment Receipt</h1>
+                <div class="receipt-number">Receipt #${receipt.receiptNumber}</div>
+              </div>
+              <div class="row"><span class="label">Payment ID:</span><span class="value">${receipt.paymentId}</span></div>
+              <div class="row"><span class="label">Date:</span><span class="value">${new Date(receipt.paymentDate).toLocaleString()}</span></div>
+              <div class="row"><span class="label">Company:</span><span class="value">${receipt.companyName}</span></div>
+              <div class="row"><span class="label">Internship:</span><span class="value">${receipt.internshipTitle}</span></div>
+              <div class="row"><span class="label">Application Type:</span><span class="value">${receipt.applicationType}</span></div>
+              <div class="row"><span class="label">Payment Method:</span><span class="value">${receipt.paymentMethod}</span></div>
+              <div class="amount">₹${receipt.amount.toFixed(2)}</div>
+              <div class="footer">
+                <p>Thank you for your payment!</p>
+                <p>This is a computer-generated receipt.</p>
+                <button class="no-print" onclick="window.print()" style="padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Print Receipt</button>
+              </div>
+            </div>
+          </body>
+        </html>
+      `);
+      receiptWindow.document.close();
+    }
   }
 
   loadCertificates() {

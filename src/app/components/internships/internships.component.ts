@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="page" (touchstart)="onTouchStart($event)" (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd()">
+    <div class="page">
       <div class="pull-indicator" [class.visible]="pullDistance > 0">
         <div class="pull-content">
           <i class="pi pi-refresh" [class.spin]="loading"></i>
@@ -41,7 +41,7 @@ import { AuthService } from '../../services/auth.service';
             {{internship.isPaid ? 'PAID' : 'FREE'}}
           </div>
 
-          <button class="btn" (click)="applyNow(internship.id)">Apply Now</button>
+          <button class="btn" (click)="applyNow(internship.id)" type="button">Apply Now</button>
         </div>
       </div>
 
@@ -53,7 +53,7 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
   styles: [`
-    .page { padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 100%; background: #f5f5f5; padding-bottom: 100px; position: relative; }
+    .page { padding: 20px; max-width: 1200px; margin: 0 auto; min-height: 100%; background: #f5f5f5; padding-bottom: 120px; position: relative; }
     .pull-indicator { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; opacity: 0; transition: opacity 0.2s; }
     .pull-indicator.visible { opacity: 1; }
     .pull-content { display: flex; align-items: center; gap: 8px; color: white; padding: 10px 16px; font-size: 13px; font-weight: 600; white-space: nowrap; }
@@ -80,6 +80,7 @@ import { AuthService } from '../../services/auth.service';
 
     .btn { background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 16px; width: 100%; font-weight: 500; transition: background 0.2s; }
     .btn:hover { background: #1976D2; }
+    .btn:active { transform: scale(0.98); background: #1565C0; }
     .empty-state { background: white; padding: 60px 20px; text-align: center; border-radius: 12px; }
     .empty-state p { margin: 0; color: #999; font-size: 18px; }
 
@@ -104,8 +105,6 @@ export class InternshipsComponent implements OnInit {
   userGroup: any = null;
   loading = false;
   pullDistance = 0;
-  startY = 0;
-  isPulling = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -120,11 +119,32 @@ export class InternshipsComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.companyId = +params['companyId'];
       this.companyName = params['companyName'] || 'Company';
+      
+      // Check if groupId is in URL (from group selection)
+      const groupIdFromUrl = +params['groupId'];
+      if (groupIdFromUrl) {
+        console.log('GroupId from URL:', groupIdFromUrl);
+        // Load the specific group
+        this.groupService.getGroupById(groupIdFromUrl).subscribe({
+          next: (group) => {
+            this.userGroup = group;
+            console.log('Loaded group from URL:', group);
+          },
+          error: (error) => {
+            console.error('Error loading group from URL:', error);
+            // Fallback to user's group
+            this.loadUserGroup();
+          }
+        });
+      } else {
+        // Load user's group normally
+        this.loadUserGroup();
+      }
+      
       if (this.companyId) {
         this.loadInternships();
       }
     });
-    this.loadUserGroup();
   }
 
   loadUserGroup() {
@@ -176,32 +196,5 @@ export class InternshipsComponent implements OnInit {
 
   isFavorite(internshipId: number): boolean {
     return this.favoritesService.isFavorite(internshipId);
-  }
-
-  onTouchStart(event: TouchEvent) {
-    if (window.scrollY === 0) {
-      this.startY = event.touches[0].clientY;
-      this.isPulling = true;
-    }
-  }
-
-  onTouchMove(event: TouchEvent) {
-    if (!this.isPulling || this.loading) return;
-    const currentY = event.touches[0].clientY;
-    const distance = currentY - this.startY;
-    if (distance > 0 && window.scrollY === 0) {
-      this.pullDistance = Math.min(distance * 0.5, 100);
-      if (this.pullDistance > 10) {
-        event.preventDefault();
-      }
-    }
-  }
-
-  onTouchEnd() {
-    if (this.pullDistance >= 80 && !this.loading) {
-      this.loadInternships();
-    }
-    this.isPulling = false;
-    this.pullDistance = 0;
   }
 }

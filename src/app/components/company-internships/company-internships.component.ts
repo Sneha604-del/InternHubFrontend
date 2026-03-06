@@ -76,6 +76,7 @@ import { FavoritesService } from '../../services/favorites.service';
 export class CompanyInternshipsComponent implements OnInit {
   companyId = 0;
   companyName = '';
+  groupId = 0;
   internships: any[] = [];
   loading = true;
   pullDistance = 0;
@@ -93,6 +94,7 @@ export class CompanyInternshipsComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.companyId = +params['companyId'];
       this.companyName = params['companyName'] || 'Company';
+      this.groupId = +params['groupId'] || 0;
       if (this.companyId) this.load();
     });
   }
@@ -105,9 +107,19 @@ export class CompanyInternshipsComponent implements OnInit {
   }
 
   apply(internship: any) {
-    this.router.navigate(['/apply'], {
-      queryParams: { internshipId: internship.id, companyId: this.companyId, companyName: this.companyName }
-    });
+    const queryParams: any = { 
+      internshipId: internship.id, 
+      companyId: this.companyId, 
+      companyName: this.companyName 
+    };
+    
+    // Navigate to different routes based on groupId
+    if (this.groupId) {
+      queryParams.groupId = this.groupId;
+      this.router.navigate(['/group-apply'], { queryParams });
+    } else {
+      this.router.navigate(['/individual-apply'], { queryParams });
+    }
   }
 
   isFavorite(internshipId: number): boolean {

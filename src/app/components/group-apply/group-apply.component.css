@@ -43,23 +43,14 @@
   border-color: #e5e7eb;
 }
 
-.section-title {
-  color: #111827;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 12px 0 !important;
-  padding: 0 !important;
-  border: none !important;
-}
-
-.content h3 {
+h3 {
   margin: 2rem 0 12px 0;
   color: #111827;
   font-size: 18px;
   font-weight: 600;
 }
 
-.content h3:first-of-type {
+h3:first-of-type {
   margin-top: 0;
 }
 
@@ -89,12 +80,6 @@
 .required {
   color: #e53e3e;
   margin-left: 2px;
-}
-
-.faculty-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 input, select, textarea {
@@ -143,11 +128,6 @@ textarea {
   resize: vertical;
 }
 
-.error-field {
-  border: 2px solid #dc2626 !important;
-  background-color: #fee2e2 !important;
-}
-
 .file-hint {
   display: block;
   margin-top: 6px;
@@ -188,14 +168,6 @@ textarea {
   opacity: 0.5;
   cursor: not-allowed;
   background: #9ca3af;
-}
-
-.submit-btn.btn-success {
-  background: #111827;
-}
-
-.submit-btn.btn-success:hover:not(:disabled) {
-  background: #1f2937;
 }
 
 ::ng-deep .p-button-outlined {

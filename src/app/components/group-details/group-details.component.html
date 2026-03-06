@@ -36,6 +36,11 @@
     
     <div class="status-section">
       <p-tag [value]="group.status" [severity]="getStatusSeverity(group.status)"></p-tag>
+      <p-button label="Select Company to Apply" 
+                icon="pi pi-building" 
+                (onClick)="openCompanySelection()"
+                styleClass="p-button-success"
+                [style]="{'margin-left': '12px'}"></p-button>
     </div>
 
     <!-- Faculty Coordinator -->
@@ -88,8 +93,54 @@
       <i class="pi pi-users" style="font-size: 3rem;"></i>
       <p>No members yet. Start inviting students to join your group!</p>
     </div>
+    
+    <!-- Payment Receipts -->
+    <div *ngIf="groupReceipts.length > 0">
+      <h3>Payment Receipts</h3>
+      <div class="receipts-list">
+        <div *ngFor="let receipt of groupReceipts" class="receipt-card" (click)="viewReceipt(receipt)">
+          <div class="receipt-icon">
+            <i class="pi pi-file"></i>
+          </div>
+          <div class="receipt-info">
+            <div class="receipt-number">{{receipt.receiptNumber}}</div>
+            <div class="receipt-details">
+              <span>{{receipt.internshipTitle}}</span>
+              <span>{{receipt.paymentDate | date:'short'}}</span>
+            </div>
+          </div>
+          <div class="receipt-amount">₹{{receipt.amount}}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Company Selection Dialog -->
+<p-dialog header="Select Company" 
+          [(visible)]="showCompanyDialog" 
+          [modal]="true" 
+          [style]="{width: '90vw', maxWidth: '600px'}">
+  <div *ngIf="loadingCompanies" style="text-align: center; padding: 20px;">
+    <p-progressSpinner></p-progressSpinner>
+    <p>Loading companies...</p>
+  </div>
+  
+  <div *ngIf="!loadingCompanies" class="companies-list">
+    <div *ngFor="let company of companies" class="company-item" (click)="selectCompany(company)">
+      <div class="company-info">
+        <h4>{{company.name}}</h4>
+        <p *ngIf="company.location">📍 {{company.location}}</p>
+      </div>
+      <i class="pi pi-chevron-right"></i>
+    </div>
+    
+    <div *ngIf="companies.length === 0" style="text-align: center; padding: 20px; color: #666;">
+      <i class="pi pi-inbox" style="font-size: 3rem; margin-bottom: 10px;"></i>
+      <p>No companies available</p>
+    </div>
+  </div>
+</p-dialog>
 
 <div *ngIf="loading" class="loading">
   <p-progressSpinner></p-progressSpinner>

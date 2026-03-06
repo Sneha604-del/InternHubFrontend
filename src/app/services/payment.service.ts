@@ -20,6 +20,18 @@ export class PaymentService {
   verifyPayment(paymentData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/verify`, paymentData);
   }
+  
+  getReceiptByApplicationId(applicationId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/receipt/application/${applicationId}`);
+  }
+  
+  getReceiptsByStudentId(studentId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/receipt/student/${studentId}`);
+  }
+  
+  getReceiptsByGroupId(groupId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/receipt/group/${groupId}`);
+  }
 
   openRazorpay(orderData: any, onSuccess: (response: any) => void, onFailure: (error: any) => void) {
     console.log('🔵 openRazorpay called with:', orderData);

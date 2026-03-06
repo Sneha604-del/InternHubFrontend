@@ -1,0 +1,93 @@
+<div class="apply-container">
+  <div class="header">
+    <h2>Individual Application</h2>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="content">
+    <h3>Personal Information</h3>
+    <div class="info-grid">
+      <div class="field">
+        <label>Full Name *</label>
+        <input pInputText [(ngModel)]="individualData.fullName" name="fullName" required />
+      </div>
+      <div class="field">
+        <label>Email *</label>
+        <input pInputText type="email" [(ngModel)]="individualData.email" name="email" required />
+      </div>
+      <div class="field">
+        <label>Phone *</label>
+        <input pInputText [(ngModel)]="individualData.phone" name="phone" 
+               pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" required />
+      </div>
+      <div class="field">
+        <label>Duration (Months) *</label>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-select [(ngModel)]="individualData.duration" name="duration" required>
+            <mat-option value="1">1 Month</mat-option>
+            <mat-option value="2">2 Months</mat-option>
+            <mat-option value="3">3 Months</mat-option>
+            <mat-option value="4">4 Months</mat-option>
+            <mat-option value="5">5 Months</mat-option>
+            <mat-option value="6">6 Months</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <h3>Skills & Expertise</h3>
+    <textarea [(ngModel)]="individualData.skills" name="skills" rows="3"></textarea>
+
+    <h3>Why This Internship? *</h3>
+    <textarea [(ngModel)]="individualData.motivation" name="motivation" rows="4" required></textarea>
+
+    <h3>Educational Information</h3>
+    <div class="info-grid">
+      <div class="field">
+        <label>College *</label>
+        <input pInputText [(ngModel)]="individualData.college" name="college" required />
+      </div>
+      <div class="field">
+        <label>Degree *</label>
+        <input pInputText [(ngModel)]="individualData.degree" name="degree" required />
+      </div>
+      <div class="field">
+        <label>Year of Study *</label>
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-select [(ngModel)]="individualData.yearOfStudy" name="yearOfStudy" required>
+            <mat-option value="1st year">1st year</mat-option>
+            <mat-option value="2nd year">2nd year</mat-option>
+            <mat-option value="3rd year">3rd year</mat-option>
+            <mat-option value="4th year">4th year</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <h3>Documents *</h3>
+    <div class="info-grid">
+      <div class="field">
+        <label>Resume/CV *</label>
+        <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
+               accept=".pdf" style="display: none;" required>
+        <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
+                  icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+        <small class="file-hint">PDF only (Max 256KB)</small>
+        <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
+      </div>
+      <div class="field">
+        <label>Past Qualification Documents *</label>
+        <input #pastQualInput type="file" (change)="onFileSelect($event, 'pastQualification')" 
+               accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
+        <p-button (onClick)="pastQualInput.click()" [label]="pastQualificationFileName || 'Choose File'" 
+                  icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
+        <small class="file-hint">PDF/JPG/PNG (Max 256KB)</small>
+        <small class="error-msg" *ngIf="fileErrors.pastQualification">{{fileErrors.pastQualification}}</small>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="loading">
+      <i class="pi pi-check"></i>
+      {{loading ? 'Submitting...' : 'Apply Now'}}
+    </button>
+  </form>
+</div>

@@ -144,6 +144,7 @@ export class GroupsListComponent implements OnInit {
   }
 
   selectCompany(groupId: number): void {
+    // Navigate to home with groupId so user can browse and select internships
     this.router.navigate(['/home'], { queryParams: { groupId: groupId } });
   }
 

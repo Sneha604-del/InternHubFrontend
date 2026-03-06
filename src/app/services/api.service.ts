@@ -50,4 +50,8 @@ export class ApiService {
   getNews(): Observable<any> {
     return this.http.get(`${this.baseUrl}/admin/news`);
   }
+
+  getAllCompanies(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/admin/companies`);
+  }
 }

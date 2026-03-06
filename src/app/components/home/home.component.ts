@@ -637,13 +637,20 @@ export class HomeComponent implements OnInit {
   }
 
   loadInternships(company: any) {
-    this.router.navigate(['/company-internships'], {
-      queryParams: {
-        companyId: company.id,
-        companyName: company.name,
-        categoryId: this.selectedCategory
+    const queryParams: any = {
+      companyId: company.id,
+      companyName: company.name,
+      categoryId: this.selectedCategory
+    };
+    
+    // Pass groupId if it exists in URL
+    this.route.queryParams.subscribe(params => {
+      if (params['groupId']) {
+        queryParams.groupId = params['groupId'];
       }
     });
+    
+    this.router.navigate(['/company-internships'], { queryParams });
   }
 
   applyNow(internship: any, event?: Event) {

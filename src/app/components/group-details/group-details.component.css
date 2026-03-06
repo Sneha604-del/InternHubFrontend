@@ -198,6 +198,56 @@
   margin-top: 16px;
 }
 
+.companies-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.company-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.company-item:hover {
+  background: #f7fafc;
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.company-info h4 {
+  margin: 0 0 4px 0;
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.company-info p {
+  margin: 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.company-item i {
+  color: #cbd5e0;
+  font-size: 18px;
+}
+
+.status-section {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 @media (max-width: 768px) {
   .invite-form {
     flex-direction: column;
@@ -207,4 +257,67 @@
   .info-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+.receipts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.receipt-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.receipt-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #4caf50;
+  transform: translateY(-2px);
+}
+
+.receipt-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.receipt-info {
+  flex: 1;
+}
+
+.receipt-number {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.receipt-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: #718096;
+}
+
+.receipt-amount {
+  font-weight: 700;
+  font-size: 18px;
+  color: #4caf50;
 }

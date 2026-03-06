@@ -7,6 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ToastService } from '../../services/toast.service';
@@ -18,522 +20,9 @@ import { environment } from '../../../environment';
 @Component({
   selector: 'app-apply',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, FileUploadModule, InputNumberModule, MatSelectModule, MatFormFieldModule],
-  template: `
-    <div class="group-details-container">
-      <div class="header">
-        <h2>{{groupInfo ? 'Group Application' : 'Applied Details'}}</h2>
-      </div>
-
-      <form (ngSubmit)="onSubmit()" #applyForm="ngForm" class="content">
-        <div *ngIf="!groupInfo">
-          <h3 class="section-highlight">Personal Information</h3>
-          <div class="info-grid">
-            <div class="field">
-              <label for="fullName">Full Name *</label>
-              <input pInputText id="fullName" [(ngModel)]="individualData.fullName" name="fullName" 
-                     required [class.error-field]="isFieldInvalid('fullName')" />
-            </div>
-            <div class="field">
-              <label for="email">Email Address *</label>
-              <input pInputText id="email" type="email" [(ngModel)]="individualData.email" name="email" 
-                     required [class.error-field]="isFieldInvalid('email')" />
-            </div>
-            <div class="field">
-              <label for="phone">Phone Number *</label>
-              <input pInputText id="phone" [(ngModel)]="individualData.phone" name="phone" 
-                     required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
-                     [class.error-field]="isFieldInvalid('phone')" />
-              <small class="error-msg" *ngIf="isFieldInvalid('phone')">Phone number must be exactly 10 digits</small>
-            </div>
-            <div class="field">
-              <label for="duration">Preferred Duration (Months) *</label>
-              <mat-form-field appearance="outline" style="width: 100%;">
-                <mat-select id="duration" [(ngModel)]="individualData.duration" name="duration" 
-                            required [class.error-field]="isFieldInvalid('duration')">
-                  <mat-option value="">Select duration</mat-option>
-                  <mat-option value="1">1 Month</mat-option>
-                  <mat-option value="2">2 Months</mat-option>
-                  <mat-option value="3">3 Months</mat-option>
-                  <mat-option value="4">4 Months</mat-option>
-                  <mat-option value="5">5 Months</mat-option>
-                  <mat-option value="6">6 Months</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <h3>Skills & Expertise</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="individualData.skills" name="individualSkills" rows="3"></textarea>
-          </div>
-
-          <h3>Why This Internship? *</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="individualData.motivation" name="individualMotivation" 
-                      required rows="4" [class.error-field]="isFieldInvalid('individualMotivation')"></textarea>
-          </div>
-        </div>
-
-        <div *ngIf="groupInfo">
-          <h3 class="section-title">Group Information</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <strong>Group Name:</strong> {{groupInfo.groupName}}
-            </div>
-            <div class="info-item">
-              <strong>College:</strong> {{groupInfo.collegeName}}
-            </div>
-            <div class="info-item">
-              <strong>Department:</strong> {{groupInfo.department}}
-            </div>
-            <div class="info-item">
-              <strong>Total Students:</strong> {{groupInfo.totalStudents}}
-            </div>
-          </div>
-
-          <h3>Team Details</h3>
-          <div class="info-grid">
-            <div class="field">
-              <label for="teamSize">Actual Team Size *</label>
-              <p-inputNumber id="teamSize" [(ngModel)]="teamData.teamSize" name="teamSize" 
-                             [required]="true" [class.error-field]="isFieldInvalid('teamSize')"></p-inputNumber>
-            </div>
-            <div class="field">
-              <label for="teamLeader">Team Leader Name *</label>
-              <input pInputText id="teamLeader" [(ngModel)]="teamData.teamLeader" name="teamLeader" 
-                     required [class.error-field]="isFieldInvalid('teamLeader')" />
-            </div>
-            <div class="field">
-              <label for="leaderContact">Team Leader Contact *</label>
-              <input pInputText id="leaderContact" [(ngModel)]="teamData.leaderContact" name="leaderContact" 
-                     required pattern="[0-9]{10}" maxlength="10" (input)="onlyNumbers($event)" 
-                     [class.error-field]="isFieldInvalid('leaderContact')" />
-              <small class="error-msg" *ngIf="isFieldInvalid('leaderContact')">Phone number must be exactly 10 digits</small>
-            </div>
-            <div class="field">
-              <label for="leaderEmail">Team Leader Email *</label>
-              <input pInputText id="leaderEmail" type="email" [(ngModel)]="teamData.leaderEmail" name="leaderEmail" 
-                     required [class.error-field]="isFieldInvalid('leaderEmail')" />
-            </div>
-          </div>
-
-          <h3>Team Members (Names) *</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="teamData.teamMembers" name="teamMembers" 
-                      required rows="4" [class.error-field]="isFieldInvalid('teamMembers')"></textarea>
-          </div>
-
-          <h3>Team Member Emails</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="teamData.memberEmails" name="memberEmails" rows="3"></textarea>
-          </div>
-
-          <h3>Academic Year *</h3>
-          <div class="info-grid">
-            <div class="field">
-              <select [(ngModel)]="teamData.academicYear" name="academicYear" 
-                      required [class.error-field]="isFieldInvalid('academicYear')">
-                <option value="">Select academic year</option>
-                <option value="2023-24">2023-24</option>
-                <option value="2024-25">2024-25</option>
-                <option value="2025-26">2025-26</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Current Semester *</label>
-              <select [(ngModel)]="teamData.semester" name="semester" 
-                      required [class.error-field]="isFieldInvalid('semester')">
-                <option value="">Select semester</option>
-                <option value="1st Semester">1st Semester</option>
-                <option value="2nd Semester">2nd Semester</option>
-                <option value="3rd Semester">3rd Semester</option>
-                <option value="4th Semester">4th Semester</option>
-                <option value="5th Semester">5th Semester</option>
-                <option value="6th Semester">6th Semester</option>
-                <option value="7th Semester">7th Semester</option>
-                <option value="8th Semester">8th Semester</option>
-              </select>
-            </div>
-          </div>
-
-          <h3>Team Skills & Expertise</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="teamData.skills" name="skills" rows="3"></textarea>
-          </div>
-
-          <h3>Previous Project Experience</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="teamData.experience" name="experience" rows="3"></textarea>
-          </div>
-
-          <h3>Why This Internship? *</h3>
-          <div class="faculty-info">
-            <textarea [(ngModel)]="teamData.motivation" name="motivation" 
-                      required rows="4" [class.error-field]="isFieldInvalid('motivation')"></textarea>
-          </div>
-        </div>
-
-        <h3 class="section-highlight">Educational Information</h3>
-        <div class="info-grid">
-          <div class="field">
-            <label for="college">Name of your college *</label>
-            <input pInputText id="college" [(ngModel)]="applicationData.college" name="college" 
-                   required [class.error-field]="isFieldInvalid('college')" />
-          </div>
-          <div class="field">
-            <label for="degree">Degree you are studying *</label>
-            <input pInputText id="degree" [(ngModel)]="applicationData.degree" name="degree" 
-                   required [class.error-field]="isFieldInvalid('degree')" />
-          </div>
-          <div class="field">
-            <label for="yearOfStudy">Year of study *</label>
-            <mat-form-field appearance="outline" style="width: 100%;">
-              <mat-select id="yearOfStudy" [(ngModel)]="applicationData.yearOfStudy" name="yearOfStudy" 
-                          required [class.error-field]="isFieldInvalid('yearOfStudy')">
-                <mat-option value="">Select year</mat-option>
-                <mat-option value="1st year">1st year</mat-option>
-                <mat-option value="2nd year">2nd year</mat-option>
-                <mat-option value="3rd year">3rd year</mat-option>
-                <mat-option value="4th year">4th year</mat-option>
-                <mat-option value="5th year">5th year</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <h3 class="section-highlight">Documents for Verification *</h3>
-        <div class="info-grid">
-          <div class="field">
-            <label>{{groupInfo ? 'Group Leader\'s Student ID card *' : 'Student ID card *'}}</label>
-            <input #studentIdInput type="file" (change)="onFileSelect($event, 'studentId')" 
-                   accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
-            <p-button (onClick)="studentIdInput.click()" [label]="studentIdFileName || 'Choose File'" 
-                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB) - Required</small>
-            <small class="error-msg" *ngIf="fileErrors.studentId">{{fileErrors.studentId}}</small>
-            <small class="error-msg" *ngIf="submittedOnce && !applicationData.studentId">Student ID card is required</small>
-          </div>
-          <div class="field">
-            <label>{{groupInfo ? 'Group Resume/Portfolio *' : 'Resume/CV *'}}</label>
-            <input #resumeInput type="file" (change)="onFileSelect($event, 'resume')" 
-                   accept=".pdf" style="display: none;" required>
-            <p-button (onClick)="resumeInput.click()" [label]="resumeFileName || 'Choose File'" 
-                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF only (Max 256KB) - Required</small>
-            <small class="error-msg" *ngIf="fileErrors.resume">{{fileErrors.resume}}</small>
-            <small class="error-msg" *ngIf="submittedOnce && !applicationData.resume">Resume is required</small>
-          </div>
-          <div class="field">
-            <label>College Invitation Letter *</label>
-            <input #invitationInput type="file" (change)="onFileSelect($event, 'invitationLetter')" 
-                   accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
-            <p-button (onClick)="invitationInput.click()" [label]="invitationFileName || 'Choose File'" 
-                      icon="pi pi-upload" styleClass="w-full p-button-outlined"></p-button>
-            <small class="file-hint">Upload PDF, JPG, or PNG (Max 256KB) - Required</small>
-            <small class="error-msg" *ngIf="fileErrors.invitationLetter">{{fileErrors.invitationLetter}}</small>
-            <small class="error-msg" *ngIf="submittedOnce && !applicationData.invitationLetter">College invitation letter is required</small>
-          </div>
-        </div>
-
-        <div style="margin-top: 2rem;">
-          <button type="submit" class="submit-btn" [class.btn-success]="isFormComplete() && !loading" 
-                  [disabled]="loading || !isFormComplete()">
-            <i class="pi pi-check" style="margin-right: 8px;"></i>
-            {{loading ? 'Processing...' : (groupInfo ? 'Submit Group Application' : 'Apply Now')}}
-          </button>
-        </div>
-      </form>
-
-
-    </div>
-  `,
-  styles: [`
-    .group-details-container {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 20px;
-    }
-
-    .header {
-      margin-bottom: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 16px;
-      border-radius: 8px;
-    }
-
-    .header h2 {
-      color: white;
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .content {
-      padding: 32px;
-    }
-
-    .section-title {
-      color: #1a202c;
-      font-size: 20px;
-      font-weight: 600;
-      margin: 0 0 20px 0 !important;
-      padding: 0 !important;
-      border: none !important;
-    }
-
-    .content h3 {
-      margin: 2rem 0 1rem 0;
-      color: #1a202c;
-      font-size: 18px;
-      font-weight: 600;
-      padding-top: 1.5rem;
-      border-top: 1px solid #e2e8f0;
-    }
-
-    .content h3:first-of-type {
-      margin-top: 0;
-      padding-top: 0;
-      border-top: none;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .info-item {
-      font-size: 14px;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
-      font-size: 14px;
-    }
-
-    .faculty-info {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 2px solid #cbd5e1;
-      border-radius: 8px;
-      font-size: 15px;
-      transition: all 0.2s ease;
-      background: white;
-      color: #1f2937;
-      font-family: inherit;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      outline: none;
-    }
-
-    textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    .error-field {
-      border: 2px solid #dc2626 !important;
-      background-color: #fee2e2 !important;
-    }
-
-    .file-hint {
-      display: block;
-      margin-top: 6px;
-      font-size: 12px;
-      color: #666;
-      font-style: italic;
-    }
-
-    .error-msg {
-      display: block;
-      margin-top: 4px;
-      font-size: 12px;
-      color: #dc2626;
-      font-weight: 500;
-    }
-
-    .submit-btn {
-      width: 100%;
-      height: 48px;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .submit-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .submit-btn.btn-success {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    }
-
-    .submit-btn.btn-success:hover:not(:disabled) {
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-    }
-
-    ::ng-deep .p-inputtext {
-      border: 2px solid #cbd5e1 !important;
-    }
-
-    ::ng-deep .p-button-outlined {
-      border: 2px solid #667eea;
-      color: #667eea;
-      background: white;
-    }
-
-    ::ng-deep .p-button-outlined:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    .group-details-container {
-      max-width: 100%;
-      margin: 0;
-      padding: 12px;
-    }
-
-    .header {
-      margin-bottom: 20px;
-    }
-
-    .header h2 {
-      font-size: 18px;
-    }
-
-    .content {
-      padding: 16px;
-    }
-
-    .section-title {
-      font-size: 16px;
-      margin: 0 0 16px 0;
-    }
-
-    .content h3 {
-      margin: 1.5rem 0 0.8rem 0;
-      font-size: 15px;
-      padding-top: 1rem;
-    }
-
-    .section-highlight {
-      color: #667eea;
-      font-size: 15px;
-      font-weight: 600;
-      margin-top: 1.5rem;
-      margin-bottom: 1rem;
-      padding: 0 0 8px 0;
-      border-bottom: 3px solid #667eea;
-    }
-
-    .info-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .field {
-      margin-bottom: 12px;
-    }
-
-    .field label {
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-
-    input, select, textarea {
-      padding: 10px 12px;
-      font-size: 14px;
-    }
-
-    textarea {
-      min-height: 70px;
-    }
-
-    .submit-btn {
-      height: 44px;
-      font-size: 14px;
-    }
-
-    .file-hint {
-      font-size: 11px;
-    }
-
-    .error-msg {
-      font-size: 11px;
-    }
-
-    ::ng-deep .mat-mdc-form-field {
-      background: white;
-    }
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background: white !important;
-      padding: 0 !important;
-    }
-
-    ::ng-deep .mat-mdc-select {
-      background: white;
-      padding: 10px 12px !important;
-      font-size: 14px !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field-flex {
-      background-color: white !important;
-      height: 44px !important;
-      align-items: center !important;
-    }
-
-    ::ng-deep .mat-mdc-select-trigger {
-      background-color: white !important;
-      height: 44px !important;
-    }
-
-    ::ng-deep .mat-mdc-select-value {
-      background-color: white !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field-infix {
-      padding: 8px 0 !important;
-      min-height: auto !important;
-    }
-
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      display: none !important;
-    }
-  `]
+  imports: [CommonModule, FormsModule, InputTextModule, ButtonModule, FileUploadModule, InputNumberModule, CardModule, DividerModule, MatSelectModule, MatFormFieldModule],
+  templateUrl: './apply.component.html',
+  styleUrls: ['./apply.component.css']
 })
 export class ApplyComponent implements OnInit {
   @ViewChild('applyForm') applyForm!: NgForm;
@@ -546,7 +35,7 @@ export class ApplyComponent implements OnInit {
   loading = false;
   submittedOnce = false;
 
-  fileErrors: { studentId: string; resume: string; invitationLetter: string } = { studentId: '', resume: '', invitationLetter: '' };
+  fileErrors: { studentId: string; resume: string; invitationLetter: string; pastQualification: string } = { studentId: '', resume: '', invitationLetter: '', pastQualification: '' };
 
   applicationData = {
     college: '',
@@ -554,7 +43,8 @@ export class ApplyComponent implements OnInit {
     yearOfStudy: '',
     studentId: null as File | null,
     resume: null as File | null,
-    invitationLetter: null as File | null
+    invitationLetter: null as File | null,
+    pastQualification: null as File | null
   };
 
   individualData = {
@@ -583,6 +73,7 @@ export class ApplyComponent implements OnInit {
   studentIdFileName = '';
   resumeFileName = '';
   invitationFileName = '';
+  pastQualificationFileName = '';
   applicationFee = 0;
   requiresPayment = false;
 
@@ -612,12 +103,10 @@ export class ApplyComponent implements OnInit {
         console.error('❌ No internship ID found!');
       }
       
-      // Always check if user has a group
       const currentUser = this.authService.getCurrentUser();
       if (currentUser) {
         this.loadGroupInfo();
         
-        // For individual applications
         if (!this.groupId) {
           this.individualData.fullName = currentUser.fullName || '';
           this.individualData.email = currentUser.email || '';
@@ -641,33 +130,56 @@ export class ApplyComponent implements OnInit {
 
   loadGroupInfo() {
     const currentUser = this.authService.getCurrentUser();
-    if (currentUser?.id) {
+    if (!currentUser?.id) {
+      console.log('No current user');
+      return;
+    }
+
+    // First check if groupId is in URL params
+    if (this.groupId) {
+      console.log('Loading group by groupId from URL:', this.groupId);
+      this.groupService.getGroupById(this.groupId).subscribe({
+        next: (group) => {
+          console.log('Loaded group data by ID:', group);
+          this.groupInfo = group;
+          this.prefillGroupData(group, currentUser);
+        },
+        error: (error) => {
+          console.error('Error loading group by ID:', error);
+        }
+      });
+    } else {
+      // Fallback: Load user's group
+      console.log('No groupId in URL - loading user group');
       this.groupService.getUserGroup(currentUser.id).subscribe({
         next: (group) => {
-          console.log('Loaded group data:', group);
+          console.log('Loaded user group data:', group);
           this.groupInfo = group;
           if (group) {
-            // Pre-fill application form with group data
-            this.applicationData.college = group.collegeName || '';
-            this.applicationData.degree = group.department || '';
-            this.applicationData.yearOfStudy = group.academicYear || '';
-            
-            this.teamData.teamSize = group.totalStudents || 1;
-            this.teamData.academicYear = group.academicYear || '';
-            this.teamData.semester = group.semester || '';
-            this.teamData.teamLeader = group.leader?.fullName || currentUser.fullName || '';
-            this.teamData.leaderEmail = group.leader?.email || currentUser.email || '';
-            this.teamData.leaderContact = group.leader?.phone || '';
-            
-            console.log('Pre-filled application data:', this.applicationData);
-            console.log('Pre-filled team data:', this.teamData);
+            this.prefillGroupData(group, currentUser);
           }
         },
         error: (error) => {
-          console.error('Error loading group info:', error);
+          console.error('Error loading user group:', error);
         }
       });
     }
+  }
+
+  prefillGroupData(group: any, currentUser: any) {
+    this.applicationData.college = group.collegeName || '';
+    this.applicationData.degree = group.department || '';
+    this.applicationData.yearOfStudy = group.academicYear || '';
+    
+    this.teamData.teamSize = group.totalStudents || 1;
+    this.teamData.academicYear = group.academicYear || '';
+    this.teamData.semester = group.semester || '';
+    this.teamData.teamLeader = group.leader?.fullName || currentUser.fullName || '';
+    this.teamData.leaderEmail = group.leader?.email || currentUser.email || '';
+    this.teamData.leaderContact = group.leader?.phone || '';
+    
+    console.log('Pre-filled application data:', this.applicationData);
+    console.log('Pre-filled team data:', this.teamData);
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -693,25 +205,28 @@ export class ApplyComponent implements OnInit {
         this.resumeFileName = file.name;
       } else if (field === 'invitationLetter') {
         this.invitationFileName = file.name;
+      } else if (field === 'pastQualification') {
+        this.pastQualificationFileName = file.name;
       }
     }
   }
 
   isFormComplete(): boolean {
-    const hasAllDocuments = !!(this.applicationData.studentId && this.applicationData.resume && this.applicationData.invitationLetter);
     const hasBasicInfo = !!(this.applicationData.college && this.applicationData.degree && this.applicationData.yearOfStudy);
     
     if (this.groupInfo) {
+      const hasAllDocuments = !!(this.applicationData.studentId && this.applicationData.resume && this.applicationData.invitationLetter);
       const hasTeamInfo = !!(this.teamData.teamSize && this.teamData.teamLeader && 
                             this.teamData.leaderContact && this.teamData.leaderEmail && 
                             this.teamData.teamMembers && this.teamData.academicYear && 
                             this.teamData.semester && this.teamData.motivation);
       return hasAllDocuments && hasBasicInfo && hasTeamInfo;
     } else {
+      const hasIndividualDocuments = !!(this.applicationData.resume && this.applicationData.pastQualification);
       const hasIndividualInfo = !!(this.individualData.fullName && this.individualData.email && 
                                    this.individualData.phone && this.individualData.duration && 
                                    this.individualData.motivation);
-      return hasAllDocuments && hasBasicInfo && hasIndividualInfo;
+      return hasIndividualDocuments && hasBasicInfo && hasIndividualInfo;
     }
   }
 
@@ -725,12 +240,15 @@ export class ApplyComponent implements OnInit {
     if (!this.isFormComplete()) {
       let missingField = '';
       
-      // Check documents first
-      if (!this.applicationData.studentId) missingField = 'Student ID Card';
-      else if (!this.applicationData.resume) missingField = 'Resume/CV';
-      else if (!this.applicationData.invitationLetter) missingField = 'College Invitation Letter';
+      if (this.groupId) {
+        if (!this.applicationData.studentId) missingField = 'Student ID Card';
+        else if (!this.applicationData.resume) missingField = 'Resume/CV';
+        else if (!this.applicationData.invitationLetter) missingField = 'College Invitation Letter';
+      } else {
+        if (!this.applicationData.resume) missingField = 'Resume/CV';
+        else if (!this.applicationData.pastQualification) missingField = 'Past Qualification Documents';
+      }
       
-      // Check other fields
       if (!missingField) {
         if (!this.groupId) {
           if (!this.individualData.fullName) missingField = 'Full Name';
@@ -826,7 +344,6 @@ export class ApplyComponent implements OnInit {
     formData.append('degree', this.applicationData.degree);
     formData.append('yearOfStudy', this.applicationData.yearOfStudy);
     
-    // Add payment info
     if (this.requiresPayment && this.applicationFee > 0) {
       formData.append('paymentStatus', 'PAID');
       formData.append('paymentAmount', this.applicationFee.toString());
@@ -872,6 +389,9 @@ export class ApplyComponent implements OnInit {
     }
     if (this.applicationData.invitationLetter) {
       formData.append('invitationLetter', this.applicationData.invitationLetter);
+    }
+    if (this.applicationData.pastQualification) {
+      formData.append('pastQualification', this.applicationData.pastQualification);
     }
 
     const token = localStorage.getItem('token');
